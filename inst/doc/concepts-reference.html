@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>BID Framework Concepts: Practical Implementation</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">BID Framework Concepts: Practical
+Implementation</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(bidux)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(reactable)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(echarts4r)</span></code></pre></div>
+<div id="bid-framework-concepts-practical-implementation" class="section level1">
+<h1>BID Framework Concepts: Practical Implementation</h1>
+<p>The Behavior Insight Design (BID) framework integrates psychological
+principles into UI/UX design for Shiny dashboards. This guide focuses on
+practical implementation of key concepts using modern packages like
+{bslib}, {reactable}, and {echarts4r}.</p>
+<div id="framework-overview" class="section level2">
+<h2>Framework Overview</h2>
+<p>The BID framework consists of 5 sequential stages, each incorporating
+specific psychological principles:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Notice</strong>: Identify friction points (Cognitive Load,
+Visual Hierarchy)</li>
+<li><strong>Interpret</strong>: Understand user needs (Data
+Storytelling, User Personas)</li>
+<li><strong>Structure</strong>: Organize information (Layout Patterns,
+Breathable Designs)</li>
+<li><strong>Anticipate</strong>: Mitigate biases (Anchoring,
+Framing)</li>
+<li><strong>Validate</strong>: Empower the user (Peak-End Rule,
+Collaboration)</li>
+</ol>
+</div>
+<div id="stage-1-notice---reducing-cognitive-load" class="section level2">
+<h2>Stage 1: Notice - Reducing Cognitive Load</h2>
+<p>Cognitive load is the amount of mental effort required to use your
+interface. High cognitive load leads to user frustration and errors.</p>
+<div id="using-bslib-to-reduce-cognitive-load" class="section level3">
+<h3>Using {bslib} to Reduce Cognitive Load</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="at">version =</span> <span class="dv">5</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">bg =</span> <span class="st">&quot;#FFFFFF&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  ),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="co"># Clear section headers</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>      <span class="fu">card_header</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>        <span class="fu">h2</span>(<span class="st">&quot;Sales Dashboard&quot;</span>, <span class="at">class =</span> <span class="st">&quot;fs-4&quot;</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>      ),</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>        <span class="fu">p</span>(<span class="st">&quot;Key sales metrics for Q2 2025&quot;</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>      )</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>    )</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  ),</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  <span class="co"># Limited filters grouped by purpose</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Filters&quot;</span>),</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>        <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>          <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">3</span>,</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>          <span class="co"># Time-related filters grouped together</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>          <span class="fu">card</span>(</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>            <span class="fu">card_body</span>(</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>              <span class="fu">h5</span>(<span class="st">&quot;Time Period&quot;</span>),</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>              <span class="fu">dateRangeInput</span>(</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>                <span class="st">&quot;date_range&quot;</span>,</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>                <span class="cn">NULL</span>,</span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>                <span class="at">start =</span> <span class="fu">Sys.Date</span>() <span class="sc">-</span> <span class="dv">90</span>,</span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>                <span class="at">end =</span> <span class="fu">Sys.Date</span>()</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>              ),</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>              <span class="fu">checkboxInput</span>(<span class="st">&quot;compare_prev&quot;</span>, <span class="st">&quot;Compare to previous period&quot;</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>            )</span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>          ),</span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>          <span class="co"># Product-related filters grouped together</span></span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>          <span class="fu">card</span>(</span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a>            <span class="fu">card_body</span>(</span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a>              <span class="fu">h5</span>(<span class="st">&quot;Products&quot;</span>),</span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a>              <span class="fu">selectInput</span>(</span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a>                <span class="st">&quot;category&quot;</span>,</span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a>                <span class="st">&quot;Category:&quot;</span>,</span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a>                <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;All&quot;</span>, <span class="st">&quot;Electronics&quot;</span>, <span class="st">&quot;Clothing&quot;</span>, <span class="st">&quot;Home&quot;</span>)</span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a>              )</span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a>            )</span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a>          ),</span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a>          <span class="co"># Region-related filters grouped together</span></span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a>          <span class="fu">card</span>(</span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a>            <span class="fu">card_body</span>(</span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a>              <span class="fu">h5</span>(<span class="st">&quot;Regions&quot;</span>),</span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a>              <span class="fu">selectInput</span>(</span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a>                <span class="st">&quot;region&quot;</span>, <span class="st">&quot;Region:&quot;</span>,</span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a>                <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;All&quot;</span>, <span class="st">&quot;North&quot;</span>, <span class="st">&quot;South&quot;</span>, <span class="st">&quot;East&quot;</span>, <span class="st">&quot;West&quot;</span>)</span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a>              )</span>
+<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a>            )</span>
+<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a>          )</span>
+<span id="cb2-61"><a href="#cb2-61" tabindex="-1"></a>        )</span>
+<span id="cb2-62"><a href="#cb2-62" tabindex="-1"></a>      )</span>
+<span id="cb2-63"><a href="#cb2-63" tabindex="-1"></a>    )</span>
+<span id="cb2-64"><a href="#cb2-64" tabindex="-1"></a>  ),</span>
+<span id="cb2-65"><a href="#cb2-65" tabindex="-1"></a>  <span class="co"># Main content with clear organization</span></span>
+<span id="cb2-66"><a href="#cb2-66" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb2-67"><a href="#cb2-67" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">3</span>,</span>
+<span id="cb2-68"><a href="#cb2-68" tabindex="-1"></a>    <span class="co"># Key metrics with visual simplicity</span></span>
+<span id="cb2-69"><a href="#cb2-69" tabindex="-1"></a>    <span class="fu">value_box</span>(</span>
+<span id="cb2-70"><a href="#cb2-70" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Total Revenue&quot;</span>,</span>
+<span id="cb2-71"><a href="#cb2-71" tabindex="-1"></a>      <span class="at">value =</span> <span class="st">&quot;$1.24M&quot;</span>,</span>
+<span id="cb2-72"><a href="#cb2-72" tabindex="-1"></a>      <span class="at">showcase =</span> bsicons<span class="sc">::</span><span class="fu">bs_icon</span>(<span class="st">&quot;graph-up-arrow&quot;</span>),</span>
+<span id="cb2-73"><a href="#cb2-73" tabindex="-1"></a>      <span class="at">theme =</span> <span class="fu">value_box_theme</span>(</span>
+<span id="cb2-74"><a href="#cb2-74" tabindex="-1"></a>        <span class="at">bg =</span> <span class="st">&quot;#f8f9fa&quot;</span>,</span>
+<span id="cb2-75"><a href="#cb2-75" tabindex="-1"></a>        <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
+<span id="cb2-76"><a href="#cb2-76" tabindex="-1"></a>      )</span>
+<span id="cb2-77"><a href="#cb2-77" tabindex="-1"></a>    ),</span>
+<span id="cb2-78"><a href="#cb2-78" tabindex="-1"></a>    <span class="fu">value_box</span>(</span>
+<span id="cb2-79"><a href="#cb2-79" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Orders&quot;</span>,</span>
+<span id="cb2-80"><a href="#cb2-80" tabindex="-1"></a>      <span class="at">value =</span> <span class="st">&quot;8,490&quot;</span>,</span>
+<span id="cb2-81"><a href="#cb2-81" tabindex="-1"></a>      <span class="at">showcase =</span> bsicons<span class="sc">::</span><span class="fu">bs_icon</span>(<span class="st">&quot;cart&quot;</span>),</span>
+<span id="cb2-82"><a href="#cb2-82" tabindex="-1"></a>      <span class="at">theme =</span> <span class="fu">value_box_theme</span>(</span>
+<span id="cb2-83"><a href="#cb2-83" tabindex="-1"></a>        <span class="at">bg =</span> <span class="st">&quot;#f8f9fa&quot;</span>,</span>
+<span id="cb2-84"><a href="#cb2-84" tabindex="-1"></a>        <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
+<span id="cb2-85"><a href="#cb2-85" tabindex="-1"></a>      )</span>
+<span id="cb2-86"><a href="#cb2-86" tabindex="-1"></a>    ),</span>
+<span id="cb2-87"><a href="#cb2-87" tabindex="-1"></a>    <span class="fu">value_box</span>(</span>
+<span id="cb2-88"><a href="#cb2-88" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Avg Order Value&quot;</span>,</span>
+<span id="cb2-89"><a href="#cb2-89" tabindex="-1"></a>      <span class="at">value =</span> <span class="st">&quot;$146&quot;</span>,</span>
+<span id="cb2-90"><a href="#cb2-90" tabindex="-1"></a>      <span class="at">showcase =</span> bsicons<span class="sc">::</span><span class="fu">bs_icon</span>(<span class="st">&quot;tag&quot;</span>),</span>
+<span id="cb2-91"><a href="#cb2-91" tabindex="-1"></a>      <span class="at">theme =</span> <span class="fu">value_box_theme</span>(</span>
+<span id="cb2-92"><a href="#cb2-92" tabindex="-1"></a>        <span class="at">bg =</span> <span class="st">&quot;#f8f9fa&quot;</span>,</span>
+<span id="cb2-93"><a href="#cb2-93" tabindex="-1"></a>        <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
+<span id="cb2-94"><a href="#cb2-94" tabindex="-1"></a>      )</span>
+<span id="cb2-95"><a href="#cb2-95" tabindex="-1"></a>    )</span>
+<span id="cb2-96"><a href="#cb2-96" tabindex="-1"></a>  ),</span>
+<span id="cb2-97"><a href="#cb2-97" tabindex="-1"></a>  <span class="co"># Main charts with progressive disclosure</span></span>
+<span id="cb2-98"><a href="#cb2-98" tabindex="-1"></a>  <span class="fu">accordion</span>(</span>
+<span id="cb2-99"><a href="#cb2-99" tabindex="-1"></a>    <span class="fu">accordion_panel</span>(</span>
+<span id="cb2-100"><a href="#cb2-100" tabindex="-1"></a>      <span class="st">&quot;Sales Performance&quot;</span>,</span>
+<span id="cb2-101"><a href="#cb2-101" tabindex="-1"></a>      <span class="fu">echarts4rOutput</span>(<span class="st">&quot;sales_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb2-102"><a href="#cb2-102" tabindex="-1"></a>    ),</span>
+<span id="cb2-103"><a href="#cb2-103" tabindex="-1"></a>    <span class="fu">accordion_panel</span>(</span>
+<span id="cb2-104"><a href="#cb2-104" tabindex="-1"></a>      <span class="st">&quot;Category Breakdown&quot;</span>,</span>
+<span id="cb2-105"><a href="#cb2-105" tabindex="-1"></a>      <span class="fu">echarts4rOutput</span>(<span class="st">&quot;category_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb2-106"><a href="#cb2-106" tabindex="-1"></a>    ),</span>
+<span id="cb2-107"><a href="#cb2-107" tabindex="-1"></a>    <span class="fu">accordion_panel</span>(</span>
+<span id="cb2-108"><a href="#cb2-108" tabindex="-1"></a>      <span class="st">&quot;Regional Analysis&quot;</span>,</span>
+<span id="cb2-109"><a href="#cb2-109" tabindex="-1"></a>      <span class="fu">echarts4rOutput</span>(<span class="st">&quot;region_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb2-110"><a href="#cb2-110" tabindex="-1"></a>    )</span>
+<span id="cb2-111"><a href="#cb2-111" tabindex="-1"></a>  )</span>
+<span id="cb2-112"><a href="#cb2-112" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="key-design-principles-for-reducing-cognitive-load" class="section level3">
+<h3>Key Design Principles for Reducing Cognitive Load:</h3>
+<ol style="list-style-type: decimal">
+<li>Group related controls and information together</li>
+<li>Use consistent layouts and patterns</li>
+<li>Implement progressive disclosure to hide complexity</li>
+<li>Limit the number of choices presented at once</li>
+<li>Use clear visual hierarchy to guide attention</li>
+</ol>
+</div>
+</div>
+<div id="stage-2-interpret---implementing-data-storytelling" class="section level2">
+<h2>Stage 2: Interpret - Implementing Data Storytelling</h2>
+<p>Data storytelling helps users understand the meaning behind data
+through a narrative structure with hook, context, tension, and
+resolution.</p>
+<div id="using-echarts4r-for-data-storytelling" class="section level3">
+<h3>Using {echarts4r} for Data Storytelling</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="at">version =</span> <span class="dv">5</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="at">bg =</span> <span class="st">&quot;#FFFFFF&quot;</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  ),</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="co"># Story Hook: Lead with a compelling insight</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Q2 2025 Sales Analysis&quot;</span>),</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>        <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>          <span class="at">width =</span> <span class="dv">1</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>          <span class="co"># Hook: Draw attention to an interesting pattern</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>          <span class="fu">h3</span>(</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>            <span class="st">&quot;Online sales exceeded in-store for the first time&quot;</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>            <span class="at">class =</span> <span class="st">&quot;text-primary fs-4&quot;</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>          ),</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>          <span class="fu">p</span>(</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>            <span class="fu">paste</span>(</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>              <span class="st">&quot;Q2 saw a historic shift in our sales channels,&quot;</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>              <span class="st">&quot;creating both challenges and opportunities.&quot;</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>            )</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>          )</span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>        )</span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>      )</span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>    )</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>  ),</span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>  <span class="co"># Story Context: Provide background</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">2</span>,</span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Sales Channel Trend&quot;</span>),</span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>        <span class="co"># Context: Show the historical trend</span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>        <span class="fu">echarts4rOutput</span>(<span class="st">&quot;channel_trend&quot;</span>)</span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>      ),</span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a>      <span class="fu">card_footer</span>(</span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a>        <span class="fu">p</span>(</span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a>          <span class="fu">paste</span>(</span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a>            <span class="st">&quot;Historical context: Online sales have been steadily increasing&quot;</span>,</span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a>            <span class="st">&quot;over the past 8 quarters.&quot;</span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a>          )</span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a>        )</span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a>      )</span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a>    ),</span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a>    <span class="co"># Supporting context visualization</span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Q2 Channel Breakdown&quot;</span>),</span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a>        <span class="fu">echarts4rOutput</span>(<span class="st">&quot;channel_pie&quot;</span>)</span>
+<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a>      )</span>
+<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a>    )</span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a>  ),</span>
+<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a>  <span class="co"># Story Tension: Highlight the challenge or opportunity</span></span>
+<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;The Challenge&quot;</span>),</span>
+<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a>        <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a>          <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">2</span>,</span>
+<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a>          <span class="fu">div</span>(</span>
+<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a>            <span class="co"># Tension: Highlight the problem</span></span>
+<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a>            <span class="fu">h4</span>(<span class="st">&quot;Different Customer Behaviors by Channel&quot;</span>),</span>
+<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a>            <span class="fu">p</span>(</span>
+<span id="cb3-68"><a href="#cb3-68" tabindex="-1"></a>              <span class="fu">paste</span>(</span>
+<span id="cb3-69"><a href="#cb3-69" tabindex="-1"></a>                <span class="st">&quot;Online customers show distinct shopping patterns compared&quot;</span>,</span>
+<span id="cb3-70"><a href="#cb3-70" tabindex="-1"></a>                <span class="st">&quot;to in-store shoppers.&quot;</span></span>
+<span id="cb3-71"><a href="#cb3-71" tabindex="-1"></a>              )</span>
+<span id="cb3-72"><a href="#cb3-72" tabindex="-1"></a>            ),</span>
+<span id="cb3-73"><a href="#cb3-73" tabindex="-1"></a>            <span class="fu">p</span>(<span class="st">&quot;Key differences:&quot;</span>)</span>
+<span id="cb3-74"><a href="#cb3-74" tabindex="-1"></a>          ),</span>
+<span id="cb3-75"><a href="#cb3-75" tabindex="-1"></a>          <span class="co"># Supporting data for tension</span></span>
+<span id="cb3-76"><a href="#cb3-76" tabindex="-1"></a>          <span class="fu">echarts4rOutput</span>(<span class="st">&quot;behavior_comparison&quot;</span>)</span>
+<span id="cb3-77"><a href="#cb3-77" tabindex="-1"></a>        )</span>
+<span id="cb3-78"><a href="#cb3-78" tabindex="-1"></a>      )</span>
+<span id="cb3-79"><a href="#cb3-79" tabindex="-1"></a>    )</span>
+<span id="cb3-80"><a href="#cb3-80" tabindex="-1"></a>  ),</span>
+<span id="cb3-81"><a href="#cb3-81" tabindex="-1"></a>  <span class="co"># Story Resolution: Provide insights and next steps</span></span>
+<span id="cb3-82"><a href="#cb3-82" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb3-83"><a href="#cb3-83" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb3-84"><a href="#cb3-84" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb3-85"><a href="#cb3-85" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Recommended Actions&quot;</span>),</span>
+<span id="cb3-86"><a href="#cb3-86" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb3-87"><a href="#cb3-87" tabindex="-1"></a>        <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb3-88"><a href="#cb3-88" tabindex="-1"></a>          <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">3</span>,</span>
+<span id="cb3-89"><a href="#cb3-89" tabindex="-1"></a>          <span class="fu">card</span>(</span>
+<span id="cb3-90"><a href="#cb3-90" tabindex="-1"></a>            <span class="fu">card_body</span>(</span>
+<span id="cb3-91"><a href="#cb3-91" tabindex="-1"></a>              <span class="fu">h5</span>(<span class="st">&quot;Update Digital Strategy&quot;</span>),</span>
+<span id="cb3-92"><a href="#cb3-92" tabindex="-1"></a>              <span class="fu">p</span>(<span class="st">&quot;Adapt marketing approach to online-first customer base&quot;</span>),</span>
+<span id="cb3-93"><a href="#cb3-93" tabindex="-1"></a>              <span class="fu">p</span>(<span class="st">&quot;Timeline: Immediate&quot;</span>)</span>
+<span id="cb3-94"><a href="#cb3-94" tabindex="-1"></a>            )</span>
+<span id="cb3-95"><a href="#cb3-95" tabindex="-1"></a>          ),</span>
+<span id="cb3-96"><a href="#cb3-96" tabindex="-1"></a>          <span class="fu">card</span>(</span>
+<span id="cb3-97"><a href="#cb3-97" tabindex="-1"></a>            <span class="fu">card_body</span>(</span>
+<span id="cb3-98"><a href="#cb3-98" tabindex="-1"></a>              <span class="fu">h5</span>(<span class="st">&quot;Enhance Online Experience&quot;</span>),</span>
+<span id="cb3-99"><a href="#cb3-99" tabindex="-1"></a>              <span class="fu">p</span>(<span class="st">&quot;Focus on mobile optimization and checkout flow&quot;</span>),</span>
+<span id="cb3-100"><a href="#cb3-100" tabindex="-1"></a>              <span class="fu">p</span>(<span class="st">&quot;Timeline: Q3 2025&quot;</span>)</span>
+<span id="cb3-101"><a href="#cb3-101" tabindex="-1"></a>            )</span>
+<span id="cb3-102"><a href="#cb3-102" tabindex="-1"></a>          ),</span>
+<span id="cb3-103"><a href="#cb3-103" tabindex="-1"></a>          <span class="fu">card</span>(</span>
+<span id="cb3-104"><a href="#cb3-104" tabindex="-1"></a>            <span class="fu">card_body</span>(</span>
+<span id="cb3-105"><a href="#cb3-105" tabindex="-1"></a>              <span class="fu">h5</span>(<span class="st">&quot;Reposition Physical Stores&quot;</span>),</span>
+<span id="cb3-106"><a href="#cb3-106" tabindex="-1"></a>              <span class="fu">p</span>(<span class="st">&quot;Shift from transaction centers to experience hubs&quot;</span>),</span>
+<span id="cb3-107"><a href="#cb3-107" tabindex="-1"></a>              <span class="fu">p</span>(<span class="st">&quot;Timeline: Q4 2025&quot;</span>)</span>
+<span id="cb3-108"><a href="#cb3-108" tabindex="-1"></a>            )</span>
+<span id="cb3-109"><a href="#cb3-109" tabindex="-1"></a>          )</span>
+<span id="cb3-110"><a href="#cb3-110" tabindex="-1"></a>        )</span>
+<span id="cb3-111"><a href="#cb3-111" tabindex="-1"></a>      ),</span>
+<span id="cb3-112"><a href="#cb3-112" tabindex="-1"></a>      <span class="fu">card_footer</span>(</span>
+<span id="cb3-113"><a href="#cb3-113" tabindex="-1"></a>        <span class="fu">actionButton</span>(</span>
+<span id="cb3-114"><a href="#cb3-114" tabindex="-1"></a>          <span class="st">&quot;download_report&quot;</span>,</span>
+<span id="cb3-115"><a href="#cb3-115" tabindex="-1"></a>          <span class="st">&quot;Download Full Analysis&quot;</span>,</span>
+<span id="cb3-116"><a href="#cb3-116" tabindex="-1"></a>          <span class="at">class =</span> <span class="st">&quot;btn-primary&quot;</span></span>
+<span id="cb3-117"><a href="#cb3-117" tabindex="-1"></a>        )</span>
+<span id="cb3-118"><a href="#cb3-118" tabindex="-1"></a>      )</span>
+<span id="cb3-119"><a href="#cb3-119" tabindex="-1"></a>    )</span>
+<span id="cb3-120"><a href="#cb3-120" tabindex="-1"></a>  )</span>
+<span id="cb3-121"><a href="#cb3-121" tabindex="-1"></a>)</span>
+<span id="cb3-122"><a href="#cb3-122" tabindex="-1"></a></span>
+<span id="cb3-123"><a href="#cb3-123" tabindex="-1"></a><span class="co"># Server function for data storytelling charts:</span></span>
+<span id="cb3-124"><a href="#cb3-124" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb3-125"><a href="#cb3-125" tabindex="-1"></a>  <span class="co"># Channel trend chart showing the story over time</span></span>
+<span id="cb3-126"><a href="#cb3-126" tabindex="-1"></a>  output<span class="sc">$</span>channel_trend <span class="ot">&lt;-</span> <span class="fu">renderEcharts4r</span>({</span>
+<span id="cb3-127"><a href="#cb3-127" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
+<span id="cb3-128"><a href="#cb3-128" tabindex="-1"></a>      <span class="at">quarter =</span> <span class="fu">paste0</span>(<span class="st">&quot;Q&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="st">&quot; &quot;</span>, <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;2024&quot;</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="st">&quot;2025&quot;</span>, <span class="dv">4</span>))),</span>
+<span id="cb3-129"><a href="#cb3-129" tabindex="-1"></a>      <span class="at">online =</span> <span class="fu">c</span>(<span class="dv">42</span>, <span class="dv">45</span>, <span class="dv">47</span>, <span class="dv">48</span>, <span class="dv">49</span>, <span class="dv">52</span>, <span class="dv">54</span>, <span class="dv">56</span>),</span>
+<span id="cb3-130"><a href="#cb3-130" tabindex="-1"></a>      <span class="at">in_store =</span> <span class="fu">c</span>(<span class="dv">58</span>, <span class="dv">55</span>, <span class="dv">53</span>, <span class="dv">52</span>, <span class="dv">51</span>, <span class="dv">48</span>, <span class="dv">46</span>, <span class="dv">44</span>)</span>
+<span id="cb3-131"><a href="#cb3-131" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb3-132"><a href="#cb3-132" tabindex="-1"></a>      <span class="fu">e_charts</span>(quarter) <span class="sc">|&gt;</span></span>
+<span id="cb3-133"><a href="#cb3-133" tabindex="-1"></a>      <span class="fu">e_line</span>(online, <span class="at">name =</span> <span class="st">&quot;Online&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-134"><a href="#cb3-134" tabindex="-1"></a>      <span class="fu">e_line</span>(in_store, <span class="at">name =</span> <span class="st">&quot;In-store&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-135"><a href="#cb3-135" tabindex="-1"></a>      <span class="fu">e_title</span>(<span class="st">&quot;Sales Channel Distribution (%)&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-136"><a href="#cb3-136" tabindex="-1"></a>      <span class="fu">e_x_axis</span>(<span class="at">axisLabel =</span> <span class="fu">list</span>(<span class="at">rotate =</span> <span class="dv">45</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-137"><a href="#cb3-137" tabindex="-1"></a>      <span class="fu">e_tooltip</span>(<span class="at">trigger =</span> <span class="st">&quot;axis&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-138"><a href="#cb3-138" tabindex="-1"></a>      <span class="fu">e_mark_line</span>(</span>
+<span id="cb3-139"><a href="#cb3-139" tabindex="-1"></a>        <span class="at">data =</span> <span class="fu">list</span>(<span class="at">xAxis =</span> <span class="st">&quot;Q2 2025&quot;</span>),</span>
+<span id="cb3-140"><a href="#cb3-140" tabindex="-1"></a>        <span class="at">name =</span> <span class="st">&quot;Current Quarter&quot;</span></span>
+<span id="cb3-141"><a href="#cb3-141" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb3-142"><a href="#cb3-142" tabindex="-1"></a>      <span class="fu">e_color</span>(<span class="fu">c</span>(<span class="st">&quot;#3498db&quot;</span>, <span class="st">&quot;#2ecc71&quot;</span>))</span>
+<span id="cb3-143"><a href="#cb3-143" tabindex="-1"></a>  })</span>
+<span id="cb3-144"><a href="#cb3-144" tabindex="-1"></a></span>
+<span id="cb3-145"><a href="#cb3-145" tabindex="-1"></a>  <span class="co"># Channel gauge chart for current quarter</span></span>
+<span id="cb3-146"><a href="#cb3-146" tabindex="-1"></a>  output<span class="sc">$</span>channel_pie <span class="ot">&lt;-</span> <span class="fu">renderEcharts4r</span>({</span>
+<span id="cb3-147"><a href="#cb3-147" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
+<span id="cb3-148"><a href="#cb3-148" tabindex="-1"></a>      <span class="at">channel =</span> <span class="fu">c</span>(<span class="st">&quot;Online&quot;</span>, <span class="st">&quot;In-store&quot;</span>),</span>
+<span id="cb3-149"><a href="#cb3-149" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">c</span>(<span class="dv">56</span>, <span class="dv">44</span>)</span>
+<span id="cb3-150"><a href="#cb3-150" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb3-151"><a href="#cb3-151" tabindex="-1"></a>      <span class="fu">e_charts</span>(channel) <span class="sc">|&gt;</span></span>
+<span id="cb3-152"><a href="#cb3-152" tabindex="-1"></a>      <span class="fu">e_title</span>(<span class="st">&quot;Q2 2025 Sales Distribution&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-153"><a href="#cb3-153" tabindex="-1"></a>      <span class="fu">e_gauge</span>(</span>
+<span id="cb3-154"><a href="#cb3-154" tabindex="-1"></a>        value,</span>
+<span id="cb3-155"><a href="#cb3-155" tabindex="-1"></a>        <span class="at">startAngle =</span> <span class="dv">180</span>,</span>
+<span id="cb3-156"><a href="#cb3-156" tabindex="-1"></a>        <span class="at">endAngle =</span> <span class="dv">0</span>,</span>
+<span id="cb3-157"><a href="#cb3-157" tabindex="-1"></a>        <span class="at">detail =</span> <span class="fu">list</span>(<span class="at">formatter =</span> <span class="st">&quot;{value}%&quot;</span>),</span>
+<span id="cb3-158"><a href="#cb3-158" tabindex="-1"></a>        <span class="at">axisLine =</span> <span class="fu">list</span>(</span>
+<span id="cb3-159"><a href="#cb3-159" tabindex="-1"></a>          <span class="at">lineStyle =</span> <span class="fu">list</span>(</span>
+<span id="cb3-160"><a href="#cb3-160" tabindex="-1"></a>            <span class="at">color =</span> <span class="fu">list</span>(</span>
+<span id="cb3-161"><a href="#cb3-161" tabindex="-1"></a>              <span class="fu">c</span>(value <span class="sc">/</span> <span class="dv">100</span>, <span class="st">&quot;#3498db&quot;</span>),</span>
+<span id="cb3-162"><a href="#cb3-162" tabindex="-1"></a>              <span class="fu">c</span>(<span class="dv">1</span>, <span class="st">&quot;#e9e9e9&quot;</span>)</span>
+<span id="cb3-163"><a href="#cb3-163" tabindex="-1"></a>            ),</span>
+<span id="cb3-164"><a href="#cb3-164" tabindex="-1"></a>            <span class="at">width =</span> <span class="dv">30</span></span>
+<span id="cb3-165"><a href="#cb3-165" tabindex="-1"></a>          )</span>
+<span id="cb3-166"><a href="#cb3-166" tabindex="-1"></a>        )</span>
+<span id="cb3-167"><a href="#cb3-167" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb3-168"><a href="#cb3-168" tabindex="-1"></a>      <span class="fu">e_tooltip</span>()</span>
+<span id="cb3-169"><a href="#cb3-169" tabindex="-1"></a>  })</span>
+<span id="cb3-170"><a href="#cb3-170" tabindex="-1"></a></span>
+<span id="cb3-171"><a href="#cb3-171" tabindex="-1"></a>  <span class="co"># Behavior comparison for tension</span></span>
+<span id="cb3-172"><a href="#cb3-172" tabindex="-1"></a>  output<span class="sc">$</span>behavior_comparison <span class="ot">&lt;-</span> <span class="fu">renderEcharts4r</span>({</span>
+<span id="cb3-173"><a href="#cb3-173" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
+<span id="cb3-174"><a href="#cb3-174" tabindex="-1"></a>      <span class="at">metric =</span> <span class="fu">c</span>(</span>
+<span id="cb3-175"><a href="#cb3-175" tabindex="-1"></a>        <span class="st">&quot;Avg Order Value&quot;</span>,</span>
+<span id="cb3-176"><a href="#cb3-176" tabindex="-1"></a>        <span class="st">&quot;Items per Order&quot;</span>,</span>
+<span id="cb3-177"><a href="#cb3-177" tabindex="-1"></a>        <span class="st">&quot;Return Rate&quot;</span>,</span>
+<span id="cb3-178"><a href="#cb3-178" tabindex="-1"></a>        <span class="st">&quot;Repeat Purchase&quot;</span></span>
+<span id="cb3-179"><a href="#cb3-179" tabindex="-1"></a>      ),</span>
+<span id="cb3-180"><a href="#cb3-180" tabindex="-1"></a>      <span class="at">online =</span> <span class="fu">c</span>(<span class="dv">120</span>, <span class="fl">2.4</span>, <span class="dv">12</span>, <span class="dv">45</span>),</span>
+<span id="cb3-181"><a href="#cb3-181" tabindex="-1"></a>      <span class="at">in_store =</span> <span class="fu">c</span>(<span class="dv">150</span>, <span class="fl">1.8</span>, <span class="dv">5</span>, <span class="dv">35</span>)</span>
+<span id="cb3-182"><a href="#cb3-182" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb3-183"><a href="#cb3-183" tabindex="-1"></a>      <span class="fu">e_charts</span>(metric) <span class="sc">|&gt;</span></span>
+<span id="cb3-184"><a href="#cb3-184" tabindex="-1"></a>      <span class="fu">e_bar</span>(online, <span class="at">name =</span> <span class="st">&quot;Online&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-185"><a href="#cb3-185" tabindex="-1"></a>      <span class="fu">e_bar</span>(in_store, <span class="at">name =</span> <span class="st">&quot;In-store&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-186"><a href="#cb3-186" tabindex="-1"></a>      <span class="fu">e_tooltip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-187"><a href="#cb3-187" tabindex="-1"></a>      <span class="fu">e_color</span>(<span class="fu">c</span>(<span class="st">&quot;#3498db&quot;</span>, <span class="st">&quot;#2ecc71&quot;</span>))</span>
+<span id="cb3-188"><a href="#cb3-188" tabindex="-1"></a>  })</span>
+<span id="cb3-189"><a href="#cb3-189" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="key-elements-of-effective-data-storytelling" class="section level3">
+<h3>Key Elements of Effective Data Storytelling:</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Hook</strong>: Start with a compelling insight to grab
+attention</li>
+<li><strong>Context</strong>: Provide background information and
+historical data</li>
+<li><strong>Tension</strong>: Highlight the challenge, problem, or
+opportunity</li>
+<li><strong>Resolution</strong>: Offer insights and actionable
+recommendations</li>
+</ol>
+</div>
+</div>
+<div id="stage-3-structure---breathable-layouts" class="section level2">
+<h2>Stage 3: Structure - Breathable Layouts</h2>
+<p>Breathable layouts use whitespace effectively to create visual rhythm
+and reduce cognitive load.</p>
+<div id="using-bslib-for-breathable-layouts" class="section level3">
+<h3>Using {bslib} for Breathable Layouts</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    <span class="at">version =</span> <span class="dv">5</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">bg =</span> <span class="st">&quot;#FFFFFF&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  ),</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="co"># Page title with ample space</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">gap =</span> <span class="st">&quot;2rem&quot;</span>, <span class="co"># Add breathing room</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>      <span class="fu">card_header</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>        <span class="fu">h1</span>(</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>          <span class="st">&quot;Customer Analytics Dashboard&quot;</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>          <span class="at">class =</span> <span class="st">&quot;fs-3 py-2&quot;</span> <span class="co"># Add vertical padding</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>        )</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>      )</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    )</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  ),</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="co"># KPI cards with generous spacing</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">3</span>,</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>    <span class="at">gap =</span> <span class="st">&quot;2rem&quot;</span>, <span class="co"># Generous spacing between cards</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>        <span class="at">padding =</span> <span class="st">&quot;1.5rem&quot;</span>, <span class="co"># Extra padding inside cards</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>        <span class="fu">h3</span>(<span class="st">&quot;Customers&quot;</span>, <span class="at">class =</span> <span class="st">&quot;fs-4 mb-4&quot;</span>), <span class="co"># Bottom margin for breathing room</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>        <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;display-5 mb-3&quot;</span>, <span class="st">&quot;12,486&quot;</span>), <span class="co"># Large text with spacing</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>        <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-success&quot;</span>, <span class="st">&quot;↑ 8% from last month&quot;</span>)</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>      )</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>    ),</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>        <span class="at">padding =</span> <span class="st">&quot;1.5rem&quot;</span>,</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>        <span class="fu">h3</span>(<span class="st">&quot;Retention Rate&quot;</span>, <span class="at">class =</span> <span class="st">&quot;fs-4 mb-4&quot;</span>),</span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>        <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;display-5 mb-3&quot;</span>, <span class="st">&quot;86%&quot;</span>),</span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>        <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-success&quot;</span>, <span class="st">&quot;↑ 3% from last month&quot;</span>)</span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>      )</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>    ),</span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>        <span class="at">padding =</span> <span class="st">&quot;1.5rem&quot;</span>,</span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a>        <span class="fu">h3</span>(<span class="st">&quot;Satisfaction&quot;</span>, <span class="at">class =</span> <span class="st">&quot;fs-4 mb-4&quot;</span>),</span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>        <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;display-5 mb-3&quot;</span>, <span class="st">&quot;4.7/5&quot;</span>),</span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>        <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-success&quot;</span>, <span class="st">&quot;↑ 0.2 from last month&quot;</span>)</span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a>      )</span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a>    )</span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a>  ),</span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a>  <span class="co"># Add vertical spacing</span></span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a>    <span class="at">gap =</span> <span class="st">&quot;2rem&quot;</span>,</span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>      <span class="fu">card_header</span>(</span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>        <span class="fu">h3</span>(<span class="st">&quot;Customer Segments&quot;</span>, <span class="at">class =</span> <span class="st">&quot;fs-4&quot;</span>)</span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>      ),</span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a>        <span class="at">padding =</span> <span class="st">&quot;1.5rem&quot;</span>, <span class="co"># Extra padding</span></span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a>        <span class="fu">echarts4rOutput</span>(<span class="st">&quot;segments_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>      )</span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a>    )</span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a>  ),</span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a>  <span class="co"># Tabbed interface with inner spacing</span></span>
+<span id="cb4-64"><a href="#cb4-64" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb4-65"><a href="#cb4-65" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb4-66"><a href="#cb4-66" tabindex="-1"></a>    <span class="at">gap =</span> <span class="st">&quot;2rem&quot;</span>,</span>
+<span id="cb4-67"><a href="#cb4-67" tabindex="-1"></a>    <span class="fu">nav_panel_tabset</span>(</span>
+<span id="cb4-68"><a href="#cb4-68" tabindex="-1"></a>      <span class="fu">nav_panel</span>(</span>
+<span id="cb4-69"><a href="#cb4-69" tabindex="-1"></a>        <span class="st">&quot;Demographics&quot;</span>,</span>
+<span id="cb4-70"><a href="#cb4-70" tabindex="-1"></a>        <span class="fu">div</span>(</span>
+<span id="cb4-71"><a href="#cb4-71" tabindex="-1"></a>          <span class="at">class =</span> <span class="st">&quot;py-4&quot;</span>, <span class="co"># Top and bottom padding</span></span>
+<span id="cb4-72"><a href="#cb4-72" tabindex="-1"></a>          <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb4-73"><a href="#cb4-73" tabindex="-1"></a>            <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">2</span>,</span>
+<span id="cb4-74"><a href="#cb4-74" tabindex="-1"></a>            <span class="at">gap =</span> <span class="st">&quot;2rem&quot;</span>,</span>
+<span id="cb4-75"><a href="#cb4-75" tabindex="-1"></a>            <span class="fu">echarts4rOutput</span>(<span class="st">&quot;age_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>),</span>
+<span id="cb4-76"><a href="#cb4-76" tabindex="-1"></a>            <span class="fu">echarts4rOutput</span>(<span class="st">&quot;location_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb4-77"><a href="#cb4-77" tabindex="-1"></a>          )</span>
+<span id="cb4-78"><a href="#cb4-78" tabindex="-1"></a>        )</span>
+<span id="cb4-79"><a href="#cb4-79" tabindex="-1"></a>      ),</span>
+<span id="cb4-80"><a href="#cb4-80" tabindex="-1"></a>      <span class="fu">nav_panel</span>(</span>
+<span id="cb4-81"><a href="#cb4-81" tabindex="-1"></a>        <span class="st">&quot;Behavior&quot;</span>,</span>
+<span id="cb4-82"><a href="#cb4-82" tabindex="-1"></a>        <span class="fu">div</span>(</span>
+<span id="cb4-83"><a href="#cb4-83" tabindex="-1"></a>          <span class="at">class =</span> <span class="st">&quot;py-4&quot;</span>,</span>
+<span id="cb4-84"><a href="#cb4-84" tabindex="-1"></a>          <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb4-85"><a href="#cb4-85" tabindex="-1"></a>            <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">2</span>,</span>
+<span id="cb4-86"><a href="#cb4-86" tabindex="-1"></a>            <span class="at">gap =</span> <span class="st">&quot;2rem&quot;</span>,</span>
+<span id="cb4-87"><a href="#cb4-87" tabindex="-1"></a>            <span class="fu">echarts4rOutput</span>(<span class="st">&quot;frequency_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>),</span>
+<span id="cb4-88"><a href="#cb4-88" tabindex="-1"></a>            <span class="fu">echarts4rOutput</span>(<span class="st">&quot;channels_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb4-89"><a href="#cb4-89" tabindex="-1"></a>          )</span>
+<span id="cb4-90"><a href="#cb4-90" tabindex="-1"></a>        )</span>
+<span id="cb4-91"><a href="#cb4-91" tabindex="-1"></a>      )</span>
+<span id="cb4-92"><a href="#cb4-92" tabindex="-1"></a>    )</span>
+<span id="cb4-93"><a href="#cb4-93" tabindex="-1"></a>  ),</span>
+<span id="cb4-94"><a href="#cb4-94" tabindex="-1"></a>  <span class="co"># Data table with breathing room</span></span>
+<span id="cb4-95"><a href="#cb4-95" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb4-96"><a href="#cb4-96" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb4-97"><a href="#cb4-97" tabindex="-1"></a>    <span class="at">gap =</span> <span class="st">&quot;2rem&quot;</span>,</span>
+<span id="cb4-98"><a href="#cb4-98" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb4-99"><a href="#cb4-99" tabindex="-1"></a>      <span class="fu">card_header</span>(</span>
+<span id="cb4-100"><a href="#cb4-100" tabindex="-1"></a>        <span class="fu">h3</span>(<span class="st">&quot;Customer Details&quot;</span>, <span class="at">class =</span> <span class="st">&quot;fs-4&quot;</span>)</span>
+<span id="cb4-101"><a href="#cb4-101" tabindex="-1"></a>      ),</span>
+<span id="cb4-102"><a href="#cb4-102" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb4-103"><a href="#cb4-103" tabindex="-1"></a>        <span class="at">padding =</span> <span class="st">&quot;1.5rem&quot;</span>, <span class="co"># Extra padding</span></span>
+<span id="cb4-104"><a href="#cb4-104" tabindex="-1"></a>        <span class="fu">reactableOutput</span>(<span class="st">&quot;customers_table&quot;</span>)</span>
+<span id="cb4-105"><a href="#cb4-105" tabindex="-1"></a>      )</span>
+<span id="cb4-106"><a href="#cb4-106" tabindex="-1"></a>    )</span>
+<span id="cb4-107"><a href="#cb4-107" tabindex="-1"></a>  ),</span>
+<span id="cb4-108"><a href="#cb4-108" tabindex="-1"></a>  <span class="co"># Add space at bottom of page</span></span>
+<span id="cb4-109"><a href="#cb4-109" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb4-110"><a href="#cb4-110" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb4-111"><a href="#cb4-111" tabindex="-1"></a>    <span class="at">gap =</span> <span class="st">&quot;1rem&quot;</span>,</span>
+<span id="cb4-112"><a href="#cb4-112" tabindex="-1"></a>    <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;py-3&quot;</span>) <span class="co"># Empty div for padding</span></span>
+<span id="cb4-113"><a href="#cb4-113" tabindex="-1"></a>  )</span>
+<span id="cb4-114"><a href="#cb4-114" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="key-elements-of-breathable-layouts" class="section level3">
+<h3>Key Elements of Breathable Layouts:</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Consistent spacing</strong>: Use consistent margins and
+padding throughout</li>
+<li><strong>Whitespace</strong>: Don’t crowd elements; give them room to
+“breathe”</li>
+<li><strong>Grouping</strong>: Use whitespace to create logical
+groups</li>
+<li><strong>Content density</strong>: Limit the amount of information in
+each section</li>
+<li><strong>Visual rhythm</strong>: Create a consistent visual pattern
+with spacing</li>
+</ol>
+</div>
+</div>
+<div id="stage-4-anticipate---mitigating-anchoring-bias" class="section level2">
+<h2>Stage 4: Anticipate - Mitigating Anchoring Bias</h2>
+<p>Anchoring bias occurs when users rely too heavily on the first piece
+of information they encounter when making decisions.</p>
+<div id="using-reactable-and-echarts4r-to-mitigate-anchoring" class="section level3">
+<h3>Using {reactable} and {echarts4r} to Mitigate Anchoring</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="at">version =</span> <span class="dv">5</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  ),</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="co"># Context explanation</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Sales Performance Dashboard&quot;</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>        <span class="fu">p</span>(</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>          <span class="fu">paste</span>(</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>            <span class="st">&quot;This dashboard provides multiple reference points&quot;</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>            <span class="st">&quot;to help avoid anchoring bias.&quot;</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>          )</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>        )</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>      )</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>    )</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  ),</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="co"># Multiple reference points in KPIs</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">3</span>,</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Revenue&quot;</span>),</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>        <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>          <span class="at">width =</span> <span class="dv">1</span>,</span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>          <span class="fu">h3</span>(<span class="st">&quot;$1.24M&quot;</span>, <span class="at">class =</span> <span class="st">&quot;text-center fs-2&quot;</span>),</span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>          <span class="co"># Multiple reference points to reduce anchoring</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>          <span class="fu">navset_pill</span>(</span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>            <span class="fu">nav_panel</span>(</span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>              <span class="st">&quot;vs Target&quot;</span>,</span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>              <span class="fu">div</span>(</span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;text-center mt-2&quot;</span>,</span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-success fw-bold&quot;</span>, <span class="st">&quot;+8%&quot;</span>),</span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-muted small&quot;</span>, <span class="st">&quot;Target: $1.15M&quot;</span>)</span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>              )</span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>            ),</span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a>            <span class="fu">nav_panel</span>(</span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>              <span class="st">&quot;vs Last Year&quot;</span>,</span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>              <span class="fu">div</span>(</span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;text-center mt-2&quot;</span>,</span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-success fw-bold&quot;</span>, <span class="st">&quot;+12%&quot;</span>),</span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-muted small&quot;</span>, <span class="st">&quot;Last Year: $1.11M&quot;</span>)</span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>              )</span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>            ),</span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a>            <span class="fu">nav_panel</span>(</span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a>              <span class="st">&quot;vs Industry&quot;</span>,</span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>              <span class="fu">div</span>(</span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;text-center mt-2&quot;</span>,</span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-success fw-bold&quot;</span>, <span class="st">&quot;+5%&quot;</span>),</span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-muted small&quot;</span>, <span class="st">&quot;Industry Avg: $1.18M&quot;</span>)</span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>              )</span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>            )</span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>          )</span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a>        )</span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a>      )</span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a>    ),</span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a>    <span class="co"># Similar pattern for other metrics</span></span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Conversion Rate&quot;</span>),</span>
+<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a>        <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb5-64"><a href="#cb5-64" tabindex="-1"></a>          <span class="at">width =</span> <span class="dv">1</span>,</span>
+<span id="cb5-65"><a href="#cb5-65" tabindex="-1"></a>          <span class="fu">h3</span>(<span class="st">&quot;3.2%&quot;</span>, <span class="at">class =</span> <span class="st">&quot;text-center fs-2&quot;</span>),</span>
+<span id="cb5-66"><a href="#cb5-66" tabindex="-1"></a>          <span class="co"># Multiple reference points</span></span>
+<span id="cb5-67"><a href="#cb5-67" tabindex="-1"></a>          <span class="fu">navset_pill</span>(</span>
+<span id="cb5-68"><a href="#cb5-68" tabindex="-1"></a>            <span class="fu">nav_panel</span>(</span>
+<span id="cb5-69"><a href="#cb5-69" tabindex="-1"></a>              <span class="st">&quot;vs Target&quot;</span>,</span>
+<span id="cb5-70"><a href="#cb5-70" tabindex="-1"></a>              <span class="fu">div</span>(</span>
+<span id="cb5-71"><a href="#cb5-71" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;text-center mt-2&quot;</span>,</span>
+<span id="cb5-72"><a href="#cb5-72" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-success fw-bold&quot;</span>, <span class="st">&quot;+0.2%&quot;</span>),</span>
+<span id="cb5-73"><a href="#cb5-73" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-muted small&quot;</span>, <span class="st">&quot;Target: 3.0%&quot;</span>)</span>
+<span id="cb5-74"><a href="#cb5-74" tabindex="-1"></a>              )</span>
+<span id="cb5-75"><a href="#cb5-75" tabindex="-1"></a>            ),</span>
+<span id="cb5-76"><a href="#cb5-76" tabindex="-1"></a>            <span class="fu">nav_panel</span>(</span>
+<span id="cb5-77"><a href="#cb5-77" tabindex="-1"></a>              <span class="st">&quot;vs Last Year&quot;</span>,</span>
+<span id="cb5-78"><a href="#cb5-78" tabindex="-1"></a>              <span class="fu">div</span>(</span>
+<span id="cb5-79"><a href="#cb5-79" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;text-center mt-2&quot;</span>,</span>
+<span id="cb5-80"><a href="#cb5-80" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-success fw-bold&quot;</span>, <span class="st">&quot;+0.5%&quot;</span>),</span>
+<span id="cb5-81"><a href="#cb5-81" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-muted small&quot;</span>, <span class="st">&quot;Last Year: 2.7%&quot;</span>)</span>
+<span id="cb5-82"><a href="#cb5-82" tabindex="-1"></a>              )</span>
+<span id="cb5-83"><a href="#cb5-83" tabindex="-1"></a>            ),</span>
+<span id="cb5-84"><a href="#cb5-84" tabindex="-1"></a>            <span class="fu">nav_panel</span>(</span>
+<span id="cb5-85"><a href="#cb5-85" tabindex="-1"></a>              <span class="st">&quot;vs Industry&quot;</span>,</span>
+<span id="cb5-86"><a href="#cb5-86" tabindex="-1"></a>              <span class="fu">div</span>(</span>
+<span id="cb5-87"><a href="#cb5-87" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;text-center mt-2&quot;</span>,</span>
+<span id="cb5-88"><a href="#cb5-88" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-danger fw-bold&quot;</span>, <span class="st">&quot;-0.3%&quot;</span>),</span>
+<span id="cb5-89"><a href="#cb5-89" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-muted small&quot;</span>, <span class="st">&quot;Industry Avg: 3.5%&quot;</span>)</span>
+<span id="cb5-90"><a href="#cb5-90" tabindex="-1"></a>              )</span>
+<span id="cb5-91"><a href="#cb5-91" tabindex="-1"></a>            )</span>
+<span id="cb5-92"><a href="#cb5-92" tabindex="-1"></a>          )</span>
+<span id="cb5-93"><a href="#cb5-93" tabindex="-1"></a>        )</span>
+<span id="cb5-94"><a href="#cb5-94" tabindex="-1"></a>      )</span>
+<span id="cb5-95"><a href="#cb5-95" tabindex="-1"></a>    ),</span>
+<span id="cb5-96"><a href="#cb5-96" tabindex="-1"></a>    <span class="co"># Third metric with multiple anchors</span></span>
+<span id="cb5-97"><a href="#cb5-97" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb5-98"><a href="#cb5-98" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Average Order Value&quot;</span>),</span>
+<span id="cb5-99"><a href="#cb5-99" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb5-100"><a href="#cb5-100" tabindex="-1"></a>        <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb5-101"><a href="#cb5-101" tabindex="-1"></a>          <span class="at">width =</span> <span class="dv">1</span>,</span>
+<span id="cb5-102"><a href="#cb5-102" tabindex="-1"></a>          <span class="fu">h3</span>(<span class="st">&quot;$148&quot;</span>, <span class="at">class =</span> <span class="st">&quot;text-center fs-2&quot;</span>),</span>
+<span id="cb5-103"><a href="#cb5-103" tabindex="-1"></a>          <span class="co"># Multiple reference points</span></span>
+<span id="cb5-104"><a href="#cb5-104" tabindex="-1"></a>          <span class="fu">navset_pill</span>(</span>
+<span id="cb5-105"><a href="#cb5-105" tabindex="-1"></a>            <span class="fu">nav_panel</span>(</span>
+<span id="cb5-106"><a href="#cb5-106" tabindex="-1"></a>              <span class="st">&quot;vs Target&quot;</span>,</span>
+<span id="cb5-107"><a href="#cb5-107" tabindex="-1"></a>              <span class="fu">div</span>(</span>
+<span id="cb5-108"><a href="#cb5-108" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;text-center mt-2&quot;</span>,</span>
+<span id="cb5-109"><a href="#cb5-109" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-danger fw-bold&quot;</span>, <span class="st">&quot;-$7&quot;</span>),</span>
+<span id="cb5-110"><a href="#cb5-110" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-muted small&quot;</span>, <span class="st">&quot;Target: $155&quot;</span>)</span>
+<span id="cb5-111"><a href="#cb5-111" tabindex="-1"></a>              )</span>
+<span id="cb5-112"><a href="#cb5-112" tabindex="-1"></a>            ),</span>
+<span id="cb5-113"><a href="#cb5-113" tabindex="-1"></a>            <span class="fu">nav_panel</span>(</span>
+<span id="cb5-114"><a href="#cb5-114" tabindex="-1"></a>              <span class="st">&quot;vs Last Year&quot;</span>,</span>
+<span id="cb5-115"><a href="#cb5-115" tabindex="-1"></a>              <span class="fu">div</span>(</span>
+<span id="cb5-116"><a href="#cb5-116" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;text-center mt-2&quot;</span>,</span>
+<span id="cb5-117"><a href="#cb5-117" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-success fw-bold&quot;</span>, <span class="st">&quot;+$10&quot;</span>),</span>
+<span id="cb5-118"><a href="#cb5-118" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-muted small&quot;</span>, <span class="st">&quot;Last Year: $138&quot;</span>)</span>
+<span id="cb5-119"><a href="#cb5-119" tabindex="-1"></a>              )</span>
+<span id="cb5-120"><a href="#cb5-120" tabindex="-1"></a>            ),</span>
+<span id="cb5-121"><a href="#cb5-121" tabindex="-1"></a>            <span class="fu">nav_panel</span>(</span>
+<span id="cb5-122"><a href="#cb5-122" tabindex="-1"></a>              <span class="st">&quot;vs Industry&quot;</span>,</span>
+<span id="cb5-123"><a href="#cb5-123" tabindex="-1"></a>              <span class="fu">div</span>(</span>
+<span id="cb5-124"><a href="#cb5-124" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;text-center mt-2&quot;</span>,</span>
+<span id="cb5-125"><a href="#cb5-125" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-success fw-bold&quot;</span>, <span class="st">&quot;+$8&quot;</span>),</span>
+<span id="cb5-126"><a href="#cb5-126" tabindex="-1"></a>                <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;text-muted small&quot;</span>, <span class="st">&quot;Industry Avg: $140&quot;</span>)</span>
+<span id="cb5-127"><a href="#cb5-127" tabindex="-1"></a>              )</span>
+<span id="cb5-128"><a href="#cb5-128" tabindex="-1"></a>            )</span>
+<span id="cb5-129"><a href="#cb5-129" tabindex="-1"></a>          )</span>
+<span id="cb5-130"><a href="#cb5-130" tabindex="-1"></a>        )</span>
+<span id="cb5-131"><a href="#cb5-131" tabindex="-1"></a>      )</span>
+<span id="cb5-132"><a href="#cb5-132" tabindex="-1"></a>    )</span>
+<span id="cb5-133"><a href="#cb5-133" tabindex="-1"></a>  ),</span>
+<span id="cb5-134"><a href="#cb5-134" tabindex="-1"></a>  <span class="co"># Chart with multiple reference lines</span></span>
+<span id="cb5-135"><a href="#cb5-135" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb5-136"><a href="#cb5-136" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb5-137"><a href="#cb5-137" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb5-138"><a href="#cb5-138" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Sales Performance with Multiple References&quot;</span>),</span>
+<span id="cb5-139"><a href="#cb5-139" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb5-140"><a href="#cb5-140" tabindex="-1"></a>        <span class="fu">echarts4rOutput</span>(<span class="st">&quot;sales_references&quot;</span>)</span>
+<span id="cb5-141"><a href="#cb5-141" tabindex="-1"></a>      )</span>
+<span id="cb5-142"><a href="#cb5-142" tabindex="-1"></a>    )</span>
+<span id="cb5-143"><a href="#cb5-143" tabindex="-1"></a>  ),</span>
+<span id="cb5-144"><a href="#cb5-144" tabindex="-1"></a>  <span class="co"># Data table with multiple reference columns</span></span>
+<span id="cb5-145"><a href="#cb5-145" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb5-146"><a href="#cb5-146" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb5-147"><a href="#cb5-147" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb5-148"><a href="#cb5-148" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Performance Metrics with Multiple References&quot;</span>),</span>
+<span id="cb5-149"><a href="#cb5-149" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb5-150"><a href="#cb5-150" tabindex="-1"></a>        <span class="fu">reactableOutput</span>(<span class="st">&quot;metrics_table&quot;</span>)</span>
+<span id="cb5-151"><a href="#cb5-151" tabindex="-1"></a>      )</span>
+<span id="cb5-152"><a href="#cb5-152" tabindex="-1"></a>    )</span>
+<span id="cb5-153"><a href="#cb5-153" tabindex="-1"></a>  )</span>
+<span id="cb5-154"><a href="#cb5-154" tabindex="-1"></a>)</span>
+<span id="cb5-155"><a href="#cb5-155" tabindex="-1"></a></span>
+<span id="cb5-156"><a href="#cb5-156" tabindex="-1"></a><span class="co"># Server logic for anchoring bias mitigation</span></span>
+<span id="cb5-157"><a href="#cb5-157" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb5-158"><a href="#cb5-158" tabindex="-1"></a>  <span class="co"># Chart with multiple reference points</span></span>
+<span id="cb5-159"><a href="#cb5-159" tabindex="-1"></a>  output<span class="sc">$</span>sales_references <span class="ot">&lt;-</span> <span class="fu">renderEcharts4r</span>({</span>
+<span id="cb5-160"><a href="#cb5-160" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
+<span id="cb5-161"><a href="#cb5-161" tabindex="-1"></a>      <span class="at">month =</span> month.name[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>],</span>
+<span id="cb5-162"><a href="#cb5-162" tabindex="-1"></a>      <span class="at">actual =</span> <span class="fu">c</span>(<span class="dv">980</span>, <span class="dv">1020</span>, <span class="dv">1150</span>, <span class="dv">1240</span>, <span class="dv">1310</span>, <span class="dv">1280</span>),</span>
+<span id="cb5-163"><a href="#cb5-163" tabindex="-1"></a>      <span class="at">target =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">1050</span>, <span class="dv">1100</span>, <span class="dv">1150</span>, <span class="dv">1200</span>, <span class="dv">1250</span>),</span>
+<span id="cb5-164"><a href="#cb5-164" tabindex="-1"></a>      <span class="at">prev_year =</span> <span class="fu">c</span>(<span class="dv">920</span>, <span class="dv">950</span>, <span class="dv">990</span>, <span class="dv">1110</span>, <span class="dv">1160</span>, <span class="dv">1200</span>),</span>
+<span id="cb5-165"><a href="#cb5-165" tabindex="-1"></a>      <span class="at">industry =</span> <span class="fu">c</span>(<span class="dv">990</span>, <span class="dv">1040</span>, <span class="dv">1090</span>, <span class="dv">1130</span>, <span class="dv">1170</span>, <span class="dv">1210</span>)</span>
+<span id="cb5-166"><a href="#cb5-166" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb5-167"><a href="#cb5-167" tabindex="-1"></a>      <span class="fu">e_charts</span>(month) <span class="sc">|&gt;</span></span>
+<span id="cb5-168"><a href="#cb5-168" tabindex="-1"></a>      <span class="fu">e_line</span>(</span>
+<span id="cb5-169"><a href="#cb5-169" tabindex="-1"></a>        actual,</span>
+<span id="cb5-170"><a href="#cb5-170" tabindex="-1"></a>        <span class="at">name =</span> <span class="st">&quot;Actual&quot;</span>,</span>
+<span id="cb5-171"><a href="#cb5-171" tabindex="-1"></a>        <span class="at">symbol =</span> <span class="st">&quot;circle&quot;</span>,</span>
+<span id="cb5-172"><a href="#cb5-172" tabindex="-1"></a>        <span class="at">symbolSize =</span> <span class="dv">10</span></span>
+<span id="cb5-173"><a href="#cb5-173" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb5-174"><a href="#cb5-174" tabindex="-1"></a>      <span class="fu">e_line</span>(</span>
+<span id="cb5-175"><a href="#cb5-175" tabindex="-1"></a>        target,</span>
+<span id="cb5-176"><a href="#cb5-176" tabindex="-1"></a>        <span class="at">name =</span> <span class="st">&quot;Target&quot;</span>,</span>
+<span id="cb5-177"><a href="#cb5-177" tabindex="-1"></a>        <span class="at">symbol =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb5-178"><a href="#cb5-178" tabindex="-1"></a>        <span class="at">lineStyle =</span> <span class="fu">list</span>(<span class="at">type =</span> <span class="st">&quot;dashed&quot;</span>)</span>
+<span id="cb5-179"><a href="#cb5-179" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb5-180"><a href="#cb5-180" tabindex="-1"></a>      <span class="fu">e_line</span>(</span>
+<span id="cb5-181"><a href="#cb5-181" tabindex="-1"></a>        prev_year,</span>
+<span id="cb5-182"><a href="#cb5-182" tabindex="-1"></a>        <span class="at">name =</span> <span class="st">&quot;Previous Year&quot;</span>,</span>
+<span id="cb5-183"><a href="#cb5-183" tabindex="-1"></a>        <span class="at">symbol =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb5-184"><a href="#cb5-184" tabindex="-1"></a>        <span class="at">lineStyle =</span> <span class="fu">list</span>(<span class="at">type =</span> <span class="st">&quot;dotted&quot;</span>)</span>
+<span id="cb5-185"><a href="#cb5-185" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb5-186"><a href="#cb5-186" tabindex="-1"></a>      <span class="fu">e_line</span>(</span>
+<span id="cb5-187"><a href="#cb5-187" tabindex="-1"></a>        industry,</span>
+<span id="cb5-188"><a href="#cb5-188" tabindex="-1"></a>        <span class="at">name =</span> <span class="st">&quot;Industry Avg&quot;</span>,</span>
+<span id="cb5-189"><a href="#cb5-189" tabindex="-1"></a>        <span class="at">symbol =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb5-190"><a href="#cb5-190" tabindex="-1"></a>        <span class="at">lineStyle =</span> <span class="fu">list</span>(<span class="at">type =</span> <span class="st">&quot;dashed&quot;</span>)</span>
+<span id="cb5-191"><a href="#cb5-191" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb5-192"><a href="#cb5-192" tabindex="-1"></a>      <span class="fu">e_title</span>(<span class="st">&quot;Revenue Performance (Thousands)&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-193"><a href="#cb5-193" tabindex="-1"></a>      <span class="fu">e_tooltip</span>(<span class="at">trigger =</span> <span class="st">&quot;axis&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-194"><a href="#cb5-194" tabindex="-1"></a>      <span class="fu">e_color</span>(<span class="fu">c</span>(<span class="st">&quot;#3498db&quot;</span>, <span class="st">&quot;#e74c3c&quot;</span>, <span class="st">&quot;#2ecc71&quot;</span>, <span class="st">&quot;#f39c12&quot;</span>))</span>
+<span id="cb5-195"><a href="#cb5-195" tabindex="-1"></a>  })</span>
+<span id="cb5-196"><a href="#cb5-196" tabindex="-1"></a></span>
+<span id="cb5-197"><a href="#cb5-197" tabindex="-1"></a>  <span class="co"># Table with multiple reference columns</span></span>
+<span id="cb5-198"><a href="#cb5-198" tabindex="-1"></a>  output<span class="sc">$</span>metrics_table <span class="ot">&lt;-</span> <span class="fu">renderReactable</span>({</span>
+<span id="cb5-199"><a href="#cb5-199" tabindex="-1"></a>    data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb5-200"><a href="#cb5-200" tabindex="-1"></a>      <span class="at">metric =</span> <span class="fu">c</span>(</span>
+<span id="cb5-201"><a href="#cb5-201" tabindex="-1"></a>        <span class="st">&quot;Revenue&quot;</span>,</span>
+<span id="cb5-202"><a href="#cb5-202" tabindex="-1"></a>        <span class="st">&quot;Conversion Rate&quot;</span>,</span>
+<span id="cb5-203"><a href="#cb5-203" tabindex="-1"></a>        <span class="st">&quot;Avg Order Value&quot;</span>,</span>
+<span id="cb5-204"><a href="#cb5-204" tabindex="-1"></a>        <span class="st">&quot;Customer Count&quot;</span>,</span>
+<span id="cb5-205"><a href="#cb5-205" tabindex="-1"></a>        <span class="st">&quot;Units Sold&quot;</span></span>
+<span id="cb5-206"><a href="#cb5-206" tabindex="-1"></a>      ),</span>
+<span id="cb5-207"><a href="#cb5-207" tabindex="-1"></a>      <span class="at">actual =</span> <span class="fu">c</span>(<span class="st">&quot;$1.24M&quot;</span>, <span class="st">&quot;3.2%&quot;</span>, <span class="st">&quot;$148&quot;</span>, <span class="st">&quot;8,378&quot;</span>, <span class="st">&quot;12,420&quot;</span>),</span>
+<span id="cb5-208"><a href="#cb5-208" tabindex="-1"></a>      <span class="at">target =</span> <span class="fu">c</span>(<span class="st">&quot;$1.15M&quot;</span>, <span class="st">&quot;3.0%&quot;</span>, <span class="st">&quot;$155&quot;</span>, <span class="st">&quot;7,500&quot;</span>, <span class="st">&quot;11,500&quot;</span>),</span>
+<span id="cb5-209"><a href="#cb5-209" tabindex="-1"></a>      <span class="at">vs_target =</span> <span class="fu">c</span>(<span class="st">&quot;+8%&quot;</span>, <span class="st">&quot;+7%&quot;</span>, <span class="st">&quot;-5%&quot;</span>, <span class="st">&quot;+12%&quot;</span>, <span class="st">&quot;+8%&quot;</span>),</span>
+<span id="cb5-210"><a href="#cb5-210" tabindex="-1"></a>      <span class="at">prev_year =</span> <span class="fu">c</span>(<span class="st">&quot;$1.11M&quot;</span>, <span class="st">&quot;2.7%&quot;</span>, <span class="st">&quot;$138&quot;</span>, <span class="st">&quot;7,825&quot;</span>, <span class="st">&quot;11,830&quot;</span>),</span>
+<span id="cb5-211"><a href="#cb5-211" tabindex="-1"></a>      <span class="at">vs_prev =</span> <span class="fu">c</span>(<span class="st">&quot;+12%&quot;</span>, <span class="st">&quot;+19%&quot;</span>, <span class="st">&quot;+7%&quot;</span>, <span class="st">&quot;+7%&quot;</span>, <span class="st">&quot;+5%&quot;</span>),</span>
+<span id="cb5-212"><a href="#cb5-212" tabindex="-1"></a>      <span class="at">industry =</span> <span class="fu">c</span>(<span class="st">&quot;$1.18M&quot;</span>, <span class="st">&quot;3.5%&quot;</span>, <span class="st">&quot;$140&quot;</span>, <span class="st">&quot;8,100&quot;</span>, <span class="st">&quot;12,000&quot;</span>),</span>
+<span id="cb5-213"><a href="#cb5-213" tabindex="-1"></a>      <span class="at">vs_industry =</span> <span class="fu">c</span>(<span class="st">&quot;+5%&quot;</span>, <span class="st">&quot;-9%&quot;</span>, <span class="st">&quot;+6%&quot;</span>, <span class="st">&quot;+3%&quot;</span>, <span class="st">&quot;+4%&quot;</span>)</span>
+<span id="cb5-214"><a href="#cb5-214" tabindex="-1"></a>    )</span>
+<span id="cb5-215"><a href="#cb5-215" tabindex="-1"></a></span>
+<span id="cb5-216"><a href="#cb5-216" tabindex="-1"></a>    <span class="co"># Custom cell renderer for comparisons</span></span>
+<span id="cb5-217"><a href="#cb5-217" tabindex="-1"></a>    compare_cell <span class="ot">&lt;-</span> <span class="cf">function</span>(value) {</span>
+<span id="cb5-218"><a href="#cb5-218" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">&quot;^</span><span class="sc">\\</span><span class="st">+&quot;</span>, value)) {</span>
+<span id="cb5-219"><a href="#cb5-219" tabindex="-1"></a>        <span class="fu">div</span>(value, <span class="at">style =</span> <span class="fu">list</span>(<span class="at">color =</span> <span class="st">&quot;#2ecc71&quot;</span>, <span class="at">fontWeight =</span> <span class="st">&quot;bold&quot;</span>))</span>
+<span id="cb5-220"><a href="#cb5-220" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">&quot;^</span><span class="sc">\\</span><span class="st">-&quot;</span>, value)) {</span>
+<span id="cb5-221"><a href="#cb5-221" tabindex="-1"></a>        <span class="fu">div</span>(value, <span class="at">style =</span> <span class="fu">list</span>(<span class="at">color =</span> <span class="st">&quot;#e74c3c&quot;</span>, <span class="at">fontWeight =</span> <span class="st">&quot;bold&quot;</span>))</span>
+<span id="cb5-222"><a href="#cb5-222" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb5-223"><a href="#cb5-223" tabindex="-1"></a>        value</span>
+<span id="cb5-224"><a href="#cb5-224" tabindex="-1"></a>      }</span>
+<span id="cb5-225"><a href="#cb5-225" tabindex="-1"></a>    }</span>
+<span id="cb5-226"><a href="#cb5-226" tabindex="-1"></a></span>
+<span id="cb5-227"><a href="#cb5-227" tabindex="-1"></a>    <span class="fu">reactable</span>(data,</span>
+<span id="cb5-228"><a href="#cb5-228" tabindex="-1"></a>      <span class="at">columns =</span> <span class="fu">list</span>(</span>
+<span id="cb5-229"><a href="#cb5-229" tabindex="-1"></a>        <span class="at">metric =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Metric&quot;</span>),</span>
+<span id="cb5-230"><a href="#cb5-230" tabindex="-1"></a>        <span class="at">actual =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Actual&quot;</span>),</span>
+<span id="cb5-231"><a href="#cb5-231" tabindex="-1"></a>        <span class="at">target =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Target&quot;</span>),</span>
+<span id="cb5-232"><a href="#cb5-232" tabindex="-1"></a>        <span class="at">vs_target =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;vs Target&quot;</span>, <span class="at">cell =</span> compare_cell),</span>
+<span id="cb5-233"><a href="#cb5-233" tabindex="-1"></a>        <span class="at">prev_year =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Previous Year&quot;</span>),</span>
+<span id="cb5-234"><a href="#cb5-234" tabindex="-1"></a>        <span class="at">vs_prev =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;vs Prev Year&quot;</span>, <span class="at">cell =</span> compare_cell),</span>
+<span id="cb5-235"><a href="#cb5-235" tabindex="-1"></a>        <span class="at">industry =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Industry Avg&quot;</span>),</span>
+<span id="cb5-236"><a href="#cb5-236" tabindex="-1"></a>        <span class="at">vs_industry =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;vs Industry&quot;</span>, <span class="at">cell =</span> compare_cell)</span>
+<span id="cb5-237"><a href="#cb5-237" tabindex="-1"></a>      ),</span>
+<span id="cb5-238"><a href="#cb5-238" tabindex="-1"></a>      <span class="at">striped =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-239"><a href="#cb5-239" tabindex="-1"></a>      <span class="at">highlight =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-240"><a href="#cb5-240" tabindex="-1"></a>      <span class="at">bordered =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-241"><a href="#cb5-241" tabindex="-1"></a>    )</span>
+<span id="cb5-242"><a href="#cb5-242" tabindex="-1"></a>  })</span>
+<span id="cb5-243"><a href="#cb5-243" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="key-techniques-for-mitigating-anchoring-bias" class="section level3">
+<h3>Key Techniques for Mitigating Anchoring Bias:</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Multiple reference points</strong>: Show different
+benchmarks (target, previous, industry)</li>
+<li><strong>Alternative perspectives</strong>: Enable switching between
+different views</li>
+<li><strong>Contextual information</strong>: Provide additional context
+for values</li>
+<li><strong>Visual references</strong>: Use reference lines in
+charts</li>
+<li><strong>Relative comparisons</strong>: Show percentage changes
+rather than just absolute values</li>
+</ol>
+</div>
+</div>
+<div id="stage-5-validate---implementing-the-peak-end-rule" class="section level2">
+<h2>Stage 5: Validate - Implementing the Peak-End Rule</h2>
+<p>The Peak-End Rule states that people judge experiences largely based
+on how they felt at the most intense point (peak) and at the end, rather
+than based on the sum or average of the experience.</p>
+<div id="using-bslib-to-implement-the-peak-end-rule" class="section level3">
+<h3>Using {bslib} to Implement the Peak-End Rule</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">version =</span> <span class="dv">5</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  ),</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="co"># Dashboard content would go here...</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="co"># End with a strong summary and clear next steps</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">12</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>      <span class="fu">card_header</span>(</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>        <span class="fu">h2</span>(<span class="st">&quot;Key Insights &amp; Recommended Actions&quot;</span>, <span class="at">class =</span> <span class="st">&quot;fs-4&quot;</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>      ),</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>      <span class="fu">card_body</span>(</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>        <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>          <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">2</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>          <span class="co"># Summary insights at the end of the dashboard</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>          <span class="fu">card</span>(</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>            <span class="fu">card_header</span>(<span class="st">&quot;Key Takeaways&quot;</span>),</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>            <span class="fu">card_body</span>(</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>              tags<span class="sc">$</span><span class="fu">ul</span>(</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>                tags<span class="sc">$</span><span class="fu">li</span>(</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>                  <span class="fu">span</span>(<span class="st">&quot;Revenue is trending &quot;</span>, <span class="at">class =</span> <span class="st">&quot;fw-bold&quot;</span>),</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>                  <span class="fu">span</span>(<span class="st">&quot;8% above target&quot;</span>, <span class="at">class =</span> <span class="st">&quot;text-success fw-bold&quot;</span>),</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>                  <span class="fu">span</span>(</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>                    <span class="fu">paste</span>(</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>                      <span class="st">&quot; for the quarter, primarily driven by&quot;</span>,</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>                      <span class="st">&quot;the Electronics category.&quot;</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>                    )</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>                  )</span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>                ),</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>                tags<span class="sc">$</span><span class="fu">li</span>(</span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>                  <span class="fu">span</span>(<span class="st">&quot;Customer acquisition cost has &quot;</span>, <span class="at">class =</span> <span class="st">&quot;fw-bold&quot;</span>),</span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>                  <span class="fu">span</span>(<span class="st">&quot;decreased by 12%&quot;</span>, <span class="at">class =</span> <span class="st">&quot;text-success fw-bold&quot;</span>),</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>                  <span class="fu">span</span>(<span class="st">&quot; following the new digital marketing strategy.&quot;</span>)</span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>                ),</span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>                tags<span class="sc">$</span><span class="fu">li</span>(</span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>                  <span class="fu">span</span>(<span class="st">&quot;The West region continues to &quot;</span>, <span class="at">class =</span> <span class="st">&quot;fw-bold&quot;</span>),</span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>                  <span class="fu">span</span>(<span class="st">&quot;underperform by 5%&quot;</span>, <span class="at">class =</span> <span class="st">&quot;text-danger fw-bold&quot;</span>),</span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a>                  <span class="fu">span</span>(<span class="st">&quot; compared to other regions.&quot;</span>)</span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a>                )</span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a>              )</span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>            )</span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a>          ),</span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a>          <span class="co"># Clear next steps to end on a positive action-oriented note</span></span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a>          <span class="fu">card</span>(</span>
+<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a>            <span class="fu">card_header</span>(<span class="st">&quot;Recommended Next Steps&quot;</span>),</span>
+<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a>            <span class="fu">card_body</span>(</span>
+<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a>              <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a>                <span class="at">width =</span> <span class="dv">1</span>,</span>
+<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a>                <span class="co"># Button card for first recommendation</span></span>
+<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a>                <span class="fu">card</span>(</span>
+<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a>                  <span class="fu">card_body</span>(</span>
+<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a>                    <span class="fu">h5</span>(<span class="st">&quot;Increase Electronics Inventory&quot;</span>),</span>
+<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a>                    <span class="fu">p</span>(</span>
+<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a>                      <span class="fu">paste</span>(</span>
+<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a>                        <span class="st">&quot;Current inventory will only support 2 more&quot;</span>,</span>
+<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a>                        <span class="st">&quot;weeks of sales at current pace.&quot;</span></span>
+<span id="cb6-60"><a href="#cb6-60" tabindex="-1"></a>                      )</span>
+<span id="cb6-61"><a href="#cb6-61" tabindex="-1"></a>                    ),</span>
+<span id="cb6-62"><a href="#cb6-62" tabindex="-1"></a>                    <span class="fu">actionButton</span>(</span>
+<span id="cb6-63"><a href="#cb6-63" tabindex="-1"></a>                      <span class="st">&quot;action1&quot;</span>,</span>
+<span id="cb6-64"><a href="#cb6-64" tabindex="-1"></a>                      <span class="st">&quot;Order Inventory&quot;</span>,</span>
+<span id="cb6-65"><a href="#cb6-65" tabindex="-1"></a>                      <span class="at">class =</span> <span class="st">&quot;btn-primary w-100&quot;</span></span>
+<span id="cb6-66"><a href="#cb6-66" tabindex="-1"></a>                    )</span>
+<span id="cb6-67"><a href="#cb6-67" tabindex="-1"></a>                  )</span>
+<span id="cb6-68"><a href="#cb6-68" tabindex="-1"></a>                ),</span>
+<span id="cb6-69"><a href="#cb6-69" tabindex="-1"></a>                <span class="co"># Button card for second recommendation</span></span>
+<span id="cb6-70"><a href="#cb6-70" tabindex="-1"></a>                <span class="fu">card</span>(</span>
+<span id="cb6-71"><a href="#cb6-71" tabindex="-1"></a>                  <span class="fu">card_body</span>(</span>
+<span id="cb6-72"><a href="#cb6-72" tabindex="-1"></a>                    <span class="fu">h5</span>(<span class="st">&quot;Expand Digital Marketing&quot;</span>),</span>
+<span id="cb6-73"><a href="#cb6-73" tabindex="-1"></a>                    <span class="fu">p</span>(</span>
+<span id="cb6-74"><a href="#cb6-74" tabindex="-1"></a>                      <span class="fu">paste</span>(</span>
+<span id="cb6-75"><a href="#cb6-75" tabindex="-1"></a>                        <span class="st">&quot;Current campaigns are performing well.&quot;</span>,</span>
+<span id="cb6-76"><a href="#cb6-76" tabindex="-1"></a>                        <span class="st">&quot;Consider increasing budget allocation.&quot;</span></span>
+<span id="cb6-77"><a href="#cb6-77" tabindex="-1"></a>                      )</span>
+<span id="cb6-78"><a href="#cb6-78" tabindex="-1"></a>                    ),</span>
+<span id="cb6-79"><a href="#cb6-79" tabindex="-1"></a>                    <span class="fu">actionButton</span>(</span>
+<span id="cb6-80"><a href="#cb6-80" tabindex="-1"></a>                      <span class="st">&quot;action2&quot;</span>,</span>
+<span id="cb6-81"><a href="#cb6-81" tabindex="-1"></a>                      <span class="st">&quot;Adjust Budget&quot;</span>,</span>
+<span id="cb6-82"><a href="#cb6-82" tabindex="-1"></a>                      <span class="at">class =</span> <span class="st">&quot;btn-primary w-100&quot;</span></span>
+<span id="cb6-83"><a href="#cb6-83" tabindex="-1"></a>                    )</span>
+<span id="cb6-84"><a href="#cb6-84" tabindex="-1"></a>                  )</span>
+<span id="cb6-85"><a href="#cb6-85" tabindex="-1"></a>                ),</span>
+<span id="cb6-86"><a href="#cb6-86" tabindex="-1"></a>                <span class="co"># Button card for third recommendation</span></span>
+<span id="cb6-87"><a href="#cb6-87" tabindex="-1"></a>                <span class="fu">card</span>(</span>
+<span id="cb6-88"><a href="#cb6-88" tabindex="-1"></a>                  <span class="fu">card_body</span>(</span>
+<span id="cb6-89"><a href="#cb6-89" tabindex="-1"></a>                    <span class="fu">h5</span>(<span class="st">&quot;Review West Region Strategy&quot;</span>),</span>
+<span id="cb6-90"><a href="#cb6-90" tabindex="-1"></a>                    <span class="fu">p</span>(</span>
+<span id="cb6-91"><a href="#cb6-91" tabindex="-1"></a>                      <span class="fu">paste</span>(</span>
+<span id="cb6-92"><a href="#cb6-92" tabindex="-1"></a>                        <span class="st">&quot;Schedule meeting with regional team to&quot;</span>,</span>
+<span id="cb6-93"><a href="#cb6-93" tabindex="-1"></a>                        <span class="st">&quot;address performance gaps.&quot;</span></span>
+<span id="cb6-94"><a href="#cb6-94" tabindex="-1"></a>                      )</span>
+<span id="cb6-95"><a href="#cb6-95" tabindex="-1"></a>                    ),</span>
+<span id="cb6-96"><a href="#cb6-96" tabindex="-1"></a>                    <span class="fu">actionButton</span>(</span>
+<span id="cb6-97"><a href="#cb6-97" tabindex="-1"></a>                      <span class="st">&quot;action3&quot;</span>,</span>
+<span id="cb6-98"><a href="#cb6-98" tabindex="-1"></a>                      <span class="st">&quot;Schedule Meeting&quot;</span>,</span>
+<span id="cb6-99"><a href="#cb6-99" tabindex="-1"></a>                      <span class="at">class =</span> <span class="st">&quot;btn-primary w-100&quot;</span></span>
+<span id="cb6-100"><a href="#cb6-100" tabindex="-1"></a>                    )</span>
+<span id="cb6-101"><a href="#cb6-101" tabindex="-1"></a>                  )</span>
+<span id="cb6-102"><a href="#cb6-102" tabindex="-1"></a>                )</span>
+<span id="cb6-103"><a href="#cb6-103" tabindex="-1"></a>              )</span>
+<span id="cb6-104"><a href="#cb6-104" tabindex="-1"></a>            )</span>
+<span id="cb6-105"><a href="#cb6-105" tabindex="-1"></a>          )</span>
+<span id="cb6-106"><a href="#cb6-106" tabindex="-1"></a>        )</span>
+<span id="cb6-107"><a href="#cb6-107" tabindex="-1"></a>      ),</span>
+<span id="cb6-108"><a href="#cb6-108" tabindex="-1"></a>      <span class="co"># Final call to action</span></span>
+<span id="cb6-109"><a href="#cb6-109" tabindex="-1"></a>      <span class="fu">card_footer</span>(</span>
+<span id="cb6-110"><a href="#cb6-110" tabindex="-1"></a>        <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb6-111"><a href="#cb6-111" tabindex="-1"></a>          <span class="at">width =</span> <span class="dv">1</span>,</span>
+<span id="cb6-112"><a href="#cb6-112" tabindex="-1"></a>          <span class="fu">p</span>(<span class="st">&quot;These insights are based on data through Q1.&quot;</span>),</span>
+<span id="cb6-113"><a href="#cb6-113" tabindex="-1"></a>          <span class="fu">div</span>(</span>
+<span id="cb6-114"><a href="#cb6-114" tabindex="-1"></a>            <span class="at">class =</span> <span class="st">&quot;text-end&quot;</span>,</span>
+<span id="cb6-115"><a href="#cb6-115" tabindex="-1"></a>            <span class="fu">actionButton</span>(</span>
+<span id="cb6-116"><a href="#cb6-116" tabindex="-1"></a>              <span class="st">&quot;export_pdf&quot;</span>,</span>
+<span id="cb6-117"><a href="#cb6-117" tabindex="-1"></a>              <span class="st">&quot;Export as PDF&quot;</span>,</span>
+<span id="cb6-118"><a href="#cb6-118" tabindex="-1"></a>              <span class="at">class =</span> <span class="st">&quot;btn-outline-primary me-2&quot;</span></span>
+<span id="cb6-119"><a href="#cb6-119" tabindex="-1"></a>            ),</span>
+<span id="cb6-120"><a href="#cb6-120" tabindex="-1"></a>            <span class="fu">actionButton</span>(</span>
+<span id="cb6-121"><a href="#cb6-121" tabindex="-1"></a>              <span class="st">&quot;share_dashboard&quot;</span>,</span>
+<span id="cb6-122"><a href="#cb6-122" tabindex="-1"></a>              <span class="st">&quot;Share Dashboard&quot;</span>,</span>
+<span id="cb6-123"><a href="#cb6-123" tabindex="-1"></a>              <span class="at">class =</span> <span class="st">&quot;btn-primary&quot;</span></span>
+<span id="cb6-124"><a href="#cb6-124" tabindex="-1"></a>            )</span>
+<span id="cb6-125"><a href="#cb6-125" tabindex="-1"></a>          )</span>
+<span id="cb6-126"><a href="#cb6-126" tabindex="-1"></a>        )</span>
+<span id="cb6-127"><a href="#cb6-127" tabindex="-1"></a>      )</span>
+<span id="cb6-128"><a href="#cb6-128" tabindex="-1"></a>    )</span>
+<span id="cb6-129"><a href="#cb6-129" tabindex="-1"></a>  )</span>
+<span id="cb6-130"><a href="#cb6-130" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="key-elements-of-implementing-the-peak-end-rule" class="section level3">
+<h3>Key Elements of Implementing the Peak-End Rule:</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Strong summary</strong>: End with a clear summary of key
+findings</li>
+<li><strong>Actionable insights</strong>: Provide specific
+recommendations</li>
+<li><strong>Visual emphasis</strong>: Make the end section visually
+distinct and appealing</li>
+<li><strong>Call to action</strong>: End with clear next steps</li>
+<li><strong>Positive tone</strong>: End on a positive, forward-looking
+note</li>
+</ol>
+</div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>These practical implementations demonstrate how to apply key BID
+framework concepts using modern Shiny packages:</p>
+<ul>
+<li><strong>{bslib}</strong> provides layout components, cards, and
+value boxes for structured information presentation</li>
+<li><strong>{reactable}</strong> offers advanced data tables with
+conditional formatting and custom rendering</li>
+<li><strong>{echarts4r}</strong> creates interactive visualizations with
+multiple reference points and comparative views</li>
+</ul>
+<p>To explore more concepts and their implementation, use the
+<code>bid_concepts()</code> function to access the full concept
+dictionary:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">bid_concepts</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">select</span>(concept, category, implementation_tips) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span></code></pre></div>
+<p>For detailed information on a specific concept:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">bid_concept</span>(<span class="st">&quot;Anchoring Effect&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">select</span>(concept, description, implementation_tips)</span></code></pre></div>
+<p>The BID framework provides a systematic approach to incorporating
+psychological principles into your dashboard design, resulting in more
+intuitive, usable, and effective Shiny applications.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

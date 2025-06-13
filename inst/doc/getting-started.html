@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Getting Started with bidux</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Getting Started with bidux</h1>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The <code>{bidux}</code> package helps Shiny developers create more
+effective dashboards using the <strong>Behavior Insight Design (BID)
+Framework</strong>. This framework integrates psychological principles,
+UX best practices, and data storytelling techniques to guide the
+development of dashboards that are easier to understand, more engaging,
+and more effective at supporting user decisions.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(bidux)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
+</div>
+<div id="the-bid-framework" class="section level2">
+<h2>The BID Framework</h2>
+<p>The BID framework consists of 5 sequential stages:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Notice</strong> the Problem - Identify friction points and
+user struggles</li>
+<li><strong>Interpret</strong> the User’s Need - Understand the core
+questions and insights needed</li>
+<li><strong>Structure</strong> the Dashboard - Organize information for
+intuitive comprehension</li>
+<li><strong>Anticipate</strong> User Behavior - Consider cognitive
+biases that influence perception</li>
+<li><strong>Validate</strong> &amp; Empower the User - Provide clear
+takeaways and collaborative features</li>
+</ol>
+<p>This sequential process forms a structured approach to dashboard
+design, with each stage building on the insights from previous
+stages.</p>
+</div>
+<div id="exploring-the-concept-dictionary" class="section level2">
+<h2>Exploring the Concept Dictionary</h2>
+<p>The BID framework is built on established psychological and design
+principles. To explore these concepts, use <code>bid_concepts()</code>
+to list all available concepts, or search for specific terms:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># List all concepts</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>all_concepts <span class="ot">&lt;-</span> <span class="fu">bid_concepts</span>()</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">head</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(all_concepts, concept, category, description), <span class="dv">3</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># Search for specific concepts</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">bid_concepts</span>(<span class="st">&quot;cognitive&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(concept, description, implementation_tips)</span></code></pre></div>
+<p>For detailed information about a specific concept, use
+<code>bid_concept()</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Get information about a specific concept</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">bid_concept</span>(<span class="st">&quot;Processing Fluency&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(concept, description, implementation_tips)</span></code></pre></div>
+<p>The <code>bid_concept()</code> function supports case-insensitive and
+partial matching:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Case-insensitive matching</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">bid_concept</span>(<span class="st">&quot;hick&#39;s law&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(concept, description)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># Partial matching</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">bid_concept</span>(<span class="st">&quot;proximity&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(concept, description)</span></code></pre></div>
+<p>You can also explore concepts that are new to the BID framework:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Explore new concepts from user-centric design</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">bid_concepts</span>(<span class="st">&quot;visual hierarchy|breathable|gherkin&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(concept, description)</span></code></pre></div>
+</div>
+<div id="documenting-a-dashboard-project-with-bid" class="section level2">
+<h2>Documenting a Dashboard Project with BID</h2>
+<p>Let’s walk through a complete example of using the BID framework to
+document and improve a dashboard project.</p>
+<div id="stage-1-notice-the-problem" class="section level3">
+<h3>Stage 1: Notice the Problem</h3>
+<p>Start by identifying the specific problems users are encountering
+with your dashboard or interface:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Document the problem</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>notice_result <span class="ot">&lt;-</span> <span class="fu">bid_notice</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">problem =</span> <span class="st">&quot;Users are overwhelmed by too many filter options and struggle to find relevant insights&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">evidence =</span> <span class="st">&quot;User testing shows 65% of first-time users fail to complete their intended task within 2 minutes&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">target_audience =</span> <span class="st">&quot;Marketing team members with varying technical skills&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>notice_result <span class="sc">|&gt;</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(problem, theory, evidence, target_audience)</span></code></pre></div>
+<p>Notice that the function automatically selected an appropriate theory
+based on our problem description. It also provides suggestions for
+addressing cognitive load which you can access from the
+<code>suggestions</code> column.</p>
+</div>
+<div id="stage-2-interpret-the-users-need" class="section level3">
+<h3>Stage 2: Interpret the User’s Need</h3>
+<p>Next, clarify the central question your dashboard needs to answer and
+structure the data story:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Document the user&#39;s need</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>interpret_result <span class="ot">&lt;-</span> <span class="fu">bid_interpret</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> notice_result,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">central_question =</span> <span class="st">&quot;How are our marketing campaigns performing across different channels?&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">data_story =</span> <span class="fu">list</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">hook =</span> <span class="st">&quot;Recent campaign performance varies significantly across channels&quot;</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="at">context =</span> <span class="st">&quot;We&#39;ve invested in 6 different marketing channels over the past quarter&quot;</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="at">tension =</span> <span class="st">&quot;ROI metrics show inconsistent results, with some channels underperforming&quot;</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    <span class="at">resolution =</span> <span class="st">&quot;Identify top-performing channels and key performance drivers&quot;</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="at">audience =</span> <span class="st">&quot;Marketing team and executives&quot;</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">&quot;Channel ROI&quot;</span>, <span class="st">&quot;Conversion Rate&quot;</span>, <span class="st">&quot;Cost per Acquisition&quot;</span>),</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    <span class="at">visual_approach =</span> <span class="st">&quot;Comparative analysis with historical benchmarks&quot;</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  ),</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="at">user_personas =</span> <span class="fu">list</span>(</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;Marketing Manager&quot;</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Optimize marketing spend across channels&quot;</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Difficulty comparing performance across different metrics&quot;</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Intermediate&quot;</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>    ),</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;CMO&quot;</span>,</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Strategic oversight of marketing effectiveness&quot;</span>,</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Needs high-level insights without technical details&quot;</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Basic&quot;</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>    )</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>  )</span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>)</span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>interpret_result <span class="sc">|&gt;</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(central_question, hook, tension, resolution)</span></code></pre></div>
+<p>The function evaluates our data story elements and provides
+suggestions for improvement (in the <code>suggestions</code> column).
+We’ve also added user personas to better target our design.</p>
+</div>
+<div id="stage-3-structure-the-dashboard" class="section level3">
+<h3>Stage 3: Structure the Dashboard</h3>
+<p>Now determine the layout and key design principles to implement:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Document the dashboard structure</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>structure_result <span class="ot">&lt;-</span> <span class="fu">bid_structure</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> interpret_result,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">layout =</span> <span class="st">&quot;dual_process&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">concepts =</span> <span class="fu">c</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    <span class="st">&quot;Principle of Proximity&quot;</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="st">&quot;Default Effect&quot;</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>    <span class="st">&quot;Visual Hierarchy&quot;</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    <span class="st">&quot;Breathable Layouts&quot;</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  ),</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="at">accessibility =</span> <span class="fu">list</span>(</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>    <span class="at">color_contrast =</span> <span class="st">&quot;Using WCAG AA-compliant color contrasts&quot;</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>    <span class="at">keyboard_navigation =</span> <span class="st">&quot;All interactive elements are keyboard accessible&quot;</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>    <span class="at">screen_reader =</span> <span class="st">&quot;Charts include descriptive alt text&quot;</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>  )</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>)</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>structure_result <span class="sc">|&gt;</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(layout, concepts, accessibility)</span></code></pre></div>
+<p>The function provides layout-specific suggestions based on the
+psychological concepts we’ve chosen to apply, and acknowledges our
+accessibility considerations.</p>
+</div>
+<div id="stage-4-anticipate-user-behavior" class="section level3">
+<h3>Stage 4: Anticipate User Behavior</h3>
+<p>Identify potential cognitive biases that might affect how users
+interpret your dashboard:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Document bias mitigation strategies</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>anticipate_result <span class="ot">&lt;-</span> <span class="fu">bid_anticipate</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> structure_result,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">bias_mitigations =</span> <span class="fu">list</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    <span class="at">anchoring =</span> <span class="st">&quot;Include previous period performance as reference points&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="at">framing =</span> <span class="st">&quot;Provide toggle between ROI improvement vs. ROI gap views&quot;</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>    <span class="at">confirmation_bias =</span> <span class="st">&quot;Highlight unexpected patterns that contradict common assumptions&quot;</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  ),</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="at">interaction_principles =</span> <span class="fu">list</span>(</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>    <span class="at">hover_effects =</span> <span class="st">&quot;Show detailed metrics on hover for each channel&quot;</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>    <span class="at">selection_feedback =</span> <span class="st">&quot;Highlight active filters with color and icon changes&quot;</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>    <span class="at">progressive_disclosure =</span> <span class="st">&quot;Reveal advanced options only when basic filters are applied&quot;</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>  )</span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>)</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>anticipate_result <span class="sc">|&gt;</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(bias_mitigations, interaction_principles)</span></code></pre></div>
+<p>The function evaluates our bias mitigation strategies and interaction
+principles, providing implementation suggestions for both.</p>
+</div>
+<div id="stage-5-validate-empower-the-user" class="section level3">
+<h3>Stage 5: Validate &amp; Empower the User</h3>
+<p>Finally, document how you’ll ensure users leave with clear insights
+and the ability to collaborate:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Document validation approach</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>validate_result <span class="ot">&lt;-</span> <span class="fu">bid_validate</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> anticipate_result,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">summary_panel =</span> <span class="st">&quot;Executive summary highlighting top and bottom performers, key trends, and recommended actions for the next marketing cycle&quot;</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="at">collaboration =</span> <span class="st">&quot;Team annotation capability allowing marketing team members to add context and insights to specific data points&quot;</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">next_steps =</span> <span class="fu">c</span>(</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>    <span class="st">&quot;Review performance of bottom 2 channels&quot;</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>    <span class="st">&quot;Increase budget for top-performing channel&quot;</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>    <span class="st">&quot;Schedule team meeting to discuss optimization strategy&quot;</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>    <span class="st">&quot;Export findings for quarterly marketing review&quot;</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>  )</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>)</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>validate_result <span class="sc">|&gt;</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(summary_panel, collaboration, next_steps)</span></code></pre></div>
+<p>The validate function acknowledges our implementation of the Peak-End
+Rule through next steps and provides suggestions for refining our
+approach.</p>
+</div>
+</div>
+<div id="generating-implementation-suggestions" class="section level2">
+<h2>Generating Implementation Suggestions</h2>
+<p>Once you’ve documented your dashboard with the BID framework, you can
+generate concrete suggestions for implementing the principles using
+common R packages:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Get {bslib} component suggestions</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">bid_suggest_components</span>(structure_result, <span class="at">package =</span> <span class="st">&quot;bslib&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(component, description) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">2</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co"># Get {reactable} suggestions for showing data</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="fu">bid_suggest_components</span>(anticipate_result, <span class="at">package =</span> <span class="st">&quot;reactable&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(component, description) <span class="sc">|&gt;</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">2</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co"># Get suggestions from all supported packages</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>all_suggestions <span class="ot">&lt;-</span> <span class="fu">bid_suggest_components</span>(validate_result, <span class="at">package =</span> <span class="st">&quot;all&quot;</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="fu">table</span>(all_suggestions<span class="sc">$</span>package)</span></code></pre></div>
+</div>
+<div id="creating-a-complete-bid-report" class="section level2">
+<h2>Creating a Complete BID Report</h2>
+<p>You can generate a complete report summarizing all stages of your BID
+process:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Generate a text report (default)</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>report <span class="ot">&lt;-</span> <span class="fu">bid_report</span>(validate_result)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">cat</span>(report)</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co"># Generate an HTML report</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>html_report <span class="ot">&lt;-</span> <span class="fu">bid_report</span>(</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  validate_result,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">&quot;html&quot;</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>)</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co"># Generate a markdown report</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>md_report <span class="ot">&lt;-</span> <span class="fu">bid_report</span>(validate_result, <span class="at">format =</span> <span class="st">&quot;markdown&quot;</span>)</span></code></pre></div>
+</div>
+<div id="using-bid-in-your-shiny-development-workflow" class="section level2">
+<h2>Using BID in Your Shiny Development Workflow</h2>
+<p>Here’s how to integrate the BID framework into your development
+process:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Planning Phase</strong></li>
+</ol>
+<ul>
+<li>Use the BID framework to document your design decisions before
+writing code</li>
+<li>Identify key user needs and potential friction points</li>
+<li>Define user personas to guide your design choices</li>
+<li>Consider accessibility requirements early</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Development Phase</strong></li>
+</ol>
+<ul>
+<li>Reference your BID documentation to implement appropriate UI
+patterns</li>
+<li>Use <code>bid_suggest_components()</code> to get package-specific
+implementation ideas</li>
+<li>Implement bias mitigation strategies in your interface</li>
+<li>Build in progressive disclosure for complex interfaces</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Testing Phase</strong></li>
+</ol>
+<ul>
+<li>Validate that your implementation addresses the issues identified in
+Stage 1</li>
+<li>Test with actual users representing your defined personas</li>
+<li>Specifically test bias mitigation strategies and accessibility
+features</li>
+<li>Gather feedback on the effectiveness of your validation
+approach</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Iteration Phase</strong></li>
+</ol>
+<ul>
+<li>Update your BID documentation as you refine the dashboard</li>
+<li>Use <code>bid_report()</code> to maintain comprehensive
+documentation</li>
+<li>Focus improvements on areas with the greatest impact on user
+experience</li>
+<li>Continue to apply BID principles as you add new features</li>
+</ul>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The <code>{bidux}</code> package makes it easier to apply
+psychological principles and UX best practices to your Shiny dashboards.
+By following the 5-stage BID framework, you can create applications that
+are more intuitive, engaging, and effective for your users.</p>
+<p>Future versions of <code>{bidux}</code> will include:</p>
+<ul>
+<li>User stories workflow integration following the Gherkin method</li>
+<li>Enhanced design patterns library</li>
+<li>Accessibility framework integration with WCAG guidelines</li>
+<li>A UI component library implementing BID principles</li>
+<li>Testing and validation tools for dashboard evaluation</li>
+</ul>
+<p>Visit <a href="https://github.com/jrwinget/bidux">github.com/jrwinget/bidux</a>
+for updates and to contribute to the package development. We welcome
+feedback and suggestions to help make the BID framework even more
+effective for Shiny developers.</p>
+<p>Remember that good dashboard design is an iterative process that
+benefits from continuous user feedback. The BID framework provides
+structure to this process while ensuring psychological principles are
+incorporated throughout your development workflow.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
