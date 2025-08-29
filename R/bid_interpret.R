@@ -74,22 +74,23 @@
 #'
 #' @export
 bid_interpret <- function(
-  previous_stage,
-  central_question = NULL,
-  data_story = NULL,
-  user_personas = NULL
-) {
-  validate_required_params(previous_stage = previous_stage)
-  validate_previous_stage(previous_stage, "Interpret")
-
-  if (!is.null(data_story) && !is.list(data_story)) {
-    cli::cli_abort(
-      c(
-        "The data_story parameter must be a list",
-        "i" = "You provided {.cls {class(data_story)}}"
+    previous_stage,
+    central_question = NULL,
+    data_story = NULL,
+    user_personas = NULL) {
+  # standardized parameter validation
+  validate_bid_stage_params(
+    previous_stage,
+    "Interpret",
+    list(
+      data_story = list(value = data_story, type = "list", allow_null = TRUE),
+      central_question = list(
+        value = central_question,
+        type = "character",
+        allow_null = TRUE
       )
     )
-  }
+  )
 
   if (!is.null(user_personas)) {
     validate_user_personas(user_personas)
@@ -97,8 +98,9 @@ bid_interpret <- function(
 
   if (is.null(central_question)) {
     if (previous_stage$stage[1] == "Notice") {
-      problem <- safe_column_access(previous_stage, "problem")
-      theory <- safe_column_access(previous_stage, "theory")
+      stage_data <- extract_stage_data(previous_stage, c("problem", "theory"))
+      problem <- stage_data$problem
+      theory <- stage_data$theory
 
       if (!is.na(problem)) {
         problem_lower <- tolower(problem)
@@ -179,10 +181,14 @@ bid_interpret <- function(
     data_story <- list()
 
     if (previous_stage$stage[1] == "Notice") {
-      problem <- safe_column_access(previous_stage, "problem")
-      theory <- safe_column_access(previous_stage, "theory")
-      evidence <- safe_column_access(previous_stage, "evidence")
-      target_audience <- safe_column_access(previous_stage, "target_audience")
+      stage_data <- extract_stage_data(
+        previous_stage,
+        c("problem", "theory", "evidence", "target_audience")
+      )
+      problem <- stage_data$problem
+      theory <- stage_data$theory
+      evidence <- stage_data$evidence
+      target_audience <- stage_data$target_audience
 
       if (!is.na(problem)) {
         # hook
@@ -284,20 +290,34 @@ bid_interpret <- function(
   if (story_completeness < 0.5) {
     missing_elements <- required_story_elements[!provided_elements]
     story_suggestion <- cli::format_inline(
-      "Your data story is incomplete ({round(story_completeness * 100)}%). Consider adding these missing elements: {paste(missing_elements, collapse = ', ')}."
+      paste(
+        "Your data story is incomplete ({round(story_completeness * 100)}%).",
+        "Consider adding these missing elements:",
+        "{paste(missing_elements, collapse = ', ')}."
+      )
     )
   } else if (story_completeness < 0.75) {
     missing_elements <- required_story_elements[!provided_elements]
     story_suggestion <- cli::format_inline(
-      "Your data story is taking shape ({round(story_completeness * 100)}%). Consider adding: {paste(missing_elements, collapse = ', ')}."
+      paste(
+        "Your data story is taking shape ({round(story_completeness * 100)}%).",
+        "Consider adding: {paste(missing_elements, collapse = ', ')}."
+      )
     )
   } else if (story_completeness < 1) {
     missing_elements <- required_story_elements[!provided_elements]
     story_suggestion <- cli::format_inline(
-      "Your data story is almost complete ({round(story_completeness * 100)}%). Consider adding: {paste(missing_elements, collapse = ', ')}."
+      paste(
+        "Your data story is almost complete",
+        "({round(story_completeness * 100)}%). Consider adding:",
+        "{paste(missing_elements, collapse = ', ')}."
+      )
     )
   } else {
-    story_suggestion <- "Your data story has all key elements. Focus on making each component compelling and relevant."
+    story_suggestion <- paste(
+      "Your data story has all key elements. Focus on making each component",
+      "compelling and relevant."
+    )
   }
 
   question_suggestion <- if (
@@ -316,15 +336,15 @@ bid_interpret <- function(
   if (is.null(user_personas)) {
     audience <- NULL
 
-    # try to get audience from data_story
     if (
+      # try to get audience from data_story
       !is.null(data_story) &&
         "audience" %in% names(data_story) &&
         !is.na(data_story$audience)
     ) {
       audience <- data_story$audience
-    } # try to get audience from previous_stage
-    else if (
+    } else if (
+      # try to get audience from previous_stage
       previous_stage$stage[1] == "Notice" &&
         "target_audience" %in% names(previous_stage) &&
         !is.na(previous_stage$target_audience[1])
@@ -494,6 +514,9 @@ bid_interpret <- function(
     NA_character_
   }
 
+  # normalize previous stage to ensure field name consistency
+  normalized_previous <- normalize_previous_stage(previous_stage)
+
   result_data <- tibble::tibble(
     stage = "Interpret",
     central_question = central_question,
@@ -504,22 +527,30 @@ bid_interpret <- function(
     audience = audience,
     metrics = metrics,
     visual_approach = visual_approach,
-    user_personas = personas_formatted,
-    previous_problem = safe_column_access(previous_stage, "problem"),
-    previous_theory = safe_column_access(previous_stage, "theory"),
-    previous_audience = safe_column_access(previous_stage, "target_audience"),
+    personas = personas_formatted,
+    previous_problem = safe_column_access(normalized_previous, "problem"),
+    previous_theory = safe_column_access(normalized_previous, "theory"),
+    previous_audience = safe_column_access(
+      normalized_previous,
+      "target_audience"
+    ),
     suggestions = suggestions,
-    timestamp = Sys.time()
+    timestamp = .now()
   )
 
-  metadata <- list(
-    stage_number = 2,
-    total_stages = 5,
-    has_central_question = !is.null(central_question),
-    story_completeness = story_completeness,
-    personas_count = if (!is.null(user_personas)) length(user_personas) else 0,
-    auto_generated_question = is.null(central_question),
-    auto_generated_story = is.null(data_story)
+  metadata <- get_stage_metadata(
+    2,
+    list(
+      has_central_question = !is.null(central_question),
+      story_completeness = story_completeness,
+      personas_count = if (!is.null(user_personas)) {
+        length(user_personas)
+      } else {
+        0
+      },
+      auto_generated_question = is.null(central_question),
+      auto_generated_story = is.null(data_story)
+    )
   )
 
   result <- bid_stage("Interpret", result_data, metadata)
@@ -544,67 +575,4 @@ bid_interpret <- function(
   )
 
   return(result)
-}
-
-safe_data_story_access <- function(data_story, element) {
-  if (!is.null(data_story) && element %in% names(data_story)) {
-    value <- data_story[[element]]
-    if (!is.null(value) && !is.na(value) && nchar(trimws(as.character(value))) > 0) {
-      return(as.character(value))
-    }
-  }
-  return(NA_character_)
-}
-
-# helper function to validate user_personas structure
-validate_user_personas <- function(user_personas) {
-  if (!is.list(user_personas)) {
-    cli::cli_abort(c(
-      "The user_personas parameter must be a list",
-      "i" = "You provided {.cls {class(user_personas)}}"
-    ))
-  }
-
-  for (i in seq_along(user_personas)) {
-    persona <- user_personas[[i]]
-
-    if (!is.list(persona)) {
-      cli::cli_abort(c(
-        "Each persona in user_personas must be a list",
-        "x" = paste0("Persona at position ", i, " is ", class(persona)[1])
-      ))
-    }
-
-    if (!"name" %in% names(persona)) {
-      cli::cli_abort(c(
-        "Each persona must have at least a 'name' field",
-        "x" = paste0(
-          "Persona at position ",
-          i,
-          " is missing the required 'name' field"
-        )
-      ))
-    }
-
-    recommended_fields <- c("goals", "pain_points", "technical_level")
-    missing_recommended <- recommended_fields[
-      !recommended_fields %in% names(persona)
-    ]
-
-    if (length(missing_recommended) > 0) {
-      cli::cli_warn(c(
-        paste0(
-          "Recommended fields are missing from persona '",
-          persona$name,
-          "'"
-        ),
-        "i" = paste0(
-          "Consider adding: ",
-          paste(missing_recommended, collapse = ", ")
-        )
-      ))
-    }
-  }
-
-  return(TRUE)
 }

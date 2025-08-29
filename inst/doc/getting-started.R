@@ -37,21 +37,9 @@ knitr::opts_chunk$set(
 # bid_concepts("visual hierarchy|breathable|gherkin") |>
 #   dplyr::select(concept, description)
 
-## ----notice-------------------------------------------------------------------
-# # Document the problem
-# notice_result <- bid_notice(
-#   problem = "Users are overwhelmed by too many filter options and struggle to find relevant insights",
-#   evidence = "User testing shows 65% of first-time users fail to complete their intended task within 2 minutes",
-#   target_audience = "Marketing team members with varying technical skills"
-# )
-# 
-# notice_result |>
-#   dplyr::select(problem, theory, evidence, target_audience)
-
 ## ----interpret----------------------------------------------------------------
 # # Document the user's need
 # interpret_result <- bid_interpret(
-#   previous_stage = notice_result,
 #   central_question = "How are our marketing campaigns performing across different channels?",
 #   data_story = list(
 #     hook = "Recent campaign performance varies significantly across channels",
@@ -81,50 +69,44 @@ knitr::opts_chunk$set(
 # interpret_result |>
 #   dplyr::select(central_question, hook, tension, resolution)
 
-## ----structure----------------------------------------------------------------
-# # Document the dashboard structure
-# structure_result <- bid_structure(
+## ----notice-------------------------------------------------------------------
+# # Document the problem
+# notice_result <- bid_notice(
 #   previous_stage = interpret_result,
-#   layout = "dual_process",
-#   concepts = c(
-#     "Principle of Proximity",
-#     "Default Effect",
-#     "Visual Hierarchy",
-#     "Breathable Layouts"
-#   ),
-#   accessibility = list(
-#     color_contrast = "Using WCAG AA-compliant color contrasts",
-#     keyboard_navigation = "All interactive elements are keyboard accessible",
-#     screen_reader = "Charts include descriptive alt text"
-#   )
+#   problem = "Users are overwhelmed by too many filter options and struggle to find relevant insights",
+#   evidence = "User testing shows 65% of first-time users fail to complete their intended task within 2 minutes"
 # )
 # 
-# structure_result |>
-#   dplyr::select(layout, concepts, accessibility)
+# notice_result |>
+#   dplyr::select(problem, theory, evidence)
 
 ## ----anticipate---------------------------------------------------------------
 # # Document bias mitigation strategies
 # anticipate_result <- bid_anticipate(
-#   previous_stage = structure_result,
+#   previous_stage = notice_result,
 #   bias_mitigations = list(
 #     anchoring = "Include previous period performance as reference points",
 #     framing = "Provide toggle between ROI improvement vs. ROI gap views",
 #     confirmation_bias = "Highlight unexpected patterns that contradict common assumptions"
-#   ),
-#   interaction_principles = list(
-#     hover_effects = "Show detailed metrics on hover for each channel",
-#     selection_feedback = "Highlight active filters with color and icon changes",
-#     progressive_disclosure = "Reveal advanced options only when basic filters are applied"
 #   )
 # )
 # 
 # anticipate_result |>
-#   dplyr::select(bias_mitigations, interaction_principles)
+#   dplyr::select(bias_mitigations)
+
+## ----structure----------------------------------------------------------------
+# # Document the dashboard structure
+# structure_result <- bid_structure(
+#   previous_stage = anticipate_result
+# )
+# 
+# structure_result |>
+#   dplyr::select(layout, concepts, suggestions)
 
 ## ----validate-----------------------------------------------------------------
 # # Document validation approach
 # validate_result <- bid_validate(
-#   previous_stage = anticipate_result,
+#   previous_stage = structure_result,
 #   summary_panel = "Executive summary highlighting top and bottom performers, key trends, and recommended actions for the next marketing cycle",
 #   collaboration = "Team annotation capability allowing marketing team members to add context and insights to specific data points",
 #   next_steps = c(
@@ -145,7 +127,7 @@ knitr::opts_chunk$set(
 #   head(2)
 # 
 # # Get {reactable} suggestions for showing data
-# bid_suggest_components(anticipate_result, package = "reactable") |>
+# bid_suggest_components(structure_result, package = "reactable") |>
 #   dplyr::select(component, description) |>
 #   head(2)
 # 

@@ -5,8 +5,10 @@
 #' Returns concepts matching the search term along with their descriptions,
 #' categories, and implementation guidance.
 #'
-#' @param search A character string to search for. If NULL or empty, returns all concepts.
-#' @param fuzzy_match Logical indicating whether to use fuzzy string matching (default: TRUE)
+#' @param search A character string to search for. If NULL or empty, returns all
+#'        concepts.
+#' @param fuzzy_match Logical indicating whether to use fuzzy string matching
+#'        (default: TRUE)
 #' @param max_distance Maximum string distance for fuzzy matching (default: 2)
 #'
 #' @return A tibble containing matching concepts with their details
@@ -19,21 +21,21 @@ bid_concepts <- function(search = NULL, fuzzy_match = TRUE, max_distance = 2) {
     return(concepts_data)
   }
 
-  # Direct search in concept names and descriptions
+  # direct search in concept names and descriptions
   search_terms <- tolower(trimws(unlist(strsplit(search, ","))))
 
   matches <- c()
   for (term in search_terms) {
     term <- trimws(term)
     if (nchar(term) > 0) {
-      # Exact matches in concept names or descriptions
+      # exact matches in concept names or descriptions
       exact_matches <- which(
         grepl(term, tolower(concepts_data$concept)) |
           grepl(term, tolower(concepts_data$description))
       )
       matches <- c(matches, exact_matches)
 
-      # Fuzzy matching if enabled and no exact matches
+      # fuzzy matching if enabled and no exact matches
       if (fuzzy_match && length(exact_matches) == 0) {
         distances <- stringdist::stringdistmatrix(
           term,
@@ -78,13 +80,13 @@ bid_concept <- function(concept_name, add_recommendations = TRUE) {
   concepts_data <- get_concepts_data()
   concept_clean <- trimws(concept_name)
 
-  # Try exact match first
+  # try exact match first
   exact_match <- which(tolower(concepts_data$concept) == tolower(concept_clean))
 
   if (length(exact_match) > 0) {
     result <- concepts_data[exact_match[1], ]
   } else {
-    # Try partial match
+    # try partial match
     partial_matches <- which(grepl(
       tolower(concept_clean),
       tolower(concepts_data$concept)
@@ -99,7 +101,7 @@ bid_concept <- function(concept_name, add_recommendations = TRUE) {
     }
   }
 
-  # Add recommendations based on stage
+  # add recommendations based on stage
   if (add_recommendations) {
     stage_recs <- switch(
       result$category[1],
@@ -122,48 +124,26 @@ bid_concept <- function(concept_name, add_recommendations = TRUE) {
 #' @return A tibble with all BID framework concepts
 #' @keywords internal
 get_concepts_data <- function() {
-  # Try to load from external data file first
-  concepts_file <- system.file(
-    "extdata",
-    "bid_concepts_data.csv",
-    package = "bidux"
+  # reuse the unified loading pattern
+  required_cols <- c(
+    "concept",
+    "description",
+    "category",
+    "reference",
+    "example",
+    "implementation_tips",
+    "related_concepts"
   )
 
-  if (file.exists(concepts_file)) {
-    tryCatch(
-      {
-        concepts <- readr::read_csv(concepts_file)
-        # Ensure required columns exist
-        required_cols <- c(
-          "concept",
-          "description",
-          "category",
-          "reference",
-          "example",
-          "implementation_tips",
-          "related_concepts"
-        )
-        if (all(required_cols %in% names(concepts))) {
-          return(tibble::as_tibble(concepts))
-        } else {
-          warning(
-            "External concepts file missing required columns, using defaults",
-            call. = FALSE
-          )
-        }
-      },
-      error = function(e) {
-        warning(
-          "Could not load external concepts file: ",
-          e$message,
-          call. = FALSE
-        )
-      }
-    )
-  }
+  # load external data and ensure it's returned as tibble
+  data <- load_external_data(
+    "bid_concepts_data.csv",
+    required_cols,
+    get_default_concepts_data,
+    NULL
+  )
 
-  # Fallback to hardcoded data if external file not available or invalid
-  return(get_default_concepts_data())
+  return(tibble::as_tibble(data))
 }
 
 #' Get default concepts data (fallback when external file unavailable)

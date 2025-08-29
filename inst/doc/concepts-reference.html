@@ -48,8 +48,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -348,33 +349,34 @@ Implementation</h1>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(echarts4r)</span></code></pre></div>
 <div id="bid-framework-concepts-practical-implementation" class="section level1">
 <h1>BID Framework Concepts: Practical Implementation</h1>
-<p>The Behavior Insight Design (BID) framework integrates psychological
-principles into UI/UX design for Shiny dashboards. This guide focuses on
+<p>The Behavior Insight Design (BID) framework integrates behavioral
+science into UI/UX design for Shiny dashboards. This guide focuses on
 practical implementation of key concepts using modern packages like
 {bslib}, {reactable}, and {echarts4r}.</p>
 <div id="framework-overview" class="section level2">
 <h2>Framework Overview</h2>
 <p>The BID framework consists of 5 sequential stages, each incorporating
-specific psychological principles:</p>
+specific psychological tendencies and design principles:</p>
 <ol style="list-style-type: decimal">
-<li><strong>Notice</strong>: Identify friction points (Cognitive Load,
-Visual Hierarchy)</li>
 <li><strong>Interpret</strong>: Understand user needs (Data
 Storytelling, User Personas)</li>
-<li><strong>Structure</strong>: Organize information (Layout Patterns,
-Breathable Designs)</li>
+<li><strong>Notice</strong>: Identify friction points (Cognitive Load,
+Visual Hierarchy)</li>
 <li><strong>Anticipate</strong>: Mitigate biases (Anchoring,
 Framing)</li>
+<li><strong>Structure</strong>: Organize information (Layout Patterns,
+Breathable Designs)</li>
 <li><strong>Validate</strong>: Empower the user (Peak-End Rule,
 Collaboration)</li>
 </ol>
 </div>
-<div id="stage-1-notice---reducing-cognitive-load" class="section level2">
-<h2>Stage 1: Notice - Reducing Cognitive Load</h2>
-<p>Cognitive load is the amount of mental effort required to use your
-interface. High cognitive load leads to user frustration and errors.</p>
-<div id="using-bslib-to-reduce-cognitive-load" class="section level3">
-<h3>Using {bslib} to Reduce Cognitive Load</h3>
+<div id="stage-1-interpret---implementing-data-storytelling" class="section level2">
+<h2>Stage 1: Interpret - Implementing Data Storytelling</h2>
+<p>Data storytelling helps users understand the meaning behind data
+through a narrative structure with hook, context, tension, and
+resolution.</p>
+<div id="using-echarts4r-for-data-storytelling" class="section level3">
+<h3>Using {echarts4r} for Data Storytelling</h3>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="at">version =</span> <span class="dv">5</span>,</span>
@@ -430,82 +432,82 @@ interface. High cognitive load leads to user frustration and errors.</p>
 <span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a>            <span class="fu">card_body</span>(</span>
 <span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a>              <span class="fu">h5</span>(<span class="st">&quot;Regions&quot;</span>),</span>
 <span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a>              <span class="fu">selectInput</span>(</span>
-<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a>                <span class="st">&quot;region&quot;</span>, <span class="st">&quot;Region:&quot;</span>,</span>
-<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a>                <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;All&quot;</span>, <span class="st">&quot;North&quot;</span>, <span class="st">&quot;South&quot;</span>, <span class="st">&quot;East&quot;</span>, <span class="st">&quot;West&quot;</span>)</span>
-<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a>              )</span>
-<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a>            )</span>
-<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a>          )</span>
-<span id="cb2-61"><a href="#cb2-61" tabindex="-1"></a>        )</span>
-<span id="cb2-62"><a href="#cb2-62" tabindex="-1"></a>      )</span>
-<span id="cb2-63"><a href="#cb2-63" tabindex="-1"></a>    )</span>
-<span id="cb2-64"><a href="#cb2-64" tabindex="-1"></a>  ),</span>
-<span id="cb2-65"><a href="#cb2-65" tabindex="-1"></a>  <span class="co"># Main content with clear organization</span></span>
-<span id="cb2-66"><a href="#cb2-66" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
-<span id="cb2-67"><a href="#cb2-67" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">3</span>,</span>
-<span id="cb2-68"><a href="#cb2-68" tabindex="-1"></a>    <span class="co"># Key metrics with visual simplicity</span></span>
-<span id="cb2-69"><a href="#cb2-69" tabindex="-1"></a>    <span class="fu">value_box</span>(</span>
-<span id="cb2-70"><a href="#cb2-70" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Total Revenue&quot;</span>,</span>
-<span id="cb2-71"><a href="#cb2-71" tabindex="-1"></a>      <span class="at">value =</span> <span class="st">&quot;$1.24M&quot;</span>,</span>
-<span id="cb2-72"><a href="#cb2-72" tabindex="-1"></a>      <span class="at">showcase =</span> bsicons<span class="sc">::</span><span class="fu">bs_icon</span>(<span class="st">&quot;graph-up-arrow&quot;</span>),</span>
-<span id="cb2-73"><a href="#cb2-73" tabindex="-1"></a>      <span class="at">theme =</span> <span class="fu">value_box_theme</span>(</span>
-<span id="cb2-74"><a href="#cb2-74" tabindex="-1"></a>        <span class="at">bg =</span> <span class="st">&quot;#f8f9fa&quot;</span>,</span>
-<span id="cb2-75"><a href="#cb2-75" tabindex="-1"></a>        <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
-<span id="cb2-76"><a href="#cb2-76" tabindex="-1"></a>      )</span>
-<span id="cb2-77"><a href="#cb2-77" tabindex="-1"></a>    ),</span>
-<span id="cb2-78"><a href="#cb2-78" tabindex="-1"></a>    <span class="fu">value_box</span>(</span>
-<span id="cb2-79"><a href="#cb2-79" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Orders&quot;</span>,</span>
-<span id="cb2-80"><a href="#cb2-80" tabindex="-1"></a>      <span class="at">value =</span> <span class="st">&quot;8,490&quot;</span>,</span>
-<span id="cb2-81"><a href="#cb2-81" tabindex="-1"></a>      <span class="at">showcase =</span> bsicons<span class="sc">::</span><span class="fu">bs_icon</span>(<span class="st">&quot;cart&quot;</span>),</span>
-<span id="cb2-82"><a href="#cb2-82" tabindex="-1"></a>      <span class="at">theme =</span> <span class="fu">value_box_theme</span>(</span>
-<span id="cb2-83"><a href="#cb2-83" tabindex="-1"></a>        <span class="at">bg =</span> <span class="st">&quot;#f8f9fa&quot;</span>,</span>
-<span id="cb2-84"><a href="#cb2-84" tabindex="-1"></a>        <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
-<span id="cb2-85"><a href="#cb2-85" tabindex="-1"></a>      )</span>
-<span id="cb2-86"><a href="#cb2-86" tabindex="-1"></a>    ),</span>
-<span id="cb2-87"><a href="#cb2-87" tabindex="-1"></a>    <span class="fu">value_box</span>(</span>
-<span id="cb2-88"><a href="#cb2-88" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Avg Order Value&quot;</span>,</span>
-<span id="cb2-89"><a href="#cb2-89" tabindex="-1"></a>      <span class="at">value =</span> <span class="st">&quot;$146&quot;</span>,</span>
-<span id="cb2-90"><a href="#cb2-90" tabindex="-1"></a>      <span class="at">showcase =</span> bsicons<span class="sc">::</span><span class="fu">bs_icon</span>(<span class="st">&quot;tag&quot;</span>),</span>
-<span id="cb2-91"><a href="#cb2-91" tabindex="-1"></a>      <span class="at">theme =</span> <span class="fu">value_box_theme</span>(</span>
-<span id="cb2-92"><a href="#cb2-92" tabindex="-1"></a>        <span class="at">bg =</span> <span class="st">&quot;#f8f9fa&quot;</span>,</span>
-<span id="cb2-93"><a href="#cb2-93" tabindex="-1"></a>        <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
-<span id="cb2-94"><a href="#cb2-94" tabindex="-1"></a>      )</span>
-<span id="cb2-95"><a href="#cb2-95" tabindex="-1"></a>    )</span>
-<span id="cb2-96"><a href="#cb2-96" tabindex="-1"></a>  ),</span>
-<span id="cb2-97"><a href="#cb2-97" tabindex="-1"></a>  <span class="co"># Main charts with progressive disclosure</span></span>
-<span id="cb2-98"><a href="#cb2-98" tabindex="-1"></a>  <span class="fu">accordion</span>(</span>
-<span id="cb2-99"><a href="#cb2-99" tabindex="-1"></a>    <span class="fu">accordion_panel</span>(</span>
-<span id="cb2-100"><a href="#cb2-100" tabindex="-1"></a>      <span class="st">&quot;Sales Performance&quot;</span>,</span>
-<span id="cb2-101"><a href="#cb2-101" tabindex="-1"></a>      <span class="fu">echarts4rOutput</span>(<span class="st">&quot;sales_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
-<span id="cb2-102"><a href="#cb2-102" tabindex="-1"></a>    ),</span>
-<span id="cb2-103"><a href="#cb2-103" tabindex="-1"></a>    <span class="fu">accordion_panel</span>(</span>
-<span id="cb2-104"><a href="#cb2-104" tabindex="-1"></a>      <span class="st">&quot;Category Breakdown&quot;</span>,</span>
-<span id="cb2-105"><a href="#cb2-105" tabindex="-1"></a>      <span class="fu">echarts4rOutput</span>(<span class="st">&quot;category_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
-<span id="cb2-106"><a href="#cb2-106" tabindex="-1"></a>    ),</span>
-<span id="cb2-107"><a href="#cb2-107" tabindex="-1"></a>    <span class="fu">accordion_panel</span>(</span>
-<span id="cb2-108"><a href="#cb2-108" tabindex="-1"></a>      <span class="st">&quot;Regional Analysis&quot;</span>,</span>
-<span id="cb2-109"><a href="#cb2-109" tabindex="-1"></a>      <span class="fu">echarts4rOutput</span>(<span class="st">&quot;region_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
-<span id="cb2-110"><a href="#cb2-110" tabindex="-1"></a>    )</span>
-<span id="cb2-111"><a href="#cb2-111" tabindex="-1"></a>  )</span>
-<span id="cb2-112"><a href="#cb2-112" tabindex="-1"></a>)</span></code></pre></div>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a>                <span class="st">&quot;region&quot;</span>,</span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a>                <span class="st">&quot;Region:&quot;</span>,</span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a>                <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;All&quot;</span>, <span class="st">&quot;North&quot;</span>, <span class="st">&quot;South&quot;</span>, <span class="st">&quot;East&quot;</span>, <span class="st">&quot;West&quot;</span>)</span>
+<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a>              )</span>
+<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a>            )</span>
+<span id="cb2-61"><a href="#cb2-61" tabindex="-1"></a>          )</span>
+<span id="cb2-62"><a href="#cb2-62" tabindex="-1"></a>        )</span>
+<span id="cb2-63"><a href="#cb2-63" tabindex="-1"></a>      )</span>
+<span id="cb2-64"><a href="#cb2-64" tabindex="-1"></a>    )</span>
+<span id="cb2-65"><a href="#cb2-65" tabindex="-1"></a>  ),</span>
+<span id="cb2-66"><a href="#cb2-66" tabindex="-1"></a>  <span class="co"># Main content with clear organization</span></span>
+<span id="cb2-67"><a href="#cb2-67" tabindex="-1"></a>  <span class="fu">layout_column_wrap</span>(</span>
+<span id="cb2-68"><a href="#cb2-68" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">3</span>,</span>
+<span id="cb2-69"><a href="#cb2-69" tabindex="-1"></a>    <span class="co"># Key metrics with visual simplicity</span></span>
+<span id="cb2-70"><a href="#cb2-70" tabindex="-1"></a>    <span class="fu">value_box</span>(</span>
+<span id="cb2-71"><a href="#cb2-71" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Total Revenue&quot;</span>,</span>
+<span id="cb2-72"><a href="#cb2-72" tabindex="-1"></a>      <span class="at">value =</span> <span class="st">&quot;$1.24M&quot;</span>,</span>
+<span id="cb2-73"><a href="#cb2-73" tabindex="-1"></a>      <span class="at">showcase =</span> bsicons<span class="sc">::</span><span class="fu">bs_icon</span>(<span class="st">&quot;graph-up-arrow&quot;</span>),</span>
+<span id="cb2-74"><a href="#cb2-74" tabindex="-1"></a>      <span class="at">theme =</span> <span class="fu">value_box_theme</span>(</span>
+<span id="cb2-75"><a href="#cb2-75" tabindex="-1"></a>        <span class="at">bg =</span> <span class="st">&quot;#f8f9fa&quot;</span>,</span>
+<span id="cb2-76"><a href="#cb2-76" tabindex="-1"></a>        <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
+<span id="cb2-77"><a href="#cb2-77" tabindex="-1"></a>      )</span>
+<span id="cb2-78"><a href="#cb2-78" tabindex="-1"></a>    ),</span>
+<span id="cb2-79"><a href="#cb2-79" tabindex="-1"></a>    <span class="fu">value_box</span>(</span>
+<span id="cb2-80"><a href="#cb2-80" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Orders&quot;</span>,</span>
+<span id="cb2-81"><a href="#cb2-81" tabindex="-1"></a>      <span class="at">value =</span> <span class="st">&quot;8,490&quot;</span>,</span>
+<span id="cb2-82"><a href="#cb2-82" tabindex="-1"></a>      <span class="at">showcase =</span> bsicons<span class="sc">::</span><span class="fu">bs_icon</span>(<span class="st">&quot;cart&quot;</span>),</span>
+<span id="cb2-83"><a href="#cb2-83" tabindex="-1"></a>      <span class="at">theme =</span> <span class="fu">value_box_theme</span>(</span>
+<span id="cb2-84"><a href="#cb2-84" tabindex="-1"></a>        <span class="at">bg =</span> <span class="st">&quot;#f8f9fa&quot;</span>,</span>
+<span id="cb2-85"><a href="#cb2-85" tabindex="-1"></a>        <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
+<span id="cb2-86"><a href="#cb2-86" tabindex="-1"></a>      )</span>
+<span id="cb2-87"><a href="#cb2-87" tabindex="-1"></a>    ),</span>
+<span id="cb2-88"><a href="#cb2-88" tabindex="-1"></a>    <span class="fu">value_box</span>(</span>
+<span id="cb2-89"><a href="#cb2-89" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Avg Order Value&quot;</span>,</span>
+<span id="cb2-90"><a href="#cb2-90" tabindex="-1"></a>      <span class="at">value =</span> <span class="st">&quot;$146&quot;</span>,</span>
+<span id="cb2-91"><a href="#cb2-91" tabindex="-1"></a>      <span class="at">showcase =</span> bsicons<span class="sc">::</span><span class="fu">bs_icon</span>(<span class="st">&quot;tag&quot;</span>),</span>
+<span id="cb2-92"><a href="#cb2-92" tabindex="-1"></a>      <span class="at">theme =</span> <span class="fu">value_box_theme</span>(</span>
+<span id="cb2-93"><a href="#cb2-93" tabindex="-1"></a>        <span class="at">bg =</span> <span class="st">&quot;#f8f9fa&quot;</span>,</span>
+<span id="cb2-94"><a href="#cb2-94" tabindex="-1"></a>        <span class="at">fg =</span> <span class="st">&quot;#333333&quot;</span></span>
+<span id="cb2-95"><a href="#cb2-95" tabindex="-1"></a>      )</span>
+<span id="cb2-96"><a href="#cb2-96" tabindex="-1"></a>    )</span>
+<span id="cb2-97"><a href="#cb2-97" tabindex="-1"></a>  ),</span>
+<span id="cb2-98"><a href="#cb2-98" tabindex="-1"></a>  <span class="co"># Main charts with progressive disclosure</span></span>
+<span id="cb2-99"><a href="#cb2-99" tabindex="-1"></a>  <span class="fu">accordion</span>(</span>
+<span id="cb2-100"><a href="#cb2-100" tabindex="-1"></a>    <span class="fu">accordion_panel</span>(</span>
+<span id="cb2-101"><a href="#cb2-101" tabindex="-1"></a>      <span class="st">&quot;Sales Performance&quot;</span>,</span>
+<span id="cb2-102"><a href="#cb2-102" tabindex="-1"></a>      <span class="fu">echarts4rOutput</span>(<span class="st">&quot;sales_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb2-103"><a href="#cb2-103" tabindex="-1"></a>    ),</span>
+<span id="cb2-104"><a href="#cb2-104" tabindex="-1"></a>    <span class="fu">accordion_panel</span>(</span>
+<span id="cb2-105"><a href="#cb2-105" tabindex="-1"></a>      <span class="st">&quot;Category Breakdown&quot;</span>,</span>
+<span id="cb2-106"><a href="#cb2-106" tabindex="-1"></a>      <span class="fu">echarts4rOutput</span>(<span class="st">&quot;category_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb2-107"><a href="#cb2-107" tabindex="-1"></a>    ),</span>
+<span id="cb2-108"><a href="#cb2-108" tabindex="-1"></a>    <span class="fu">accordion_panel</span>(</span>
+<span id="cb2-109"><a href="#cb2-109" tabindex="-1"></a>      <span class="st">&quot;Regional Analysis&quot;</span>,</span>
+<span id="cb2-110"><a href="#cb2-110" tabindex="-1"></a>      <span class="fu">echarts4rOutput</span>(<span class="st">&quot;region_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb2-111"><a href="#cb2-111" tabindex="-1"></a>    )</span>
+<span id="cb2-112"><a href="#cb2-112" tabindex="-1"></a>  )</span>
+<span id="cb2-113"><a href="#cb2-113" tabindex="-1"></a>)</span></code></pre></div>
 </div>
-<div id="key-design-principles-for-reducing-cognitive-load" class="section level3">
-<h3>Key Design Principles for Reducing Cognitive Load:</h3>
+<div id="key-design-principles-for-data-storytelling" class="section level3">
+<h3>Key Design Principles for Data Storytelling:</h3>
 <ol style="list-style-type: decimal">
-<li>Group related controls and information together</li>
-<li>Use consistent layouts and patterns</li>
-<li>Implement progressive disclosure to hide complexity</li>
-<li>Limit the number of choices presented at once</li>
-<li>Use clear visual hierarchy to guide attention</li>
+<li>Start with a compelling hook to grab attention</li>
+<li>Provide relevant context and background</li>
+<li>Highlight the challenge or opportunity (tension)</li>
+<li>Offer clear insights and actionable recommendations</li>
+<li>Use progressive disclosure to reveal the story</li>
 </ol>
 </div>
 </div>
-<div id="stage-2-interpret---implementing-data-storytelling" class="section level2">
-<h2>Stage 2: Interpret - Implementing Data Storytelling</h2>
-<p>Data storytelling helps users understand the meaning behind data
-through a narrative structure with hook, context, tension, and
-resolution.</p>
-<div id="using-echarts4r-for-data-storytelling" class="section level3">
-<h3>Using {echarts4r} for Data Storytelling</h3>
+<div id="stage-2-notice---reducing-cognitive-load" class="section level2">
+<h2>Stage 2: Notice - Reducing Cognitive Load</h2>
+<p>Cognitive load is the amount of mental effort required to use your
+interface. High cognitive load leads to user frustration and errors.</p>
+<div id="using-bslib-to-reduce-cognitive-load" class="section level3">
+<h3>Using {bslib} to Reduce Cognitive Load</h3>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="at">version =</span> <span class="dv">5</span>,</span>
@@ -696,26 +698,23 @@ resolution.</p>
 <span id="cb3-188"><a href="#cb3-188" tabindex="-1"></a>  })</span>
 <span id="cb3-189"><a href="#cb3-189" tabindex="-1"></a>}</span></code></pre></div>
 </div>
-<div id="key-elements-of-effective-data-storytelling" class="section level3">
-<h3>Key Elements of Effective Data Storytelling:</h3>
+<div id="key-elements-for-reducing-cognitive-load" class="section level3">
+<h3>Key Elements for Reducing Cognitive Load:</h3>
 <ol style="list-style-type: decimal">
-<li><strong>Hook</strong>: Start with a compelling insight to grab
-attention</li>
-<li><strong>Context</strong>: Provide background information and
-historical data</li>
-<li><strong>Tension</strong>: Highlight the challenge, problem, or
-opportunity</li>
-<li><strong>Resolution</strong>: Offer insights and actionable
-recommendations</li>
+<li>Group related controls and information together</li>
+<li>Use consistent layouts and patterns</li>
+<li>Implement progressive disclosure to hide complexity</li>
+<li>Limit the number of choices presented at once</li>
+<li>Use clear visual hierarchy to guide attention</li>
 </ol>
 </div>
 </div>
-<div id="stage-3-structure---breathable-layouts" class="section level2">
-<h2>Stage 3: Structure - Breathable Layouts</h2>
-<p>Breathable layouts use whitespace effectively to create visual rhythm
-and reduce cognitive load.</p>
-<div id="using-bslib-for-breathable-layouts" class="section level3">
-<h3>Using {bslib} for Breathable Layouts</h3>
+<div id="stage-3-anticipate---mitigating-anchoring-bias" class="section level2">
+<h2>Stage 3: Anticipate - Mitigating Anchoring Bias</h2>
+<p>Anchoring bias occurs when users rely too heavily on the first piece
+of information they encounter when making decisions.</p>
+<div id="using-reactable-and-echarts4r-to-mitigate-anchoring" class="section level3">
+<h3>Using {reactable} and {echarts4r} to Mitigate Anchoring</h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    <span class="at">version =</span> <span class="dv">5</span>,</span>
@@ -846,13 +845,8 @@ each section</li>
 with spacing</li>
 </ol>
 </div>
-</div>
-<div id="stage-4-anticipate---mitigating-anchoring-bias" class="section level2">
-<h2>Stage 4: Anticipate - Mitigating Anchoring Bias</h2>
-<p>Anchoring bias occurs when users rely too heavily on the first piece
-of information they encounter when making decisions.</p>
-<div id="using-reactable-and-echarts4r-to-mitigate-anchoring" class="section level3">
-<h3>Using {reactable} and {echarts4r} to Mitigate Anchoring</h3>
+<div id="using-bslib-for-breathable-layouts" class="section level3">
+<h3>Using {bslib} for Breathable Layouts</h3>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="at">version =</span> <span class="dv">5</span></span>
@@ -1079,23 +1073,24 @@ of information they encounter when making decisions.</p>
 <span id="cb5-224"><a href="#cb5-224" tabindex="-1"></a>      }</span>
 <span id="cb5-225"><a href="#cb5-225" tabindex="-1"></a>    }</span>
 <span id="cb5-226"><a href="#cb5-226" tabindex="-1"></a></span>
-<span id="cb5-227"><a href="#cb5-227" tabindex="-1"></a>    <span class="fu">reactable</span>(data,</span>
-<span id="cb5-228"><a href="#cb5-228" tabindex="-1"></a>      <span class="at">columns =</span> <span class="fu">list</span>(</span>
-<span id="cb5-229"><a href="#cb5-229" tabindex="-1"></a>        <span class="at">metric =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Metric&quot;</span>),</span>
-<span id="cb5-230"><a href="#cb5-230" tabindex="-1"></a>        <span class="at">actual =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Actual&quot;</span>),</span>
-<span id="cb5-231"><a href="#cb5-231" tabindex="-1"></a>        <span class="at">target =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Target&quot;</span>),</span>
-<span id="cb5-232"><a href="#cb5-232" tabindex="-1"></a>        <span class="at">vs_target =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;vs Target&quot;</span>, <span class="at">cell =</span> compare_cell),</span>
-<span id="cb5-233"><a href="#cb5-233" tabindex="-1"></a>        <span class="at">prev_year =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Previous Year&quot;</span>),</span>
-<span id="cb5-234"><a href="#cb5-234" tabindex="-1"></a>        <span class="at">vs_prev =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;vs Prev Year&quot;</span>, <span class="at">cell =</span> compare_cell),</span>
-<span id="cb5-235"><a href="#cb5-235" tabindex="-1"></a>        <span class="at">industry =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Industry Avg&quot;</span>),</span>
-<span id="cb5-236"><a href="#cb5-236" tabindex="-1"></a>        <span class="at">vs_industry =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;vs Industry&quot;</span>, <span class="at">cell =</span> compare_cell)</span>
-<span id="cb5-237"><a href="#cb5-237" tabindex="-1"></a>      ),</span>
-<span id="cb5-238"><a href="#cb5-238" tabindex="-1"></a>      <span class="at">striped =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-239"><a href="#cb5-239" tabindex="-1"></a>      <span class="at">highlight =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-240"><a href="#cb5-240" tabindex="-1"></a>      <span class="at">bordered =</span> <span class="cn">TRUE</span></span>
-<span id="cb5-241"><a href="#cb5-241" tabindex="-1"></a>    )</span>
-<span id="cb5-242"><a href="#cb5-242" tabindex="-1"></a>  })</span>
-<span id="cb5-243"><a href="#cb5-243" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb5-227"><a href="#cb5-227" tabindex="-1"></a>    <span class="fu">reactable</span>(</span>
+<span id="cb5-228"><a href="#cb5-228" tabindex="-1"></a>      data,</span>
+<span id="cb5-229"><a href="#cb5-229" tabindex="-1"></a>      <span class="at">columns =</span> <span class="fu">list</span>(</span>
+<span id="cb5-230"><a href="#cb5-230" tabindex="-1"></a>        <span class="at">metric =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Metric&quot;</span>),</span>
+<span id="cb5-231"><a href="#cb5-231" tabindex="-1"></a>        <span class="at">actual =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Actual&quot;</span>),</span>
+<span id="cb5-232"><a href="#cb5-232" tabindex="-1"></a>        <span class="at">target =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Target&quot;</span>),</span>
+<span id="cb5-233"><a href="#cb5-233" tabindex="-1"></a>        <span class="at">vs_target =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;vs Target&quot;</span>, <span class="at">cell =</span> compare_cell),</span>
+<span id="cb5-234"><a href="#cb5-234" tabindex="-1"></a>        <span class="at">prev_year =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Previous Year&quot;</span>),</span>
+<span id="cb5-235"><a href="#cb5-235" tabindex="-1"></a>        <span class="at">vs_prev =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;vs Prev Year&quot;</span>, <span class="at">cell =</span> compare_cell),</span>
+<span id="cb5-236"><a href="#cb5-236" tabindex="-1"></a>        <span class="at">industry =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;Industry Avg&quot;</span>),</span>
+<span id="cb5-237"><a href="#cb5-237" tabindex="-1"></a>        <span class="at">vs_industry =</span> <span class="fu">colDef</span>(<span class="at">name =</span> <span class="st">&quot;vs Industry&quot;</span>, <span class="at">cell =</span> compare_cell)</span>
+<span id="cb5-238"><a href="#cb5-238" tabindex="-1"></a>      ),</span>
+<span id="cb5-239"><a href="#cb5-239" tabindex="-1"></a>      <span class="at">striped =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-240"><a href="#cb5-240" tabindex="-1"></a>      <span class="at">highlight =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-241"><a href="#cb5-241" tabindex="-1"></a>      <span class="at">bordered =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-242"><a href="#cb5-242" tabindex="-1"></a>    )</span>
+<span id="cb5-243"><a href="#cb5-243" tabindex="-1"></a>  })</span>
+<span id="cb5-244"><a href="#cb5-244" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="key-techniques-for-mitigating-anchoring-bias" class="section level3">
 <h3>Key Techniques for Mitigating Anchoring Bias:</h3>
@@ -1288,7 +1283,7 @@ dictionary:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">bid_concept</span>(<span class="st">&quot;Anchoring Effect&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">select</span>(concept, description, implementation_tips)</span></code></pre></div>
 <p>The BID framework provides a systematic approach to incorporating
-psychological principles into your dashboard design, resulting in more
+behavioral science into your dashboard design, resulting in more
 intuitive, usable, and effective Shiny applications.</p>
 </div>
 </div>

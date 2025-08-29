@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 # library(reactable)
 # library(echarts4r)
 
-## ----cognitive-load-----------------------------------------------------------
+## ----data-storytelling-overview-----------------------------------------------
 # ui <- page_fillable(
 #   theme = bs_theme(
 #     version = 5,
@@ -68,7 +68,8 @@ knitr::opts_chunk$set(
 #             card_body(
 #               h5("Regions"),
 #               selectInput(
-#                 "region", "Region:",
+#                 "region",
+#                 "Region:",
 #                 choices = c("All", "North", "South", "East", "West")
 #               )
 #             )
@@ -126,7 +127,7 @@ knitr::opts_chunk$set(
 #   )
 # )
 
-## ----data-storytelling--------------------------------------------------------
+## ----cognitive-load-----------------------------------------------------------
 # ui <- page_fillable(
 #   theme = bs_theme(
 #     version = 5,
@@ -317,7 +318,7 @@ knitr::opts_chunk$set(
 #   })
 # }
 
-## ----breathable-layouts-------------------------------------------------------
+## ----anchoring-bias-overview--------------------------------------------------
 # ui <- page_fillable(
 #   theme = bs_theme(
 #     version = 5,
@@ -433,7 +434,7 @@ knitr::opts_chunk$set(
 #   )
 # )
 
-## ----anchoring-bias-----------------------------------------------------------
+## ----breathable-layouts-------------------------------------------------------
 # ui <- page_fillable(
 #   theme = bs_theme(
 #     version = 5
@@ -660,7 +661,8 @@ knitr::opts_chunk$set(
 #       }
 #     }
 # 
-#     reactable(data,
+#     reactable(
+#       data,
 #       columns = list(
 #         metric = colDef(name = "Metric"),
 #         actual = colDef(name = "Actual"),

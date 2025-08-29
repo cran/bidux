@@ -48,8 +48,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -344,8 +345,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>Introduction</h2>
 <p>The <code>{bidux}</code> package helps Shiny developers create more
 effective dashboards using the <strong>Behavior Insight Design (BID)
-Framework</strong>. This framework integrates psychological principles,
-UX best practices, and data storytelling techniques to guide the
+Framework</strong>. This framework integrates behavioral science, UX
+best practices, and data storytelling techniques to guide the
 development of dashboards that are easier to understand, more engaging,
 and more effective at supporting user decisions.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(bidux)</span>
@@ -355,14 +356,14 @@ and more effective at supporting user decisions.</p>
 <h2>The BID Framework</h2>
 <p>The BID framework consists of 5 sequential stages:</p>
 <ol style="list-style-type: decimal">
-<li><strong>Notice</strong> the Problem - Identify friction points and
-user struggles</li>
 <li><strong>Interpret</strong> the User’s Need - Understand the core
 questions and insights needed</li>
-<li><strong>Structure</strong> the Dashboard - Organize information for
-intuitive comprehension</li>
+<li><strong>Notice</strong> the Problem - Identify friction points and
+user struggles</li>
 <li><strong>Anticipate</strong> User Behavior - Consider cognitive
 biases that influence perception</li>
+<li><strong>Structure</strong> the Dashboard - Organize information for
+intuitive comprehension</li>
 <li><strong>Validate</strong> &amp; Empower the User - Provide clear
 takeaways and collaborative features</li>
 </ol>
@@ -372,7 +373,7 @@ stages.</p>
 </div>
 <div id="exploring-the-concept-dictionary" class="section level2">
 <h2>Exploring the Concept Dictionary</h2>
-<p>The BID framework is built on established psychological and design
+<p>The BID framework is built on established science and design
 principles. To explore these concepts, use <code>bid_concepts()</code>
 to list all available concepts, or search for specific terms:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># List all concepts</span></span>
@@ -405,112 +406,95 @@ partial matching:</p>
 <h2>Documenting a Dashboard Project with BID</h2>
 <p>Let’s walk through a complete example of using the BID framework to
 document and improve a dashboard project.</p>
-<div id="stage-1-notice-the-problem" class="section level3">
-<h3>Stage 1: Notice the Problem</h3>
-<p>Start by identifying the specific problems users are encountering
-with your dashboard or interface:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Document the problem</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>notice_result <span class="ot">&lt;-</span> <span class="fu">bid_notice</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">problem =</span> <span class="st">&quot;Users are overwhelmed by too many filter options and struggle to find relevant insights&quot;</span>,</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">evidence =</span> <span class="st">&quot;User testing shows 65% of first-time users fail to complete their intended task within 2 minutes&quot;</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">target_audience =</span> <span class="st">&quot;Marketing team members with varying technical skills&quot;</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>)</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>notice_result <span class="sc">|&gt;</span></span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(problem, theory, evidence, target_audience)</span></code></pre></div>
+<div id="stage-1-interpret-the-users-need" class="section level3">
+<h3>Stage 1: Interpret the User’s Need</h3>
+<p>Start by clarifying the central question your dashboard needs to
+answer and structure the data story:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Document the user&#39;s need</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>interpret_result <span class="ot">&lt;-</span> <span class="fu">bid_interpret</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">central_question =</span> <span class="st">&quot;How are our marketing campaigns performing across different channels?&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">data_story =</span> <span class="fu">list</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="at">hook =</span> <span class="st">&quot;Recent campaign performance varies significantly across channels&quot;</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">context =</span> <span class="st">&quot;We&#39;ve invested in 6 different marketing channels over the past quarter&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>    <span class="at">tension =</span> <span class="st">&quot;ROI metrics show inconsistent results, with some channels underperforming&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>    <span class="at">resolution =</span> <span class="st">&quot;Identify top-performing channels and key performance drivers&quot;</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    <span class="at">audience =</span> <span class="st">&quot;Marketing team and executives&quot;</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">&quot;Channel ROI&quot;</span>, <span class="st">&quot;Conversion Rate&quot;</span>, <span class="st">&quot;Cost per Acquisition&quot;</span>),</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>    <span class="at">visual_approach =</span> <span class="st">&quot;Comparative analysis with historical benchmarks&quot;</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  ),</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="at">user_personas =</span> <span class="fu">list</span>(</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;Marketing Manager&quot;</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Optimize marketing spend across channels&quot;</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Difficulty comparing performance across different metrics&quot;</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Intermediate&quot;</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    ),</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;CMO&quot;</span>,</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Strategic oversight of marketing effectiveness&quot;</span>,</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Needs high-level insights without technical details&quot;</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Basic&quot;</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>    )</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>  )</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>)</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>interpret_result <span class="sc">|&gt;</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(central_question, hook, tension, resolution)</span></code></pre></div>
+<p>The function evaluates our data story elements and provides
+suggestions for improvement (in the <code>suggestions</code> column).
+We’ve also added user personas to better target our design.</p>
+</div>
+<div id="stage-2-notice-the-problem" class="section level3">
+<h3>Stage 2: Notice the Problem</h3>
+<p>Now identify the specific problems users are encountering with your
+dashboard or interface:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Document the problem</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>notice_result <span class="ot">&lt;-</span> <span class="fu">bid_notice</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> interpret_result,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">problem =</span> <span class="st">&quot;Users are overwhelmed by too many filter options and struggle to find relevant insights&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">evidence =</span> <span class="st">&quot;User testing shows 65% of first-time users fail to complete their intended task within 2 minutes&quot;</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>notice_result <span class="sc">|&gt;</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(problem, theory, evidence)</span></code></pre></div>
 <p>Notice that the function automatically selected an appropriate theory
 based on our problem description. It also provides suggestions for
 addressing cognitive load which you can access from the
 <code>suggestions</code> column.</p>
 </div>
-<div id="stage-2-interpret-the-users-need" class="section level3">
-<h3>Stage 2: Interpret the User’s Need</h3>
-<p>Next, clarify the central question your dashboard needs to answer and
-structure the data story:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Document the user&#39;s need</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>interpret_result <span class="ot">&lt;-</span> <span class="fu">bid_interpret</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> notice_result,</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">central_question =</span> <span class="st">&quot;How are our marketing campaigns performing across different channels?&quot;</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">data_story =</span> <span class="fu">list</span>(</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">hook =</span> <span class="st">&quot;Recent campaign performance varies significantly across channels&quot;</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="at">context =</span> <span class="st">&quot;We&#39;ve invested in 6 different marketing channels over the past quarter&quot;</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="at">tension =</span> <span class="st">&quot;ROI metrics show inconsistent results, with some channels underperforming&quot;</span>,</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    <span class="at">resolution =</span> <span class="st">&quot;Identify top-performing channels and key performance drivers&quot;</span>,</span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="at">audience =</span> <span class="st">&quot;Marketing team and executives&quot;</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">&quot;Channel ROI&quot;</span>, <span class="st">&quot;Conversion Rate&quot;</span>, <span class="st">&quot;Cost per Acquisition&quot;</span>),</span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    <span class="at">visual_approach =</span> <span class="st">&quot;Comparative analysis with historical benchmarks&quot;</span></span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  ),</span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="at">user_personas =</span> <span class="fu">list</span>(</span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    <span class="fu">list</span>(</span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;Marketing Manager&quot;</span>,</span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Optimize marketing spend across channels&quot;</span>,</span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Difficulty comparing performance across different metrics&quot;</span>,</span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Intermediate&quot;</span></span>
-<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>    ),</span>
-<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>    <span class="fu">list</span>(</span>
-<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;CMO&quot;</span>,</span>
-<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Strategic oversight of marketing effectiveness&quot;</span>,</span>
-<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Needs high-level insights without technical details&quot;</span>,</span>
-<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Basic&quot;</span></span>
-<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>    )</span>
-<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>  )</span>
-<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>)</span>
-<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a></span>
-<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>interpret_result <span class="sc">|&gt;</span></span>
-<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(central_question, hook, tension, resolution)</span></code></pre></div>
-<p>The function evaluates our data story elements and provides
-suggestions for improvement (in the <code>suggestions</code> column).
-We’ve also added user personas to better target our design.</p>
-</div>
-<div id="stage-3-structure-the-dashboard" class="section level3">
-<h3>Stage 3: Structure the Dashboard</h3>
-<p>Now determine the layout and key design principles to implement:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Document the dashboard structure</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>structure_result <span class="ot">&lt;-</span> <span class="fu">bid_structure</span>(</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> interpret_result,</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">layout =</span> <span class="st">&quot;dual_process&quot;</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">concepts =</span> <span class="fu">c</span>(</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    <span class="st">&quot;Principle of Proximity&quot;</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="st">&quot;Default Effect&quot;</span>,</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>    <span class="st">&quot;Visual Hierarchy&quot;</span>,</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    <span class="st">&quot;Breathable Layouts&quot;</span></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  ),</span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="at">accessibility =</span> <span class="fu">list</span>(</span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>    <span class="at">color_contrast =</span> <span class="st">&quot;Using WCAG AA-compliant color contrasts&quot;</span>,</span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>    <span class="at">keyboard_navigation =</span> <span class="st">&quot;All interactive elements are keyboard accessible&quot;</span>,</span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>    <span class="at">screen_reader =</span> <span class="st">&quot;Charts include descriptive alt text&quot;</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>  )</span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>)</span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a></span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>structure_result <span class="sc">|&gt;</span></span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(layout, concepts, accessibility)</span></code></pre></div>
-<p>The function provides layout-specific suggestions based on the
-psychological concepts we’ve chosen to apply, and acknowledges our
-accessibility considerations.</p>
-</div>
-<div id="stage-4-anticipate-user-behavior" class="section level3">
-<h3>Stage 4: Anticipate User Behavior</h3>
-<p>Identify potential cognitive biases that might affect how users
+<div id="stage-3-anticipate-user-behavior" class="section level3">
+<h3>Stage 3: Anticipate User Behavior</h3>
+<p>Next, identify potential cognitive biases that might affect how users
 interpret your dashboard:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Document bias mitigation strategies</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>anticipate_result <span class="ot">&lt;-</span> <span class="fu">bid_anticipate</span>(</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> structure_result,</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">bias_mitigations =</span> <span class="fu">list</span>(</span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    <span class="at">anchoring =</span> <span class="st">&quot;Include previous period performance as reference points&quot;</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="at">framing =</span> <span class="st">&quot;Provide toggle between ROI improvement vs. ROI gap views&quot;</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>    <span class="at">confirmation_bias =</span> <span class="st">&quot;Highlight unexpected patterns that contradict common assumptions&quot;</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  ),</span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="at">interaction_principles =</span> <span class="fu">list</span>(</span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>    <span class="at">hover_effects =</span> <span class="st">&quot;Show detailed metrics on hover for each channel&quot;</span>,</span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>    <span class="at">selection_feedback =</span> <span class="st">&quot;Highlight active filters with color and icon changes&quot;</span>,</span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>    <span class="at">progressive_disclosure =</span> <span class="st">&quot;Reveal advanced options only when basic filters are applied&quot;</span></span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>  )</span>
-<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>)</span>
-<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a></span>
-<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>anticipate_result <span class="sc">|&gt;</span></span>
-<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(bias_mitigations, interaction_principles)</span></code></pre></div>
-<p>The function evaluates our bias mitigation strategies and interaction
-principles, providing implementation suggestions for both.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Document bias mitigation strategies</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>anticipate_result <span class="ot">&lt;-</span> <span class="fu">bid_anticipate</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> notice_result,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">bias_mitigations =</span> <span class="fu">list</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="at">anchoring =</span> <span class="st">&quot;Include previous period performance as reference points&quot;</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    <span class="at">framing =</span> <span class="st">&quot;Provide toggle between ROI improvement vs. ROI gap views&quot;</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="at">confirmation_bias =</span> <span class="st">&quot;Highlight unexpected patterns that contradict common assumptions&quot;</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  )</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>)</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>anticipate_result <span class="sc">|&gt;</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(bias_mitigations)</span></code></pre></div>
+<p>The function evaluates our bias mitigation strategies, providing
+implementation suggestions.</p>
+</div>
+<div id="stage-4-structure-the-dashboard" class="section level3">
+<h3>Stage 4: Structure the Dashboard</h3>
+<p>Now determine the layout and key design principles to implement:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Document the dashboard structure</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>structure_result <span class="ot">&lt;-</span> <span class="fu">bid_structure</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> anticipate_result</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>structure_result <span class="sc">|&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(layout, concepts, suggestions)</span></code></pre></div>
+<p>The function automatically selects an appropriate layout based on the
+content from previous stages and provides ranked, actionable suggestions
+organized by UX concepts. The layout selection is transparent with clear
+rationale for why a particular layout was chosen.</p>
 </div>
 <div id="stage-5-validate-empower-the-user" class="section level3">
 <h3>Stage 5: Validate &amp; Empower the User</h3>
@@ -518,7 +502,7 @@ principles, providing implementation suggestions for both.</p>
 and the ability to collaborate:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Document validation approach</span></span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>validate_result <span class="ot">&lt;-</span> <span class="fu">bid_validate</span>(</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> anticipate_result,</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> structure_result,</span>
 <span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">summary_panel =</span> <span class="st">&quot;Executive summary highlighting top and bottom performers, key trends, and recommended actions for the next marketing cycle&quot;</span>,</span>
 <span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="at">collaboration =</span> <span class="st">&quot;Team annotation capability allowing marketing team members to add context and insights to specific data points&quot;</span>,</span>
 <span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">next_steps =</span> <span class="fu">c</span>(</span>
@@ -547,7 +531,7 @@ common R packages:</p>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">2</span>)</span>
 <span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a></span>
 <span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co"># Get {reactable} suggestions for showing data</span></span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="fu">bid_suggest_components</span>(anticipate_result, <span class="at">package =</span> <span class="st">&quot;reactable&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="fu">bid_suggest_components</span>(structure_result, <span class="at">package =</span> <span class="st">&quot;reactable&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(component, description) <span class="sc">|&gt;</span></span>
 <span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">2</span>)</span>
 <span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a></span>
@@ -623,10 +607,10 @@ experience</li>
 </div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
-<p>The <code>{bidux}</code> package makes it easier to apply
-psychological principles and UX best practices to your Shiny dashboards.
-By following the 5-stage BID framework, you can create applications that
-are more intuitive, engaging, and effective for your users.</p>
+<p>The <code>{bidux}</code> package makes it easier to apply behavioral
+science and UX best practices to your Shiny dashboards. By following the
+5-stage BID framework, you can create applications that are more
+intuitive, engaging, and effective for your users.</p>
 <p>Future versions of <code>{bidux}</code> will include:</p>
 <ul>
 <li>User stories workflow integration following the Gherkin method</li>
@@ -641,7 +625,7 @@ feedback and suggestions to help make the BID framework even more
 effective for Shiny developers.</p>
 <p>Remember that good dashboard design is an iterative process that
 benefits from continuous user feedback. The BID framework provides
-structure to this process while ensuring psychological principles are
+structure to this process while ensuring common principles are
 incorporated throughout your development workflow.</p>
 </div>
 

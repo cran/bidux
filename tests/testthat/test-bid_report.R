@@ -14,7 +14,7 @@ test_that("bid_report generates text report with expected content", {
             context = "Dashboard has evolved over time"
           )
         ),
-        layout = "dual_process",
+
         concepts = c("Principle of Proximity", "Default Effect")
       ),
       bias_mitigations = list(
@@ -37,7 +37,7 @@ test_that("bid_report generates text report with expected content", {
   expect_match(report, "Added team annotation features")
   expect_match(report, "Stage 4: Anticipate User Behavior")
   expect_match(report, "anchoring: Provide reference points")
-  # Changed from "Recommended Next Steps" to "Next Steps" 
+  # Changed from "Recommended Next Steps" to "Next Steps"
   expect_match(report, "Next Steps")
 })
 
@@ -57,7 +57,7 @@ test_that("bid_report generates HTML report with correct format", {
             context = "Dashboard has evolved over time"
           )
         ),
-        layout = "dual_process",
+
         concepts = c("Principle of Proximity", "Default Effect")
       ),
       bias_mitigations = list(
@@ -95,7 +95,10 @@ test_that("bid_report generates HTML report with correct format", {
 test_that("bid_report fails with incorrect input", {
   # Updated error message to match actual implementation
   expect_error(bid_report(NULL), "Invalid input: validate_stage cannot be NULL")
-  expect_error(bid_report(list()), "Invalid input: validate_stage must be a tibble")
+  expect_error(
+    bid_report(list()),
+    "Invalid input: validate_stage must be a tibble"
+  )
 
   expect_error(
     bid_report(tibble(stage = "NotValidate")),
@@ -139,7 +142,6 @@ test_that("bid_report includes diagrams when requested", {
           ),
           central_question = "Test question"
         ),
-        layout = "dual_process"
       ),
       bias_mitigations = list(anchoring = "Test")
     ),
@@ -177,7 +179,6 @@ test_that("bid_report handles different formats", {
           ),
           central_question = "Test question"
         ),
-        layout = "dual_process"
       ),
       bias_mitigations = list(anchoring = "Test")
     ),

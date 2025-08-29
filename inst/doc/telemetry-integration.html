@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Integrating shiny.telemetry with BIDUX</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Integrating shiny.telemetry with BIDUX</h1>
+
+
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>The <code>bid_ingest_telemetry()</code> function enables you to
+analyze real user behavior data from <code>{shiny.telemetry}</code> and
+automatically identify UX friction points. This creates a powerful
+feedback loop where actual usage patterns drive design improvements
+through the BID framework.</p>
+</div>
+<div id="prerequisites" class="section level2">
+<h2>Prerequisites</h2>
+<p>First, ensure you have <code>{shiny.telemetry}</code> set up in your
+Shiny application:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(shiny.telemetry)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Initialize telemetry</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>telemetry <span class="ot">&lt;-</span> Telemetry<span class="sc">$</span><span class="fu">new</span>()</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">fluidPage</span>(</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="fu">use_telemetry</span>(), <span class="co"># Add telemetry JavaScript</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="fu">titlePanel</span>(<span class="st">&quot;Sales Dashboard&quot;</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="fu">sidebarLayout</span>(</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>    <span class="fu">sidebarPanel</span>(</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>      <span class="fu">selectInput</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>        <span class="st">&quot;region&quot;</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>        <span class="st">&quot;Region:&quot;</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>        <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;North&quot;</span>, <span class="st">&quot;South&quot;</span>, <span class="st">&quot;East&quot;</span>, <span class="st">&quot;West&quot;</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>      ),</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>      <span class="fu">dateRangeInput</span>(<span class="st">&quot;date_range&quot;</span>, <span class="st">&quot;Date Range:&quot;</span>),</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>      <span class="fu">selectInput</span>(</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>        <span class="st">&quot;product_category&quot;</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>        <span class="st">&quot;Product Category:&quot;</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>        <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;All&quot;</span>, <span class="st">&quot;Electronics&quot;</span>, <span class="st">&quot;Clothing&quot;</span>, <span class="st">&quot;Food&quot;</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>      ),</span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>      <span class="fu">actionButton</span>(<span class="st">&quot;refresh&quot;</span>, <span class="st">&quot;Refresh Data&quot;</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>    ),</span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>    <span class="fu">mainPanel</span>(</span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>      <span class="fu">tabsetPanel</span>(</span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">&quot;Overview&quot;</span>, <span class="fu">plotOutput</span>(<span class="st">&quot;overview_plot&quot;</span>)),</span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">&quot;Details&quot;</span>, <span class="fu">dataTableOutput</span>(<span class="st">&quot;details_table&quot;</span>)),</span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">&quot;Settings&quot;</span>, <span class="fu">uiOutput</span>(<span class="st">&quot;settings_ui&quot;</span>))</span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>      )</span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>    )</span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a>  )</span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a>)</span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a>  <span class="co"># Start telemetry tracking</span></span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a>  telemetry<span class="sc">$</span><span class="fu">start_session</span>()</span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a>  <span class="co"># Your app logic here...</span></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a>}</span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="analyzing-telemetry-data" class="section level2">
+<h2>Analyzing Telemetry Data</h2>
+<p>After collecting telemetry data from your users, use
+<code>bid_ingest_telemetry()</code> to identify UX issues:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(bidux)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># Analyze telemetry from SQLite database (default)</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>issues <span class="ot">&lt;-</span> <span class="fu">bid_ingest_telemetry</span>(<span class="st">&quot;telemetry.sqlite&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># Or from JSON log file</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>issues <span class="ot">&lt;-</span> <span class="fu">bid_ingest_telemetry</span>(<span class="st">&quot;telemetry.log&quot;</span>, <span class="at">format =</span> <span class="st">&quot;json&quot;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co"># Review identified issues</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="fu">length</span>(issues)</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">names</span>(issues)</span></code></pre></div>
+</div>
+<div id="understanding-the-analysis" class="section level2">
+<h2>Understanding the Analysis</h2>
+<p>The function analyzes five key friction indicators:</p>
+<div id="unused-or-under-used-inputs" class="section level3">
+<h3>1. Unused or Under-used Inputs</h3>
+<p>Identifies UI controls that users rarely or never interact with:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Example: Region filter is never used</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>issues<span class="sc">$</span>unused_input_region</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; BID Framework - Notice Stage</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; Problem: Users are not interacting with the &#39;region&#39; input control</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; Theory: Hick&#39;s Law (auto-suggested)</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; Evidence: Telemetry shows 0 out of 847 sessions where &#39;region&#39; was changed</span></span></code></pre></div>
+<p>This suggests the region filter might be: - Hidden or hard to find -
+Not relevant to users’ tasks - Confusing or intimidating</p>
+</div>
+<div id="delayed-first-interactions" class="section level3">
+<h3>2. Delayed First Interactions</h3>
+<p>Detects when users take too long to start using the dashboard:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>issues<span class="sc">$</span>delayed_interaction</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; BID Framework - Notice Stage</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; Problem: Users take a long time before making their first interaction with the dashboard</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; Theory: Information Scent (auto-suggested)</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; Evidence: Median time to first input is 45 seconds, and 10% of sessions had no interactions at all</span></span></code></pre></div>
+<p>This indicates users might be: - Overwhelmed by the initial view -
+Unsure where to start - Looking for information that’s not readily
+apparent</p>
+</div>
+<div id="frequent-errors" class="section level3">
+<h3>3. Frequent Errors</h3>
+<p>Identifies systematic errors that disrupt user experience:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>issues<span class="sc">$</span>error_1</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; BID Framework - Notice Stage</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; Problem: Users encounter errors when using the dashboard</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; Theory: Norman&#39;s Gulf of Evaluation (auto-suggested)</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; Evidence: Error &#39;Data query failed&#39; occurred 127 times in 15.0% of sessions (in output &#39;overview_plot&#39;), often after changing &#39;date_range&#39;</span></span></code></pre></div>
+<p>This reveals: - Reliability issues with specific features - Input
+validation problems - Performance bottlenecks</p>
+</div>
+<div id="navigation-drop-offs" class="section level3">
+<h3>4. Navigation Drop-offs</h3>
+<p>Finds pages or tabs that users rarely visit:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>issues<span class="sc">$</span>navigation_settings_tab</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; BID Framework - Notice Stage</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; Problem: The &#39;settings_tab&#39; page/tab is rarely visited by users</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; Theory: Information Architecture (auto-suggested)</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; Evidence: Only 42 sessions (5.0%) visited &#39;settings_tab&#39;, and 90% of those sessions ended there</span></span></code></pre></div>
+<p>Low visit rates suggest: - Poor information scent - Hidden or unclear
+navigation - Irrelevant content</p>
+</div>
+<div id="confusion-patterns" class="section level3">
+<h3>5. Confusion Patterns</h3>
+<p>Detects rapid repeated changes indicating user confusion:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>issues<span class="sc">$</span>confusion_date_range</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; BID Framework - Notice Stage</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; Problem: Users show signs of confusion when interacting with &#39;date_range&#39;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; Theory: Feedback Loops (auto-suggested)</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; Evidence: 8 sessions showed rapid repeated changes (avg 6 changes in 7.5 seconds), suggesting users are unsure about the input&#39;s behavior</span></span></code></pre></div>
+<p>This suggests: - Unclear feedback when values change - Unexpected
+behavior - Poor affordances</p>
+</div>
+</div>
+<div id="customizing-analysis-thresholds" class="section level2">
+<h2>Customizing Analysis Thresholds</h2>
+<p>You can adjust the sensitivity of the analysis:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>issues <span class="ot">&lt;-</span> <span class="fu">bid_ingest_telemetry</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="st">&quot;telemetry.sqlite&quot;</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">list</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    <span class="at">unused_input_threshold =</span> <span class="fl">0.1</span>, <span class="co"># Flag if &lt;10% of sessions use input</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="at">delay_threshold_seconds =</span> <span class="dv">60</span>, <span class="co"># Flag if &gt;60s before first interaction</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    <span class="at">error_rate_threshold =</span> <span class="fl">0.05</span>, <span class="co"># Flag if &gt;5% of sessions have errors</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="at">navigation_threshold =</span> <span class="fl">0.3</span>, <span class="co"># Flag if &lt;30% visit a page</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>    <span class="at">rapid_change_window =</span> <span class="dv">5</span>, <span class="co"># Look for 5 changes within...</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    <span class="at">rapid_change_count =</span> <span class="dv">3</span> <span class="co"># ...3 seconds</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  )</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="integrating-with-bid-workflow" class="section level2">
+<h2>Integrating with BID Workflow</h2>
+<p>Use the identified issues to drive your BID process:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Take the most critical issue</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>critical_issue <span class="ot">&lt;-</span> issues<span class="sc">$</span>error_1</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co"># Start with interpretation</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>interpret_result <span class="ot">&lt;-</span> <span class="fu">bid_interpret</span>(</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="at">central_question =</span> <span class="st">&quot;How can we prevent data query errors?&quot;</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="at">data_story =</span> <span class="fu">list</span>(</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>    <span class="at">hook =</span> <span class="st">&quot;15% of users encounter errors&quot;</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    <span class="at">context =</span> <span class="st">&quot;Errors occur after date range changes&quot;</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>    <span class="at">tension =</span> <span class="st">&quot;Users lose trust when queries fail&quot;</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>    <span class="at">resolution =</span> <span class="st">&quot;Implement robust error handling and loading states&quot;</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>  )</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>)</span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co"># Notice the specific problem</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>notice_result <span class="ot">&lt;-</span> <span class="fu">bid_notice</span>(</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  <span class="at">previous_stage =</span> interpret_result,</span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>  <span class="at">problem =</span> critical_issue<span class="sc">$</span>problem,</span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>  <span class="at">evidence =</span> critical_issue<span class="sc">$</span>evidence</span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>)</span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co"># Anticipate user behavior and biases</span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a>anticipate_result <span class="ot">&lt;-</span> <span class="fu">bid_anticipate</span>(</span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a>  <span class="at">previous_stage =</span> notice_result,</span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>  <span class="at">bias_mitigations =</span> <span class="fu">list</span>(</span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a>    <span class="at">anchoring =</span> <span class="st">&quot;Show loading states to set proper expectations&quot;</span>,</span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a>    <span class="at">confirmation_bias =</span> <span class="st">&quot;Display error context to help users understand issues&quot;</span></span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a>  )</span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a>)</span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a><span class="co"># Structure improvements</span></span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a>structure_result <span class="ot">&lt;-</span> <span class="fu">bid_structure</span>(</span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a>  <span class="at">previous_stage =</span> anticipate_result</span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a>)</span>
+<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a></span>
+<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a><span class="co"># Validate and provide next steps</span></span>
+<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a>validate_result <span class="ot">&lt;-</span> <span class="fu">bid_validate</span>(</span>
+<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a>  <span class="at">previous_stage =</span> structure_result,</span>
+<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a>  <span class="at">summary_panel =</span> <span class="st">&quot;Error handling improvements with clear user feedback&quot;</span>,</span>
+<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a>  <span class="at">next_steps =</span> <span class="fu">c</span>(</span>
+<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a>    <span class="st">&quot;Implement loading states&quot;</span>,</span>
+<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a>    <span class="st">&quot;Add error context&quot;</span>,</span>
+<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a>    <span class="st">&quot;Test with users&quot;</span></span>
+<span id="cb9-44"><a href="#cb9-44" tabindex="-1"></a>  )</span>
+<span id="cb9-45"><a href="#cb9-45" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="example-complete-analysis" class="section level2">
+<h2>Example: Complete Analysis</h2>
+<p>Here’s a full example analyzing a dashboard with multiple issues:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># 1. Ingest telemetry</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>issues <span class="ot">&lt;-</span> <span class="fu">bid_ingest_telemetry</span>(<span class="st">&quot;telemetry.sqlite&quot;</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co"># 2. Prioritize issues by impact</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>critical_issues <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">unused_inputs =</span> <span class="fu">names</span>(issues)[<span class="fu">grepl</span>(<span class="st">&quot;unused_input&quot;</span>, <span class="fu">names</span>(issues))],</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  <span class="at">errors =</span> <span class="fu">names</span>(issues)[<span class="fu">grepl</span>(<span class="st">&quot;error&quot;</span>, <span class="fu">names</span>(issues))],</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  <span class="at">delays =</span> <span class="st">&quot;delayed_interaction&quot;</span> <span class="sc">%in%</span> <span class="fu">names</span>(issues)</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>)</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co"># 3. Create a comprehensive improvement plan</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(critical_issues<span class="sc">$</span>unused_inputs) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>  <span class="co"># Address unused inputs following the updated BID workflow</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>  unused_issue <span class="ot">&lt;-</span> issues[[critical_issues<span class="sc">$</span>unused_inputs[<span class="dv">1</span>]]]</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>  improvement_plan <span class="ot">&lt;-</span> <span class="fu">bid_interpret</span>(</span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a>    <span class="at">central_question =</span> <span class="st">&quot;Which filters actually help users find insights?&quot;</span>,</span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a>    <span class="at">data_story =</span> <span class="fu">list</span>(</span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a>      <span class="at">hook =</span> <span class="st">&quot;Several filters are never used by users&quot;</span>,</span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a>      <span class="at">context =</span> <span class="st">&quot;Dashboard has 5 filter controls&quot;</span>,</span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a>      <span class="at">tension =</span> <span class="st">&quot;Too many options create choice overload&quot;</span>,</span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a>      <span class="at">resolution =</span> <span class="st">&quot;Show only relevant filters based on user tasks&quot;</span></span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a>    )</span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a>    <span class="fu">bid_notice</span>(</span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a>      <span class="at">problem =</span> unused_issue<span class="sc">$</span>problem,</span>
+<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a>      <span class="at">evidence =</span> unused_issue<span class="sc">$</span>evidence</span>
+<span id="cb10-28"><a href="#cb10-28" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb10-29"><a href="#cb10-29" tabindex="-1"></a>    <span class="fu">bid_anticipate</span>(</span>
+<span id="cb10-30"><a href="#cb10-30" tabindex="-1"></a>      <span class="at">bias_mitigations =</span> <span class="fu">list</span>(</span>
+<span id="cb10-31"><a href="#cb10-31" tabindex="-1"></a>        <span class="at">choice_overload =</span> <span class="st">&quot;Hide advanced filters until needed&quot;</span>,</span>
+<span id="cb10-32"><a href="#cb10-32" tabindex="-1"></a>        <span class="at">default_effect =</span> <span class="st">&quot;Pre-select most common filter values&quot;</span></span>
+<span id="cb10-33"><a href="#cb10-33" tabindex="-1"></a>      )</span>
+<span id="cb10-34"><a href="#cb10-34" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb10-35"><a href="#cb10-35" tabindex="-1"></a>    <span class="fu">bid_structure</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-36"><a href="#cb10-36" tabindex="-1"></a>    <span class="fu">bid_validate</span>(</span>
+<span id="cb10-37"><a href="#cb10-37" tabindex="-1"></a>      <span class="at">summary_panel =</span> <span class="st">&quot;Simplified filtering with progressive disclosure&quot;</span>,</span>
+<span id="cb10-38"><a href="#cb10-38" tabindex="-1"></a>      <span class="at">next_steps =</span> <span class="fu">c</span>(</span>
+<span id="cb10-39"><a href="#cb10-39" tabindex="-1"></a>        <span class="st">&quot;Remove unused filters&quot;</span>,</span>
+<span id="cb10-40"><a href="#cb10-40" tabindex="-1"></a>        <span class="st">&quot;Implement progressive disclosure&quot;</span>,</span>
+<span id="cb10-41"><a href="#cb10-41" tabindex="-1"></a>        <span class="st">&quot;Add contextual help&quot;</span>,</span>
+<span id="cb10-42"><a href="#cb10-42" tabindex="-1"></a>        <span class="st">&quot;Re-test with telemetry after changes&quot;</span></span>
+<span id="cb10-43"><a href="#cb10-43" tabindex="-1"></a>      )</span>
+<span id="cb10-44"><a href="#cb10-44" tabindex="-1"></a>    )</span>
+<span id="cb10-45"><a href="#cb10-45" tabindex="-1"></a>}</span>
+<span id="cb10-46"><a href="#cb10-46" tabindex="-1"></a></span>
+<span id="cb10-47"><a href="#cb10-47" tabindex="-1"></a><span class="co"># 4. Generate report</span></span>
+<span id="cb10-48"><a href="#cb10-48" tabindex="-1"></a>improvement_report <span class="ot">&lt;-</span> <span class="fu">bid_report</span>(improvement_plan, <span class="at">format =</span> <span class="st">&quot;html&quot;</span>)</span></code></pre></div>
+</div>
+<div id="best-practices" class="section level2">
+<h2>Best Practices</h2>
+<ol style="list-style-type: decimal">
+<li><p><strong>Collect Sufficient Data</strong>: Ensure you have
+telemetry from at least 50-100 sessions before analysis for reliable
+patterns.</p></li>
+<li><p><strong>Regular Analysis</strong>: Run telemetry analysis
+periodically (e.g., monthly) to catch emerging issues.</p></li>
+<li><p><strong>Combine with Qualitative Data</strong>: Use telemetry
+insights alongside user interviews and usability testing.</p></li>
+<li><p><strong>Track Improvements</strong>: After implementing changes,
+collect new telemetry to verify improvements:</p></li>
+</ol>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Before changes</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>issues_before <span class="ot">&lt;-</span> <span class="fu">bid_ingest_telemetry</span>(<span class="st">&quot;telemetry_before.sqlite&quot;</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co"># After implementing improvements</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>issues_after <span class="ot">&lt;-</span> <span class="fu">bid_ingest_telemetry</span>(<span class="st">&quot;telemetry_after.sqlite&quot;</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co"># Compare issue counts</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Issues before:&quot;</span>, <span class="fu">length</span>(issues_before), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Issues after:&quot;</span>, <span class="fu">length</span>(issues_after), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<ol start="5" style="list-style-type: decimal">
+<li><strong>Document Patterns</strong>: Build a knowledge base of common
+patterns in your domain:</li>
+</ol>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Save recurring patterns for future reference</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>telemetry_patterns <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="at">date_filter_confusion =</span> <span class="st">&quot;Users often struggle with date range inputs - consider using presets&quot;</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="at">tab_discovery =</span> <span class="st">&quot;Secondary tabs have low discovery - consider better visual hierarchy&quot;</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="at">error_recovery =</span> <span class="st">&quot;Users abandon after errors - implement graceful error handling&quot;</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The <code>bid_ingest_telemetry()</code> function bridges the gap
+between user behavior data and design decisions. By automatically
+identifying friction points from real usage patterns, it provides
+concrete, evidence-based starting points for the BID framework,
+ultimately leading to more user-friendly Shiny applications.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

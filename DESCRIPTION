@@ -1,7 +1,7 @@
 Package: bidux
 Title: Behavior Insight Design: A Toolkit for Integrating Behavioral
         Science in UI/UX Design
-Version: 0.1.0
+Version: 0.3.0
 Authors@R: 
     person(
         given = "Jeremy",
@@ -19,17 +19,18 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 4.1.0)
 RoxygenNote: 7.3.2
-Imports: cli (>= 3.6.5), dplyr (>= 1.1.4), jsonlite (>= 2.0.0), readr
-        (>= 2.1.5), stringdist (>= 0.9.15), stringr (>= 1.5.1), tibble
-        (>= 3.2.1), utils
+Imports: cli, DBI, dplyr, jsonlite, readr (>= 2.1.5), RSQLite, stats,
+        stringdist (>= 0.9.15), stringr (>= 1.5.1), tibble (>= 3.2.1),
+        utils
 Suggests: DiagrammeR, knitr, rmarkdown, spelling, testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Language: en-US
+URL: https://jrwinget.github.io/bidux/
 NeedsCompilation: no
-Packaged: 2025-06-11 19:30:41 UTC; user
+Packaged: 2025-08-29 21:12:31 UTC; user
 Author: Jeremy Winget [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-3783-4354>)
 Maintainer: Jeremy Winget <contact@jrwinget.com>
 Repository: CRAN
-Date/Publication: 2025-06-13 20:00:12 UTC
+Date/Publication: 2025-08-29 21:30:02 UTC

@@ -8,7 +8,10 @@ bid_validate(
   previous_stage,
   summary_panel = NULL,
   collaboration = NULL,
-  next_steps = NULL
+  next_steps = NULL,
+  include_exp_design = TRUE,
+  include_telemetry = TRUE,
+  include_empower_tools = TRUE
 )
 }
 \arguments{
@@ -23,6 +26,15 @@ collaboration and sharing.}
 
 \item{next_steps}{A character vector or string describing recommended next
 steps for implementation and iteration.}
+
+\item{include_exp_design}{Logical indicating whether to include experiment
+design suggestions. Default is TRUE.}
+
+\item{include_telemetry}{Logical indicating whether to include telemetry
+tracking and monitoring suggestions. Default is TRUE.}
+
+\item{include_empower_tools}{Logical indicating whether to include
+context-aware empowerment tool suggestions. Default is TRUE.}
 }
 \value{
 A tibble containing the documented information for the "Validate"
@@ -40,22 +52,21 @@ structure_input <- bid_notice(
   bid_interpret(
     central_question = "How can we improve selection efficiency?",
     data_story = list(
-      hook      = "Too many options",
-      context   = "Excessive choices",
-      tension   = "User frustration",
-      resolution= "Simplify menu"
+      hook = "Too many options",
+      context = "Excessive choices",
+      tension = "User frustration",
+      resolution = "Simplify menu"
     )
   )
 
 structure_result <- bid_structure(
   previous_stage = structure_input,
-  layout         = "dual_process",
   concepts       = c("Principle of Proximity", "Default Effect")
 )
 
 anticipate <- bid_anticipate(
-  previous_stage    = structure_result,
-  bias_mitigations  = list(
+  previous_stage = structure_result,
+  bias_mitigations = list(
     anchoring = "Provide reference points",
     framing   = "Use gain-framed messaging"
   )
@@ -63,9 +74,9 @@ anticipate <- bid_anticipate(
 
 bid_validate(
   previous_stage = anticipate,
-  summary_panel  = "Clear summary of key insights with action items",
-  collaboration  = "Team annotation and sharing features",
-  next_steps     = c(
+  summary_panel = "Clear summary of key insights with action items",
+  collaboration = "Team annotation and sharing features",
+  next_steps = c(
     "Conduct user testing with target audience",
     "Implement accessibility improvements",
     "Add mobile responsiveness"
