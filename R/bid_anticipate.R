@@ -19,39 +19,29 @@
 #'         stage.
 #'
 #' @examples
-#' structure_info <- bid_structure(
-#'   bid_interpret(
-#'     bid_notice(
-#'       "Issue with dropdown menus",
-#'       evidence = "User testing indicated delays"
-#'     ),
-#'     central_question = "How can we improve selection efficiency?",
-#'     data_story = list(
-#'       hook = "Too many options",
-#'       context = "Excessive choices",
-#'       tension = "User frustration",
-#'       resolution = "Simplify menu"
-#'     )
-#'   ),
-#'   concepts = c("principle_of_proximity", "default_effect")
-#' )
-#'
-#' # Basic usage
-#' bid_anticipate(
-#'   previous_stage = structure_info,
-#'   bias_mitigations = list(
-#'     anchoring = "Use context-aware references",
-#'     framing = "Toggle between positive and negative framing"
+#' interpret_stage <- bid_interpret(
+#'   central_question = "How can we improve selection efficiency?",
+#'   data_story = list(
+#'     hook = "Too many options",
+#'     context = "Excessive choices", 
+#'     tension = "User frustration",
+#'     resolution = "Simplify menu"
 #'   )
 #' )
+#' 
+#' notice_stage <- bid_notice(
+#'   previous_stage = interpret_stage,
+#'   problem = "Issue with dropdown menus",
+#'   evidence = "User testing indicated delays"
+#' )
+#' 
+#' structure_info <- bid_structure(previous_stage = notice_stage)
 #'
 #' # Let the function suggest bias mitigations based on previous stages
-#' bid_anticipate(
-#'   previous_stage = structure_info
-#' )
+#' bid_anticipate(previous_stage = structure_info)
 #'
-#' # with accessibility included (default)
-#' bid_anticipate(
+#' # with accessibility included (default) and custom bias mitigations
+#' anticipate_result <- bid_anticipate(
 #'   previous_stage = structure_info,
 #'   bias_mitigations = list(
 #'     anchoring = "Use context-aware references",
@@ -59,6 +49,8 @@
 #'   ),
 #'   include_accessibility = TRUE
 #' )
+#' 
+#' summary(anticipate_result)
 #'
 #' @export
 bid_anticipate <- function(
@@ -216,7 +208,8 @@ bid_anticipate <- function(
   if (is.null(bias_mitigations)) {
     suggested_biases <- list()
 
-    if (previous_stage$stage[1] == "Structure") {
+    # apply concept-based bias mitigations for any stage with concepts
+    if (length(concepts) > 0) {
       concept_bias_map <- list(
         "Dual-Processing Theory" = c("framing", "anchoring"),
         "Visual Hierarchy" = c("attention bias", "belief perseverance"),
@@ -242,29 +235,46 @@ bid_anticipate <- function(
           }
         }
       }
+    }
+
+    # apply layout-specific bias mitigations when layout information is available
+    # DEPRECATED in 0.3.1: Will be removed in 0.4.0 in favor of concept-only approach
+    if (!is.na(layout)) {
+      # issue deprecation warning once per session (skip in tests to reduce noise)
+      # use package namespace instead of global environment for CRAN compliance
+      pkg_env <- asNamespace("bidux")
+      if (!exists(".bidux_layout_bias_warned", envir = pkg_env) && 
+          !identical(Sys.getenv("TESTTHAT"), "true")) {
+        warning(
+          "Layout-specific bias mitigations are deprecated and will be removed in bidux 0.4.0. ",
+          "Consider using concept-based bias mitigations instead.",
+          call. = FALSE
+        )
+        try(assign(".bidux_layout_bias_warned", TRUE, envir = pkg_env), silent = TRUE)
+      }
 
       layout_bias_map <- list(
         "dual_process" = c(
           "framing" = "
-            Toggle between high-level insights and detailed analysis views
+            Toggle between high-level summary and detailed analysis views
           "
         ),
         "grid" = c(
-          "anchoring" = "Provide multiple reference points across grid cells"
+          "anchoring" = "Provide multiple reference points across grid cells to avoid single point anchoring"
         ),
         "card" = c(
           "beautiful-is-good stereotype" = "
-            Ensure card aesthetics don't overshadow content quality
+            Ensure card aesthetic appeal doesn't overshadow content quality
           "
         ),
         "tabs" = c(
           "availability bias" = "
-            Make important information available in the default tab
+            Make important information available in the default tab to prevent availability bias
           "
         ),
         "breathable" = c(
           "cognitive load" = "
-            Use whitespace to reduce cognitive load and improve focus
+            Use generous whitespace to reduce cognitive load and improve focus
           "
         )
       )
@@ -463,7 +473,8 @@ bid_anticipate <- function(
   # normalize previous stage to ensure field name consistency
   normalized_previous <- normalize_previous_stage(previous_stage)
 
-  result <- tibble::tibble(
+  # create result tibble
+  result_data <- tibble::tibble(
     stage = "Anticipate",
     bias_mitigations = paste(
       names(bias_mitigations),
@@ -499,8 +510,27 @@ bid_anticipate <- function(
     timestamp = .now()
   )
 
+  # create comprehensive metadata using standardized helper
+  metadata <- get_stage_metadata(
+    3,
+    list(
+      bias_count = length(names(bias_mitigations)),
+      include_accessibility = include_accessibility,
+      layout = layout,
+      concepts_count = length(concepts),
+      auto_generated_biases = is.null(bias_mitigations),
+      stage_number_previous = 4  # migration support for 0.3.1
+    )
+  )
+
+  # create and validate bid_stage object
+  result <- bid_stage("Anticipate", result_data, metadata)
+
+  # add session-level migration notice (once per session)
+  .show_stage_numbering_notice()
+  
   bid_message(
-    "Stage 4 (Anticipate) completed.",
+    "Stage 3 (Anticipate) completed.",
     paste0("Bias mitigations: ", length(names(bias_mitigations)), " defined"),
     if (include_accessibility) {
       "Accessibility considerations included"

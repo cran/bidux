@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Practical Examples: Before and After Dashboard Transformations</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Practical Examples: Before and After
+Dashboard Transformations</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(bidux)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
+<div id="introduction-real-dashboard-problems-real-solutions" class="section level2">
+<h2>Introduction: Real Dashboard Problems, Real Solutions</h2>
+<p>This vignette walks through common dashboard scenarios that data
+scientists and Shiny developers encounter, showing how the BID framework
+transforms user experience while maintaining analytical rigor.</p>
+<p>Each example includes:</p>
+<ul>
+<li><strong>Before</strong>: The technical-focused approach</li>
+<li><strong>Problem</strong>: What users actually experience</li>
+<li><strong>BID Solution</strong>: Systematic application of behavioral
+science</li>
+<li><strong>After</strong>: Improved user experience with code
+examples</li>
+</ul>
+</div>
+<div id="example-1-the-everything-dashboard-problem" class="section level2">
+<h2>Example 1: The “Everything Dashboard” Problem</h2>
+<div id="the-scenario" class="section level3">
+<h3>The Scenario</h3>
+<p>You’re a data scientist at a SaaS company. Your stakeholders asked
+for “a dashboard that shows everything about user engagement.” Being
+thorough, you built exactly that.</p>
+</div>
+<div id="before-technical-excellence-user-confusion" class="section level3">
+<h3>Before: Technical Excellence, User Confusion</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># The &quot;show everything&quot; approach</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>ui_before <span class="ot">&lt;-</span> <span class="fu">navbarPage</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="st">&quot;User Engagement Analytics&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="fu">tabPanel</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="st">&quot;Overview&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="fu">fluidRow</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>      <span class="co"># 12 KPIs across the top</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;dau&quot;</span>)),</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;wau&quot;</span>)),</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;mau&quot;</span>)),</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;retention&quot;</span>)),</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;churn&quot;</span>)),</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;ltv&quot;</span>))</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>    ),</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>    <span class="fu">fluidRow</span>(</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;sessions&quot;</span>)),</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;session_duration&quot;</span>)),</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;pages_per_session&quot;</span>)),</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;bounce_rate&quot;</span>)),</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;conversion&quot;</span>)),</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">2</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;revenue&quot;</span>))</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>    ),</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>    <span class="co"># Multiple complex charts</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>    <span class="fu">fluidRow</span>(</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">6</span>, <span class="fu">plotOutput</span>(<span class="st">&quot;engagement_trend&quot;</span>, <span class="at">height =</span> <span class="st">&quot;400px&quot;</span>)),</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">6</span>, <span class="fu">plotOutput</span>(<span class="st">&quot;cohort_analysis&quot;</span>, <span class="at">height =</span> <span class="st">&quot;400px&quot;</span>))</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>    ),</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>    <span class="fu">fluidRow</span>(</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">4</span>, <span class="fu">plotOutput</span>(<span class="st">&quot;funnel_chart&quot;</span>)),</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">4</span>, <span class="fu">plotOutput</span>(<span class="st">&quot;retention_curve&quot;</span>)),</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">4</span>, <span class="fu">plotOutput</span>(<span class="st">&quot;ltv_distribution&quot;</span>))</span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>    )</span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>  ),</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>  <span class="fu">tabPanel</span>(<span class="st">&quot;Segments&quot;</span>, <span class="st">&quot;More detailed segmentation...&quot;</span>),</span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>  <span class="fu">tabPanel</span>(<span class="st">&quot;Cohorts&quot;</span>, <span class="st">&quot;Cohort analysis details...&quot;</span>),</span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>  <span class="fu">tabPanel</span>(<span class="st">&quot;Funnels&quot;</span>, <span class="st">&quot;Conversion funnel details...&quot;</span>),</span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>  <span class="fu">tabPanel</span>(<span class="st">&quot;Revenue&quot;</span>, <span class="st">&quot;Revenue analytics...&quot;</span>),</span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>  <span class="fu">tabPanel</span>(<span class="st">&quot;Product&quot;</span>, <span class="st">&quot;Product usage analytics...&quot;</span>)</span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="the-problem-cognitive-overload" class="section level3">
+<h3>The Problem: Cognitive Overload</h3>
+<p><strong>User feedback:</strong> “I can’t find what I’m looking for”
+and “It’s overwhelming”</p>
+<p><strong>What’s happening:</strong> - 12+ metrics compete for
+attention simultaneously - No clear hierarchy of importance - Users
+don’t know where to look first - Analysis paralysis from too many
+options</p>
+</div>
+<div id="bid-framework-solution" class="section level3">
+<h3>BID Framework Solution</h3>
+<p>Let’s apply the systematic BID approach:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Stage 1: Interpret - Understand the real user need</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>interpret_result <span class="ot">&lt;-</span> <span class="fu">bid_interpret</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">central_question =</span> <span class="st">&quot;How is our user engagement trending, and what needs attention?&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">data_story =</span> <span class="fu">list</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="at">hook =</span> <span class="st">&quot;User engagement metrics are spread across multiple systems&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">context =</span> <span class="st">&quot;Leadership needs quick insights for weekly business reviews&quot;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">tension =</span> <span class="st">&quot;Current dashboards take too long to interpret&quot;</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="at">resolution =</span> <span class="st">&quot;Provide immediate key insights with drill-down capability&quot;</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  ),</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="at">user_personas =</span> <span class="fu">list</span>(</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;Sarah (Product Manager)&quot;</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Quickly spot concerning trends and dive deeper when needed&quot;</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Too many metrics to process in limited meeting time&quot;</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Intermediate&quot;</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>    ),</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;Mike (Executive)&quot;</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Understand overall health at a glance&quot;</span>,</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Gets lost in details when just needs the big picture&quot;</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Basic&quot;</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>    )</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>  )</span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>)</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co"># Stage 2: Notice - Identify the specific problem</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>notice_result <span class="ot">&lt;-</span> <span class="fu">bid_notice</span>(</span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>  <span class="at">previous_stage =</span> interpret_result,</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>  <span class="at">problem =</span> <span class="st">&quot;Users experience information overload with 12+ simultaneous metrics&quot;</span>,</span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>  <span class="at">evidence =</span> <span class="st">&quot;User interviews show 80% struggle to prioritize information, average time-to-insight is 5+ minutes&quot;</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>)</span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co"># Stage 3: Anticipate - Consider cognitive biases</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>anticipate_result <span class="ot">&lt;-</span> <span class="fu">bid_anticipate</span>(</span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>  <span class="at">previous_stage =</span> notice_result,</span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>  <span class="at">bias_mitigations =</span> <span class="fu">list</span>(</span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>    <span class="at">attention_bias =</span> <span class="st">&quot;Use size and color to direct focus to most important metrics first&quot;</span>,</span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>    <span class="at">choice_overload =</span> <span class="st">&quot;Implement progressive disclosure - show key metrics, hide advanced analytics until requested&quot;</span>,</span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a>    <span class="at">anchoring =</span> <span class="st">&quot;Lead with the most important business metric to set proper context&quot;</span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a>  )</span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a>)</span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="co"># Stage 4: Structure - Organize for cognitive efficiency</span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a>structure_result <span class="ot">&lt;-</span> <span class="fu">bid_structure</span>(<span class="at">previous_stage =</span> anticipate_result)</span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="co"># Stage 5: Validate - Ensure actionable insights</span></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a>validate_result <span class="ot">&lt;-</span> <span class="fu">bid_validate</span>(</span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a>  <span class="at">previous_stage =</span> structure_result,</span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a>  <span class="at">summary_panel =</span> <span class="st">&quot;Executive summary highlighting key trends and required actions&quot;</span>,</span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a>  <span class="at">collaboration =</span> <span class="st">&quot;Enable commenting and sharing of specific insights&quot;</span>,</span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a>  <span class="at">next_steps =</span> <span class="fu">c</span>(</span>
+<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a>    <span class="st">&quot;Focus on the primary engagement metric trend&quot;</span>,</span>
+<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a>    <span class="st">&quot;Investigate any red-flag indicators&quot;</span>,</span>
+<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a>    <span class="st">&quot;Use drill-down for detailed analysis only when needed&quot;</span></span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a>  )</span>
+<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="after-cognitively-optimized-dashboard" class="section level3">
+<h3>After: Cognitively Optimized Dashboard</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># The BID-informed approach: Progressive disclosure with clear hierarchy</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>ui_after <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>),</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="co"># Primary insight first (addresses anchoring bias)</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">layout_columns</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">4</span>),</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="co"># Key insight panel</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>      <span class="fu">card_header</span>(</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>        <span class="st">&quot;📈 Engagement Health Score&quot;</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>        <span class="at">class =</span> <span class="st">&quot;bg-primary text-white&quot;</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>      ),</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>      <span class="fu">layout_columns</span>(</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>        <span class="fu">value_box</span>(</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">&quot;Overall Score&quot;</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>          <span class="at">value =</span> <span class="st">&quot;87/100&quot;</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>          <span class="at">showcase =</span> <span class="fu">bs_icon</span>(<span class="st">&quot;speedometer2&quot;</span>, <span class="at">size =</span> <span class="st">&quot;2em&quot;</span>),</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>          <span class="at">theme =</span> <span class="st">&quot;success&quot;</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>          <span class="fu">p</span>(</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>            <span class="st">&quot;↑ 5 points vs. last month&quot;</span>,</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>            <span class="at">style =</span> <span class="st">&quot;font-size: 0.9em; color: #666;&quot;</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>          )</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>        ),</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>        <span class="fu">div</span>(</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>          <span class="fu">h5</span>(<span class="st">&quot;Key Drivers&quot;</span>, <span class="at">style =</span> <span class="st">&quot;margin-bottom: 10px;&quot;</span>),</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>          tags<span class="sc">$</span><span class="fu">ul</span>(</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>            tags<span class="sc">$</span><span class="fu">li</span>(<span class="st">&quot;DAU trending up (+12%)&quot;</span>),</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>            tags<span class="sc">$</span><span class="fu">li</span>(<span class="st">&quot;Retention stable (73%)&quot;</span>),</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>            tags<span class="sc">$</span><span class="fu">li</span>(<span class="st">&quot;⚠️ Session duration declining (-8%)&quot;</span>)</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>          )</span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>        )</span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>      )</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>    ),</span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>    <span class="co"># Action panel</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;🎯 Focus Areas&quot;</span>),</span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>      <span class="fu">div</span>(</span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>        tags<span class="sc">$</span><span class="fu">div</span>(</span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>          <span class="at">class =</span> <span class="st">&quot;alert alert-warning&quot;</span>,</span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a>          tags<span class="sc">$</span><span class="fu">strong</span>(<span class="st">&quot;Attention needed:&quot;</span>),</span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>          <span class="fu">br</span>(),</span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>          <span class="st">&quot;Session duration declining. Investigate user experience.&quot;</span></span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a>        ),</span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a>        <span class="fu">actionButton</span>(</span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a>          <span class="st">&quot;investigate_sessions&quot;</span>,</span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a>          <span class="st">&quot;Investigate Session Trends&quot;</span>,</span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a>          <span class="at">class =</span> <span class="st">&quot;btn btn-warning btn-sm&quot;</span></span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a>        )</span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a>      )</span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>    )</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>  ),</span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a></span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>  <span class="co"># Secondary metrics (progressive disclosure)</span></span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a>    <span class="fu">card_header</span>(</span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a>      <span class="fu">div</span>(</span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>        <span class="at">style =</span> <span class="st">&quot;display: flex; justify-content: space-between; align-items: center;&quot;</span>,</span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a>        <span class="fu">span</span>(<span class="st">&quot;📊 Detailed Metrics&quot;</span>),</span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a>        <span class="fu">actionButton</span>(</span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a>          <span class="st">&quot;toggle_details&quot;</span>,</span>
+<span id="cb4-64"><a href="#cb4-64" tabindex="-1"></a>          <span class="st">&quot;Show Details&quot;</span>,</span>
+<span id="cb4-65"><a href="#cb4-65" tabindex="-1"></a>          <span class="at">class =</span> <span class="st">&quot;btn btn-outline-secondary btn-sm&quot;</span></span>
+<span id="cb4-66"><a href="#cb4-66" tabindex="-1"></a>        )</span>
+<span id="cb4-67"><a href="#cb4-67" tabindex="-1"></a>      )</span>
+<span id="cb4-68"><a href="#cb4-68" tabindex="-1"></a>    ),</span>
+<span id="cb4-69"><a href="#cb4-69" tabindex="-1"></a></span>
+<span id="cb4-70"><a href="#cb4-70" tabindex="-1"></a>    <span class="co"># Hidden by default, shown on demand</span></span>
+<span id="cb4-71"><a href="#cb4-71" tabindex="-1"></a>    <span class="fu">conditionalPanel</span>(</span>
+<span id="cb4-72"><a href="#cb4-72" tabindex="-1"></a>      <span class="at">condition =</span> <span class="st">&quot;input.toggle_details % 2 == 1&quot;</span>,</span>
+<span id="cb4-73"><a href="#cb4-73" tabindex="-1"></a>      <span class="fu">layout_columns</span>(</span>
+<span id="cb4-74"><a href="#cb4-74" tabindex="-1"></a>        <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>),</span>
+<span id="cb4-75"><a href="#cb4-75" tabindex="-1"></a>        <span class="fu">value_box</span>(<span class="st">&quot;DAU&quot;</span>, <span class="st">&quot;45.2K&quot;</span>, <span class="at">icon =</span> <span class="st">&quot;people&quot;</span>),</span>
+<span id="cb4-76"><a href="#cb4-76" tabindex="-1"></a>        <span class="fu">value_box</span>(<span class="st">&quot;Retention&quot;</span>, <span class="st">&quot;73%&quot;</span>, <span class="at">icon =</span> <span class="st">&quot;arrow-clockwise&quot;</span>),</span>
+<span id="cb4-77"><a href="#cb4-77" tabindex="-1"></a>        <span class="fu">value_box</span>(<span class="st">&quot;Sessions&quot;</span>, <span class="st">&quot;2.1M&quot;</span>, <span class="at">icon =</span> <span class="st">&quot;activity&quot;</span>),</span>
+<span id="cb4-78"><a href="#cb4-78" tabindex="-1"></a>        <span class="fu">value_box</span>(<span class="st">&quot;Revenue&quot;</span>, <span class="st">&quot;$127K&quot;</span>, <span class="at">icon =</span> <span class="st">&quot;currency-dollar&quot;</span>)</span>
+<span id="cb4-79"><a href="#cb4-79" tabindex="-1"></a>      ),</span>
+<span id="cb4-80"><a href="#cb4-80" tabindex="-1"></a></span>
+<span id="cb4-81"><a href="#cb4-81" tabindex="-1"></a>      <span class="co"># Charts appear only when details are requested</span></span>
+<span id="cb4-82"><a href="#cb4-82" tabindex="-1"></a>      <span class="fu">layout_columns</span>(</span>
+<span id="cb4-83"><a href="#cb4-83" tabindex="-1"></a>        <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">6</span>),</span>
+<span id="cb4-84"><a href="#cb4-84" tabindex="-1"></a>        <span class="fu">card</span>(</span>
+<span id="cb4-85"><a href="#cb4-85" tabindex="-1"></a>          <span class="fu">card_header</span>(<span class="st">&quot;Engagement Trend&quot;</span>),</span>
+<span id="cb4-86"><a href="#cb4-86" tabindex="-1"></a>          <span class="fu">plotOutput</span>(<span class="st">&quot;engagement_trend_focused&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb4-87"><a href="#cb4-87" tabindex="-1"></a>        ),</span>
+<span id="cb4-88"><a href="#cb4-88" tabindex="-1"></a>        <span class="fu">card</span>(</span>
+<span id="cb4-89"><a href="#cb4-89" tabindex="-1"></a>          <span class="fu">card_header</span>(<span class="st">&quot;Key Drivers Analysis&quot;</span>),</span>
+<span id="cb4-90"><a href="#cb4-90" tabindex="-1"></a>          <span class="fu">plotOutput</span>(<span class="st">&quot;drivers_analysis&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb4-91"><a href="#cb4-91" tabindex="-1"></a>        )</span>
+<span id="cb4-92"><a href="#cb4-92" tabindex="-1"></a>      )</span>
+<span id="cb4-93"><a href="#cb4-93" tabindex="-1"></a>    )</span>
+<span id="cb4-94"><a href="#cb4-94" tabindex="-1"></a>  )</span>
+<span id="cb4-95"><a href="#cb4-95" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Key improvements:</strong></p>
+<ul>
+<li><strong>Reduced cognitive load</strong>: 1 primary score vs. 12
+competing metrics</li>
+<li><strong>Clear hierarchy</strong>: Most important information
+first</li>
+<li><strong>Progressive disclosure</strong>: Details available but not
+overwhelming</li>
+<li><strong>Actionable insights</strong>: Clear focus areas and next
+steps</li>
+</ul>
+</div>
+</div>
+<div id="example-2-the-data-dump-report-problem" class="section level2">
+<h2>Example 2: The “Data Dump” Report Problem</h2>
+<div id="the-scenario-1" class="section level3">
+<h3>The Scenario</h3>
+<p>You’ve built a comprehensive sales dashboard that shows everything
+the sales team could possibly need. It’s technically perfect but nobody
+uses it.</p>
+</div>
+<div id="before-all-data-no-insights" class="section level3">
+<h3>Before: All Data, No Insights</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>ui_sales_before <span class="ot">&lt;-</span> <span class="fu">fluidPage</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">titlePanel</span>(<span class="st">&quot;Q4 Sales Performance Dashboard&quot;</span>),</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="co"># Massive filter section</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="fu">sidebarLayout</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="fu">sidebarPanel</span>(</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>      <span class="fu">dateRangeInput</span>(<span class="st">&quot;date_range&quot;</span>, <span class="st">&quot;Date Range&quot;</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>      <span class="fu">selectInput</span>(<span class="st">&quot;region&quot;</span>, <span class="st">&quot;Region&quot;</span>, <span class="at">choices =</span> regions, <span class="at">multiple =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>      <span class="fu">selectInput</span>(</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>        <span class="st">&quot;product&quot;</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>        <span class="st">&quot;Product Line&quot;</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>        <span class="at">choices =</span> products,</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>        <span class="at">multiple =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>      ),</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>      <span class="fu">selectInput</span>(<span class="st">&quot;salesperson&quot;</span>, <span class="st">&quot;Sales Rep&quot;</span>, <span class="at">choices =</span> reps, <span class="at">multiple =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>      <span class="fu">selectInput</span>(</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>        <span class="st">&quot;customer_segment&quot;</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>        <span class="st">&quot;Customer Segment&quot;</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>        <span class="at">choices =</span> segments,</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>        <span class="at">multiple =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>      ),</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>      <span class="fu">selectInput</span>(</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>        <span class="st">&quot;deal_size&quot;</span>,</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>        <span class="st">&quot;Deal Size&quot;</span>,</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>        <span class="at">choices =</span> deal_sizes,</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>        <span class="at">multiple =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>      ),</span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>      <span class="fu">checkboxGroupInput</span>(<span class="st">&quot;deal_stage&quot;</span>, <span class="st">&quot;Deal Stages&quot;</span>, <span class="at">choices =</span> stages),</span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>      <span class="fu">numericInput</span>(<span class="st">&quot;min_value&quot;</span>, <span class="st">&quot;Minimum Deal Value&quot;</span>, <span class="at">value =</span> <span class="dv">0</span>),</span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>      <span class="fu">numericInput</span>(<span class="st">&quot;max_value&quot;</span>, <span class="st">&quot;Maximum Deal Value&quot;</span>, <span class="at">value =</span> <span class="dv">1000000</span>),</span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>      <span class="fu">radioButtons</span>(<span class="st">&quot;currency&quot;</span>, <span class="st">&quot;Currency&quot;</span>, <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;USD&quot;</span>, <span class="st">&quot;EUR&quot;</span>, <span class="st">&quot;GBP&quot;</span>)),</span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>      <span class="fu">actionButton</span>(<span class="st">&quot;apply_filters&quot;</span>, <span class="st">&quot;Apply Filters&quot;</span>, <span class="at">class =</span> <span class="st">&quot;btn-primary&quot;</span>)</span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>    ),</span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>    <span class="fu">mainPanel</span>(</span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>      <span class="fu">tabsetPanel</span>(</span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>        <span class="fu">tabPanel</span>(</span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>          <span class="st">&quot;Summary&quot;</span>,</span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a>          <span class="fu">fluidRow</span>(</span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>            <span class="fu">column</span>(<span class="dv">3</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;total_revenue&quot;</span>)),</span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>            <span class="fu">column</span>(<span class="dv">3</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;deal_count&quot;</span>)),</span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a>            <span class="fu">column</span>(<span class="dv">3</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;avg_deal_size&quot;</span>)),</span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a>            <span class="fu">column</span>(<span class="dv">3</span>, <span class="fu">valueBoxOutput</span>(<span class="st">&quot;win_rate&quot;</span>))</span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>          ),</span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>          <span class="fu">plotOutput</span>(<span class="st">&quot;revenue_chart&quot;</span>, <span class="at">height =</span> <span class="st">&quot;600px&quot;</span>)</span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>        ),</span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">&quot;By Region&quot;</span>, <span class="fu">dataTableOutput</span>(<span class="st">&quot;region_table&quot;</span>)),</span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">&quot;By Product&quot;</span>, <span class="fu">dataTableOutput</span>(<span class="st">&quot;product_table&quot;</span>)),</span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">&quot;By Rep&quot;</span>, <span class="fu">dataTableOutput</span>(<span class="st">&quot;rep_table&quot;</span>)),</span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">&quot;Pipeline&quot;</span>, <span class="fu">dataTableOutput</span>(<span class="st">&quot;pipeline_table&quot;</span>)),</span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">&quot;Forecasting&quot;</span>, <span class="fu">plotOutput</span>(<span class="st">&quot;forecast_chart&quot;</span>))</span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>      )</span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>    )</span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>  )</span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="the-problem-analysis-paralysis" class="section level3">
+<h3>The Problem: Analysis Paralysis</h3>
+<p><strong>User feedback:</strong> “Takes forever to find what I need”
+and “I just export to Excel instead”</p>
+</div>
+<div id="bid-solution-user-centric-design" class="section level3">
+<h3>BID Solution: User-Centric Design</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Apply BID framework focusing on sales manager workflow</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>sales_interpret <span class="ot">&lt;-</span> <span class="fu">bid_interpret</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">central_question =</span> <span class="st">&quot;What deals need my attention this week?&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">data_story =</span> <span class="fu">list</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="at">hook =</span> <span class="st">&quot;Sales managers spend 2+ hours weekly creating status reports&quot;</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">context =</span> <span class="st">&quot;They need to quickly identify at-risk deals and top opportunities&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>    <span class="at">tension =</span> <span class="st">&quot;Current data requires extensive filtering and analysis&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>    <span class="at">resolution =</span> <span class="st">&quot;Provide intelligent prioritization with drill-down capability&quot;</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  ),</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">user_personas =</span> <span class="fu">list</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;Jennifer (Regional Sales Manager)&quot;</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Identify at-risk deals, spot top opportunities, prepare for team meetings&quot;</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Too much filtering required to find actionable insights&quot;</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Intermediate&quot;</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>    )</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>  )</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>)</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>sales_notice <span class="ot">&lt;-</span> <span class="fu">bid_notice</span>(</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>  <span class="at">previous_stage =</span> sales_interpret,</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>  <span class="at">problem =</span> <span class="st">&quot;Sales managers overwhelmed by filter complexity and data volume&quot;</span>,</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>  <span class="at">evidence =</span> <span class="st">&quot;Users spend average 15 minutes per session just setting up filters, 40% abandon before getting insights&quot;</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>)</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>sales_anticipate <span class="ot">&lt;-</span> <span class="fu">bid_anticipate</span>(</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>  <span class="at">previous_stage =</span> sales_notice,</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>  <span class="at">bias_mitigations =</span> <span class="fu">list</span>(</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>    <span class="at">recency_bias =</span> <span class="st">&quot;Show deals by urgency, not just recent activity&quot;</span>,</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>    <span class="at">confirmation_bias =</span> <span class="st">&quot;Highlight both positive and concerning trends&quot;</span>,</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>    <span class="at">choice_overload =</span> <span class="st">&quot;Limit initial choices to most common use cases&quot;</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>  )</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>)</span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>sales_structure <span class="ot">&lt;-</span> <span class="fu">bid_structure</span>(<span class="at">previous_stage =</span> sales_anticipate)</span></code></pre></div>
+</div>
+<div id="after-insight-driven-sales-dashboard" class="section level3">
+<h3>After: Insight-Driven Sales Dashboard</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>ui_sales_after <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;Sales Command Center&quot;</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">preset =</span> <span class="st">&quot;bootstrap&quot;</span>),</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="fu">nav_panel</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="st">&quot;🚨 Needs Attention&quot;</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="fu">layout_columns</span>(</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>      <span class="co"># Immediate action items</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>      <span class="fu">card</span>(</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>        <span class="fu">card_header</span>(</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>          <span class="st">&quot;🔥 Urgent - Deals at Risk&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>          <span class="at">class =</span> <span class="st">&quot;bg-danger text-white&quot;</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>        ),</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>        <span class="fu">card_body</span>(</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>          <span class="fu">p</span>(<span class="st">&quot;3 deals worth $340K need immediate attention&quot;</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>          <span class="fu">layout_columns</span>(</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>            <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">6</span>),</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>            <span class="fu">div</span>(</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>              <span class="fu">h6</span>(<span class="st">&quot;MegaCorp Deal - $180K&quot;</span>),</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>              <span class="fu">p</span>(</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>                <span class="st">&quot;❌ No activity in 14 days&quot;</span>,</span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>                <span class="at">style =</span> <span class="st">&quot;color: #dc3545; margin: 0;&quot;</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>              ),</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>              <span class="fu">p</span>(<span class="st">&quot;Owner: Mike Chen&quot;</span>, <span class="at">style =</span> <span class="st">&quot;font-size: 0.9em; color: #666;&quot;</span>)</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>            ),</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>            <span class="fu">div</span>(</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>              <span class="fu">actionButton</span>(</span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>                <span class="st">&quot;view_megacorp&quot;</span>,</span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>                <span class="st">&quot;View Details&quot;</span>,</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;btn btn-sm btn-outline-danger&quot;</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>              ),</span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>              <span class="fu">actionButton</span>(</span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>                <span class="st">&quot;contact_mike&quot;</span>,</span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>                <span class="st">&quot;Contact Mike&quot;</span>,</span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>                <span class="at">class =</span> <span class="st">&quot;btn btn-sm btn-danger&quot;</span></span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>              )</span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a>            )</span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a>          )</span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a>        )</span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a>      ),</span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a></span>
+<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a>      <span class="co"># Opportunities</span></span>
+<span id="cb7-43"><a href="#cb7-43" tabindex="-1"></a>      <span class="fu">card</span>(</span>
+<span id="cb7-44"><a href="#cb7-44" tabindex="-1"></a>        <span class="fu">card_header</span>(<span class="st">&quot;⭐ Hot Opportunities&quot;</span>, <span class="at">class =</span> <span class="st">&quot;bg-success text-white&quot;</span>),</span>
+<span id="cb7-45"><a href="#cb7-45" tabindex="-1"></a>        <span class="fu">card_body</span>(</span>
+<span id="cb7-46"><a href="#cb7-46" tabindex="-1"></a>          <span class="fu">p</span>(<span class="st">&quot;2 deals worth $280K ready to close&quot;</span>),</span>
+<span id="cb7-47"><a href="#cb7-47" tabindex="-1"></a>          <span class="fu">actionButton</span>(</span>
+<span id="cb7-48"><a href="#cb7-48" tabindex="-1"></a>            <span class="st">&quot;view_opportunities&quot;</span>,</span>
+<span id="cb7-49"><a href="#cb7-49" tabindex="-1"></a>            <span class="st">&quot;Review Opportunities&quot;</span>,</span>
+<span id="cb7-50"><a href="#cb7-50" tabindex="-1"></a>            <span class="at">class =</span> <span class="st">&quot;btn btn-success btn-sm&quot;</span></span>
+<span id="cb7-51"><a href="#cb7-51" tabindex="-1"></a>          )</span>
+<span id="cb7-52"><a href="#cb7-52" tabindex="-1"></a>        )</span>
+<span id="cb7-53"><a href="#cb7-53" tabindex="-1"></a>      )</span>
+<span id="cb7-54"><a href="#cb7-54" tabindex="-1"></a>    ),</span>
+<span id="cb7-55"><a href="#cb7-55" tabindex="-1"></a></span>
+<span id="cb7-56"><a href="#cb7-56" tabindex="-1"></a>    <span class="co"># Smart filters (only show when needed)</span></span>
+<span id="cb7-57"><a href="#cb7-57" tabindex="-1"></a>    <span class="fu">conditionalPanel</span>(</span>
+<span id="cb7-58"><a href="#cb7-58" tabindex="-1"></a>      <span class="at">condition =</span> <span class="st">&quot;input.show_filters&quot;</span>,</span>
+<span id="cb7-59"><a href="#cb7-59" tabindex="-1"></a>      <span class="fu">card</span>(</span>
+<span id="cb7-60"><a href="#cb7-60" tabindex="-1"></a>        <span class="fu">card_header</span>(<span class="st">&quot;🔍 Refine Focus&quot;</span>),</span>
+<span id="cb7-61"><a href="#cb7-61" tabindex="-1"></a>        <span class="fu">layout_columns</span>(</span>
+<span id="cb7-62"><a href="#cb7-62" tabindex="-1"></a>          <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>),</span>
+<span id="cb7-63"><a href="#cb7-63" tabindex="-1"></a>          <span class="fu">selectInput</span>(<span class="st">&quot;quick_region&quot;</span>, <span class="st">&quot;Region&quot;</span>, <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;All&quot;</span>, regions)),</span>
+<span id="cb7-64"><a href="#cb7-64" tabindex="-1"></a>          <span class="fu">selectInput</span>(</span>
+<span id="cb7-65"><a href="#cb7-65" tabindex="-1"></a>            <span class="st">&quot;quick_timeframe&quot;</span>,</span>
+<span id="cb7-66"><a href="#cb7-66" tabindex="-1"></a>            <span class="st">&quot;Timeframe&quot;</span>,</span>
+<span id="cb7-67"><a href="#cb7-67" tabindex="-1"></a>            <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;This Week&quot;</span>, <span class="st">&quot;This Month&quot;</span>, <span class="st">&quot;This Quarter&quot;</span>)</span>
+<span id="cb7-68"><a href="#cb7-68" tabindex="-1"></a>          ),</span>
+<span id="cb7-69"><a href="#cb7-69" tabindex="-1"></a>          <span class="fu">selectInput</span>(</span>
+<span id="cb7-70"><a href="#cb7-70" tabindex="-1"></a>            <span class="st">&quot;quick_value&quot;</span>,</span>
+<span id="cb7-71"><a href="#cb7-71" tabindex="-1"></a>            <span class="st">&quot;Deal Size&quot;</span>,</span>
+<span id="cb7-72"><a href="#cb7-72" tabindex="-1"></a>            <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;All&quot;</span>, <span class="st">&quot;&gt;$50K&quot;</span>, <span class="st">&quot;&gt;$100K&quot;</span>, <span class="st">&quot;&gt;$250K&quot;</span>)</span>
+<span id="cb7-73"><a href="#cb7-73" tabindex="-1"></a>          ),</span>
+<span id="cb7-74"><a href="#cb7-74" tabindex="-1"></a>          <span class="fu">actionButton</span>(</span>
+<span id="cb7-75"><a href="#cb7-75" tabindex="-1"></a>            <span class="st">&quot;show_all_filters&quot;</span>,</span>
+<span id="cb7-76"><a href="#cb7-76" tabindex="-1"></a>            <span class="st">&quot;More Filters...&quot;</span>,</span>
+<span id="cb7-77"><a href="#cb7-77" tabindex="-1"></a>            <span class="at">class =</span> <span class="st">&quot;btn btn-outline-secondary btn-sm&quot;</span></span>
+<span id="cb7-78"><a href="#cb7-78" tabindex="-1"></a>          )</span>
+<span id="cb7-79"><a href="#cb7-79" tabindex="-1"></a>        )</span>
+<span id="cb7-80"><a href="#cb7-80" tabindex="-1"></a>      )</span>
+<span id="cb7-81"><a href="#cb7-81" tabindex="-1"></a>    )</span>
+<span id="cb7-82"><a href="#cb7-82" tabindex="-1"></a>  ),</span>
+<span id="cb7-83"><a href="#cb7-83" tabindex="-1"></a></span>
+<span id="cb7-84"><a href="#cb7-84" tabindex="-1"></a>  <span class="fu">nav_panel</span>(</span>
+<span id="cb7-85"><a href="#cb7-85" tabindex="-1"></a>    <span class="st">&quot;📊 Performance&quot;</span>,</span>
+<span id="cb7-86"><a href="#cb7-86" tabindex="-1"></a>    <span class="fu">layout_columns</span>(</span>
+<span id="cb7-87"><a href="#cb7-87" tabindex="-1"></a>      <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>),</span>
+<span id="cb7-88"><a href="#cb7-88" tabindex="-1"></a>      <span class="fu">value_box</span>(</span>
+<span id="cb7-89"><a href="#cb7-89" tabindex="-1"></a>        <span class="st">&quot;This Month&quot;</span>,</span>
+<span id="cb7-90"><a href="#cb7-90" tabindex="-1"></a>        <span class="st">&quot;$1.2M&quot;</span>,</span>
+<span id="cb7-91"><a href="#cb7-91" tabindex="-1"></a>        <span class="st">&quot;vs. $980K target (+22%)&quot;</span>,</span>
+<span id="cb7-92"><a href="#cb7-92" tabindex="-1"></a>        <span class="at">showcase =</span> <span class="fu">bs_icon</span>(<span class="st">&quot;graph-up&quot;</span>),</span>
+<span id="cb7-93"><a href="#cb7-93" tabindex="-1"></a>        <span class="at">theme =</span> <span class="st">&quot;success&quot;</span></span>
+<span id="cb7-94"><a href="#cb7-94" tabindex="-1"></a>      ),</span>
+<span id="cb7-95"><a href="#cb7-95" tabindex="-1"></a>      <span class="fu">value_box</span>(</span>
+<span id="cb7-96"><a href="#cb7-96" tabindex="-1"></a>        <span class="st">&quot;Pipeline Health&quot;</span>,</span>
+<span id="cb7-97"><a href="#cb7-97" tabindex="-1"></a>        <span class="st">&quot;Strong&quot;</span>,</span>
+<span id="cb7-98"><a href="#cb7-98" tabindex="-1"></a>        <span class="st">&quot;3.2x coverage ratio&quot;</span>,</span>
+<span id="cb7-99"><a href="#cb7-99" tabindex="-1"></a>        <span class="at">showcase =</span> <span class="fu">bs_icon</span>(<span class="st">&quot;speedometer2&quot;</span>),</span>
+<span id="cb7-100"><a href="#cb7-100" tabindex="-1"></a>        <span class="at">theme =</span> <span class="st">&quot;info&quot;</span></span>
+<span id="cb7-101"><a href="#cb7-101" tabindex="-1"></a>      ),</span>
+<span id="cb7-102"><a href="#cb7-102" tabindex="-1"></a>      <span class="fu">value_box</span>(</span>
+<span id="cb7-103"><a href="#cb7-103" tabindex="-1"></a>        <span class="st">&quot;Team Status&quot;</span>,</span>
+<span id="cb7-104"><a href="#cb7-104" tabindex="-1"></a>        <span class="st">&quot;On Track&quot;</span>,</span>
+<span id="cb7-105"><a href="#cb7-105" tabindex="-1"></a>        <span class="st">&quot;8 of 10 reps hitting quota&quot;</span>,</span>
+<span id="cb7-106"><a href="#cb7-106" tabindex="-1"></a>        <span class="at">showcase =</span> <span class="fu">bs_icon</span>(<span class="st">&quot;people&quot;</span>),</span>
+<span id="cb7-107"><a href="#cb7-107" tabindex="-1"></a>        <span class="at">theme =</span> <span class="st">&quot;success&quot;</span></span>
+<span id="cb7-108"><a href="#cb7-108" tabindex="-1"></a>      )</span>
+<span id="cb7-109"><a href="#cb7-109" tabindex="-1"></a>    ),</span>
+<span id="cb7-110"><a href="#cb7-110" tabindex="-1"></a></span>
+<span id="cb7-111"><a href="#cb7-111" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb7-112"><a href="#cb7-112" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;📈 Key Trends&quot;</span>),</span>
+<span id="cb7-113"><a href="#cb7-113" tabindex="-1"></a>      <span class="fu">plotOutput</span>(<span class="st">&quot;performance_trends&quot;</span>, <span class="at">height =</span> <span class="st">&quot;400px&quot;</span>)</span>
+<span id="cb7-114"><a href="#cb7-114" tabindex="-1"></a>    )</span>
+<span id="cb7-115"><a href="#cb7-115" tabindex="-1"></a>  ),</span>
+<span id="cb7-116"><a href="#cb7-116" tabindex="-1"></a></span>
+<span id="cb7-117"><a href="#cb7-117" tabindex="-1"></a>  <span class="fu">nav_panel</span>(</span>
+<span id="cb7-118"><a href="#cb7-118" tabindex="-1"></a>    <span class="st">&quot;🎯 Team Focus&quot;</span>,</span>
+<span id="cb7-119"><a href="#cb7-119" tabindex="-1"></a>    <span class="co"># Team-specific insights</span></span>
+<span id="cb7-120"><a href="#cb7-120" tabindex="-1"></a>    <span class="fu">p</span>(<span class="st">&quot;Individual rep performance and coaching opportunities...&quot;</span>)</span>
+<span id="cb7-121"><a href="#cb7-121" tabindex="-1"></a>  )</span>
+<span id="cb7-122"><a href="#cb7-122" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Key improvements:</strong></p>
+<ul>
+<li><strong>Intelligent prioritization</strong>: Shows what needs
+attention first</li>
+<li><strong>Reduced choices</strong>: Smart defaults instead of
+overwhelming filters</li>
+<li><strong>Action-oriented</strong>: Clear next steps, not just
+data</li>
+<li><strong>Progressive complexity</strong>: Simple view first, details
+on demand</li>
+</ul>
+</div>
+</div>
+<div id="example-3-the-technical-metrics-challenge" class="section level2">
+<h2>Example 3: The “Technical Metrics” Challenge</h2>
+<div id="the-scenario-2" class="section level3">
+<h3>The Scenario</h3>
+<p>You’re monitoring application performance with detailed technical
+metrics. Your dashboard is perfect for engineers but executives get
+lost.</p>
+</div>
+<div id="bid-solution-audience-aware-design" class="section level3">
+<h3>BID Solution: Audience-Aware Design</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Interpret stage: Understand different user needs</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>technical_interpret <span class="ot">&lt;-</span> <span class="fu">bid_interpret</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">central_question =</span> <span class="st">&quot;How is our application performing and what needs attention?&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">user_personas =</span> <span class="fu">list</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;DevOps Engineer&quot;</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Identify performance bottlenecks and system issues&quot;</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Needs detailed metrics and historical trends&quot;</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Expert&quot;</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>    ),</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;Engineering Manager&quot;</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Understand overall system health and team priorities&quot;</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Needs summary view but ability to drill down&quot;</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Advanced&quot;</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>    ),</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;Executive&quot;</span>,</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>      <span class="at">goals =</span> <span class="st">&quot;Understand business impact of technical issues&quot;</span>,</span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>      <span class="at">pain_points =</span> <span class="st">&quot;Technical details are overwhelming&quot;</span>,</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>      <span class="at">technical_level =</span> <span class="st">&quot;Basic&quot;</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>    )</span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>  )</span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="after-multi-audience-technical-dashboard" class="section level3">
+<h3>After: Multi-Audience Technical Dashboard</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Adaptive interface based on user role</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>ui_technical_after <span class="ot">&lt;-</span> <span class="fu">page_sidebar</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    <span class="co"># Role selector affects entire interface</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    <span class="fu">radioButtons</span>(</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>      <span class="st">&quot;user_role&quot;</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>      <span class="st">&quot;View Mode:&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>      <span class="at">choices =</span> <span class="fu">c</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>        <span class="st">&quot;Executive Summary&quot;</span> <span class="ot">=</span> <span class="st">&quot;executive&quot;</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>        <span class="st">&quot;Management View&quot;</span> <span class="ot">=</span> <span class="st">&quot;manager&quot;</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>        <span class="st">&quot;Technical Details&quot;</span> <span class="ot">=</span> <span class="st">&quot;engineer&quot;</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>      ),</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>      <span class="at">selected =</span> <span class="st">&quot;executive&quot;</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>    )</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>  ),</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  <span class="co"># Executive view: Business impact focus</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>  <span class="fu">conditionalPanel</span>(</span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>    <span class="at">condition =</span> <span class="st">&quot;input.user_role == &#39;executive&#39;&quot;</span>,</span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>    <span class="fu">h2</span>(<span class="st">&quot;🟢 System Health: Good&quot;</span>),</span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>    <span class="fu">layout_columns</span>(</span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a>      <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">6</span>),</span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a>      <span class="fu">card</span>(</span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>        <span class="fu">card_header</span>(<span class="st">&quot;Business Impact&quot;</span>),</span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a>        <span class="fu">value_box</span>(</span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a>          <span class="st">&quot;Service Availability&quot;</span>,</span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a>          <span class="st">&quot;99.8%&quot;</span>,</span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a>          <span class="st">&quot;Within SLA targets&quot;</span>,</span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a>          <span class="at">theme =</span> <span class="st">&quot;success&quot;</span></span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a>        ),</span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a>        <span class="fu">value_box</span>(</span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a>          <span class="st">&quot;User Experience&quot;</span>,</span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a>          <span class="st">&quot;Good&quot;</span>,</span>
+<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a>          <span class="st">&quot;Page loads &lt; 2 seconds&quot;</span>,</span>
+<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a>          <span class="at">theme =</span> <span class="st">&quot;success&quot;</span></span>
+<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a>        )</span>
+<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a>      ),</span>
+<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a>      <span class="fu">card</span>(</span>
+<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a>        <span class="fu">card_header</span>(<span class="st">&quot;Action Items&quot;</span>),</span>
+<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a>        <span class="fu">div</span>(</span>
+<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a>          <span class="at">class =</span> <span class="st">&quot;alert alert-info&quot;</span>,</span>
+<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a>          <span class="st">&quot;✅ No critical issues requiring immediate attention&quot;</span></span>
+<span id="cb9-44"><a href="#cb9-44" tabindex="-1"></a>        ),</span>
+<span id="cb9-45"><a href="#cb9-45" tabindex="-1"></a>        <span class="fu">p</span>(<span class="st">&quot;Next scheduled maintenance: Friday 2am&quot;</span>)</span>
+<span id="cb9-46"><a href="#cb9-46" tabindex="-1"></a>      )</span>
+<span id="cb9-47"><a href="#cb9-47" tabindex="-1"></a>    )</span>
+<span id="cb9-48"><a href="#cb9-48" tabindex="-1"></a>  ),</span>
+<span id="cb9-49"><a href="#cb9-49" tabindex="-1"></a></span>
+<span id="cb9-50"><a href="#cb9-50" tabindex="-1"></a>  <span class="co"># Manager view: Balance of summary and detail</span></span>
+<span id="cb9-51"><a href="#cb9-51" tabindex="-1"></a>  <span class="fu">conditionalPanel</span>(</span>
+<span id="cb9-52"><a href="#cb9-52" tabindex="-1"></a>    <span class="at">condition =</span> <span class="st">&quot;input.user_role == &#39;manager&#39;&quot;</span>,</span>
+<span id="cb9-53"><a href="#cb9-53" tabindex="-1"></a>    <span class="fu">layout_columns</span>(</span>
+<span id="cb9-54"><a href="#cb9-54" tabindex="-1"></a>      <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>),</span>
+<span id="cb9-55"><a href="#cb9-55" tabindex="-1"></a>      <span class="fu">value_box</span>(<span class="st">&quot;Uptime&quot;</span>, <span class="st">&quot;99.8%&quot;</span>, <span class="at">theme =</span> <span class="st">&quot;success&quot;</span>),</span>
+<span id="cb9-56"><a href="#cb9-56" tabindex="-1"></a>      <span class="fu">value_box</span>(<span class="st">&quot;Response Time&quot;</span>, <span class="st">&quot;1.2s&quot;</span>, <span class="at">theme =</span> <span class="st">&quot;success&quot;</span>),</span>
+<span id="cb9-57"><a href="#cb9-57" tabindex="-1"></a>      <span class="fu">value_box</span>(<span class="st">&quot;Error Rate&quot;</span>, <span class="st">&quot;0.02%&quot;</span>, <span class="at">theme =</span> <span class="st">&quot;success&quot;</span>),</span>
+<span id="cb9-58"><a href="#cb9-58" tabindex="-1"></a>      <span class="fu">value_box</span>(<span class="st">&quot;Throughput&quot;</span>, <span class="st">&quot;15K/min&quot;</span>, <span class="at">theme =</span> <span class="st">&quot;info&quot;</span>)</span>
+<span id="cb9-59"><a href="#cb9-59" tabindex="-1"></a>    ),</span>
+<span id="cb9-60"><a href="#cb9-60" tabindex="-1"></a></span>
+<span id="cb9-61"><a href="#cb9-61" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb9-62"><a href="#cb9-62" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;System Trends&quot;</span>),</span>
+<span id="cb9-63"><a href="#cb9-63" tabindex="-1"></a>      <span class="fu">plotOutput</span>(<span class="st">&quot;system_trends&quot;</span>, <span class="at">height =</span> <span class="st">&quot;300px&quot;</span>)</span>
+<span id="cb9-64"><a href="#cb9-64" tabindex="-1"></a>    ),</span>
+<span id="cb9-65"><a href="#cb9-65" tabindex="-1"></a></span>
+<span id="cb9-66"><a href="#cb9-66" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb9-67"><a href="#cb9-67" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Team Alerts&quot;</span>),</span>
+<span id="cb9-68"><a href="#cb9-68" tabindex="-1"></a>      <span class="fu">p</span>(<span class="st">&quot;2 minor alerts resolved this week&quot;</span>),</span>
+<span id="cb9-69"><a href="#cb9-69" tabindex="-1"></a>      <span class="fu">actionButton</span>(<span class="st">&quot;view_alerts&quot;</span>, <span class="st">&quot;View Alert History&quot;</span>)</span>
+<span id="cb9-70"><a href="#cb9-70" tabindex="-1"></a>    )</span>
+<span id="cb9-71"><a href="#cb9-71" tabindex="-1"></a>  ),</span>
+<span id="cb9-72"><a href="#cb9-72" tabindex="-1"></a></span>
+<span id="cb9-73"><a href="#cb9-73" tabindex="-1"></a>  <span class="co"># Engineer view: Full technical detail</span></span>
+<span id="cb9-74"><a href="#cb9-74" tabindex="-1"></a>  <span class="fu">conditionalPanel</span>(</span>
+<span id="cb9-75"><a href="#cb9-75" tabindex="-1"></a>    <span class="at">condition =</span> <span class="st">&quot;input.user_role == &#39;engineer&#39;&quot;</span>,</span>
+<span id="cb9-76"><a href="#cb9-76" tabindex="-1"></a>    <span class="co"># Comprehensive technical metrics</span></span>
+<span id="cb9-77"><a href="#cb9-77" tabindex="-1"></a>    <span class="fu">tabsetPanel</span>(</span>
+<span id="cb9-78"><a href="#cb9-78" tabindex="-1"></a>      <span class="fu">tabPanel</span>(<span class="st">&quot;Performance&quot;</span>, <span class="st">&quot;Detailed performance metrics...&quot;</span>),</span>
+<span id="cb9-79"><a href="#cb9-79" tabindex="-1"></a>      <span class="fu">tabPanel</span>(<span class="st">&quot;Infrastructure&quot;</span>, <span class="st">&quot;Server and database metrics...&quot;</span>),</span>
+<span id="cb9-80"><a href="#cb9-80" tabindex="-1"></a>      <span class="fu">tabPanel</span>(<span class="st">&quot;Alerts&quot;</span>, <span class="st">&quot;Full alert history and configuration...&quot;</span>),</span>
+<span id="cb9-81"><a href="#cb9-81" tabindex="-1"></a>      <span class="fu">tabPanel</span>(<span class="st">&quot;Logs&quot;</span>, <span class="st">&quot;System logs and debugging info...&quot;</span>)</span>
+<span id="cb9-82"><a href="#cb9-82" tabindex="-1"></a>    )</span>
+<span id="cb9-83"><a href="#cb9-83" tabindex="-1"></a>  )</span>
+<span id="cb9-84"><a href="#cb9-84" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Key insight</strong>: Same data, different presentations
+based on user cognitive needs and technical expertise.</p>
+</div>
+</div>
+<div id="best-practices-summary" class="section level2">
+<h2>Best Practices Summary</h2>
+<div id="start-with-user-intent-not-data-structure" class="section level3">
+<h3>1. Start with User Intent, Not Data Structure</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># ❌ Data-structure driven</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>ui_wrong <span class="ot">&lt;-</span> <span class="fu">tabPanel</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="st">&quot;Database Tables&quot;</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">tabPanel</span>(<span class="st">&quot;Users Table&quot;</span>, <span class="fu">dataTableOutput</span>(<span class="st">&quot;users&quot;</span>)),</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="fu">tabPanel</span>(<span class="st">&quot;Orders Table&quot;</span>, <span class="fu">dataTableOutput</span>(<span class="st">&quot;orders&quot;</span>)),</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="fu">tabPanel</span>(<span class="st">&quot;Products Table&quot;</span>, <span class="fu">dataTableOutput</span>(<span class="st">&quot;products&quot;</span>))</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>)</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co"># ✅ User-intent driven</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>ui_right <span class="ot">&lt;-</span> <span class="fu">tabPanel</span>(</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>  <span class="st">&quot;Customer Insights&quot;</span>,</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="fu">card_body</span>(</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>    <span class="fu">h4</span>(<span class="st">&quot;What customers need your attention?&quot;</span>),</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>    <span class="co"># Show actionable customer insights</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>  )</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="progressive-disclosure-over-information-density" class="section level3">
+<h3>2. Progressive Disclosure Over Information Density</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># ❌ Everything visible at once</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>ui_dense <span class="ot">&lt;-</span> <span class="fu">fluidRow</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="fu">column</span>(<span class="dv">2</span>, metric1),</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="fu">column</span>(<span class="dv">2</span>, metric2),</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="fu">column</span>(<span class="dv">2</span>, metric3),</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="fu">column</span>(<span class="dv">2</span>, metric4),</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  <span class="fu">column</span>(<span class="dv">2</span>, metric5),</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  <span class="fu">column</span>(<span class="dv">2</span>, metric6)</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>)</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co"># ✅ Key information first, details on demand</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>ui_progressive <span class="ot">&lt;-</span> <span class="fu">div</span>(</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>  <span class="fu">value_box</span>(<span class="st">&quot;Key Metric&quot;</span>, <span class="st">&quot;Primary value&quot;</span>),</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>  <span class="fu">actionButton</span>(<span class="st">&quot;show_details&quot;</span>, <span class="st">&quot;View Supporting Metrics&quot;</span>),</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>  <span class="fu">conditionalPanel</span>(</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>    <span class="at">condition =</span> <span class="st">&quot;input.show_details&quot;</span>,</span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>    <span class="co"># Additional metrics here</span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>  )</span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="context-over-raw-numbers" class="section level3">
+<h3>3. Context Over Raw Numbers</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># ❌ Raw number without meaning</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">valueBox</span>(<span class="st">&quot;Revenue&quot;</span>, <span class="st">&quot;$127,432&quot;</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co"># ✅ Number with context and meaning</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="fu">value_box</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="st">&quot;Revenue Progress&quot;</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="st">&quot;$127K&quot;</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="st">&quot;22% above $104K target&quot;</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>  <span class="at">showcase =</span> <span class="fu">bs_icon</span>(<span class="st">&quot;graph-up&quot;</span>),</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>  <span class="at">theme =</span> <span class="st">&quot;success&quot;</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="next-steps" class="section level2">
+<h2>Next Steps</h2>
+<ol style="list-style-type: decimal">
+<li><strong>Pick one existing dashboard</strong> and apply the BID
+framework</li>
+<li><strong>Start with Stage 1 (Interpret)</strong> - really understand
+your users’ goals</li>
+<li><strong>Test with real users</strong> - measure time-to-insight and
+task completion</li>
+<li><strong>Iterate systematically</strong> - use the same experimental
+rigor you apply to data analysis</li>
+</ol>
+<p>Remember: The goal isn’t to become a UX expert, it’s to apply your
+analytical thinking to user experience and create more effective data
+products.</p>
+<p>Use <code>bid_concepts()</code> to explore behavioral science
+principles, and check out the <code>behavioral-science-primer</code>
+vignette for deeper understanding of the psychological principles behind
+these improvements.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,17 +1,17 @@
 Package: bidux
-Title: Behavior Insight Design: A Toolkit for Integrating Behavioral
+Title: Behavioral Insight Design: A Toolkit for Integrating Behavioral
         Science in UI/UX Design
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: 
     person(
         given = "Jeremy",
-        family = "Winget", 
+        family = "Winget",
         role = c("aut", "cre"),
         email="contact@jrwinget.com",
         comment = c(ORCID = "0000-0002-3783-4354")
     )
-Description: Provides a framework and toolkit to guide 'shiny' developers in 
-    implementing the Behavior Insight Design (BID) framework. The package offers
+Description: Provides a framework and toolkit to guide 'shiny' developers in
+    implementing the Behavioral Insight Design (BID) framework. The package offers
     functions for documenting each of the five stages (Notice, Interpret,
     Structure, Anticipate, and Validate), along with a comprehensive concept
     dictionary.
@@ -28,9 +28,9 @@ Config/testthat/edition: 3
 Language: en-US
 URL: https://jrwinget.github.io/bidux/
 NeedsCompilation: no
-Packaged: 2025-08-29 21:12:31 UTC; user
+Packaged: 2025-09-06 18:17:03 UTC; user
 Author: Jeremy Winget [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-3783-4354>)
 Maintainer: Jeremy Winget <contact@jrwinget.com>
 Repository: CRAN
-Date/Publication: 2025-08-29 21:30:02 UTC
+Date/Publication: 2025-09-07 22:10:25 UTC

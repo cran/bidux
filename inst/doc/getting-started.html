@@ -344,32 +344,42 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>The <code>{bidux}</code> package helps Shiny developers create more
-effective dashboards using the <strong>Behavior Insight Design (BID)
-Framework</strong>. This framework integrates behavioral science, UX
-best practices, and data storytelling techniques to guide the
-development of dashboards that are easier to understand, more engaging,
-and more effective at supporting user decisions.</p>
+effective dashboards using the <strong>Behavioral Insight Design (BID)
+Framework</strong>. If you’ve ever wondered why users struggle with your
+carefully crafted dashboards, or why your beautifully visualized data
+doesn’t drive the decisions you expected, this package is for you.</p>
+<p><strong>The core insight</strong>: Technical excellence ≠ User
+success. Even the most sophisticated analysis can fail if users can’t
+quickly understand and act on it.</p>
+<p>The BID framework bridges this gap by integrating behavioral science,
+UX best practices, and data storytelling techniques into a systematic
+5-stage process. Think of it as applying the same rigor you use for data
+validation to user experience design.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(bidux)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
 </div>
-<div id="the-bid-framework" class="section level2">
-<h2>The BID Framework</h2>
-<p>The BID framework consists of 5 sequential stages:</p>
+<div id="the-bid-framework-a-data-driven-approach-to-ux" class="section level2">
+<h2>The BID Framework: A Data-Driven Approach to UX</h2>
+<p>The BID framework consists of 5 sequential stages that mirror how you
+might approach a data analysis project:</p>
 <ol style="list-style-type: decimal">
-<li><strong>Interpret</strong> the User’s Need - Understand the core
-questions and insights needed</li>
-<li><strong>Notice</strong> the Problem - Identify friction points and
-user struggles</li>
-<li><strong>Anticipate</strong> User Behavior - Consider cognitive
-biases that influence perception</li>
-<li><strong>Structure</strong> the Dashboard - Organize information for
-intuitive comprehension</li>
-<li><strong>Validate</strong> &amp; Empower the User - Provide clear
-takeaways and collaborative features</li>
+<li><strong>Interpret</strong> the User’s Need - Like defining your
+research question and understanding your data</li>
+<li><strong>Notice</strong> the Problem - Like identifying data quality
+issues or analytical bottlenecks</li>
+<li><strong>Anticipate</strong> User Behavior - Like checking for
+statistical biases that could skew results</li>
+<li><strong>Structure</strong> the Dashboard - Like choosing the right
+visualization or model architecture</li>
+<li><strong>Validate</strong> &amp; Empower the User - Like testing your
+model and ensuring stakeholders can act on results</li>
 </ol>
-<p>This sequential process forms a structured approach to dashboard
-design, with each stage building on the insights from previous
-stages.</p>
+<p><strong>Key insight for data professionals</strong>: Just as you
+wouldn’t skip exploratory data analysis before modeling, don’t skip
+understanding user cognition before building interfaces.</p>
+<p>Each stage builds on insights from previous stages, creating a
+systematic approach to dashboard design that’s both evidence-based and
+user-centered.</p>
 </div>
 <div id="exploring-the-concept-dictionary" class="section level2">
 <h2>Exploring the Concept Dictionary</h2>
@@ -378,29 +388,29 @@ principles. To explore these concepts, use <code>bid_concepts()</code>
 to list all available concepts, or search for specific terms:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># List all concepts</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>all_concepts <span class="ot">&lt;-</span> <span class="fu">bid_concepts</span>()</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">head</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(all_concepts, concept, category, description), <span class="dv">3</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">select</span>(all_concepts, concept, category, description), <span class="dv">3</span>)</span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># Search for specific concepts</span></span>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">bid_concepts</span>(<span class="st">&quot;cognitive&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(concept, description, implementation_tips)</span></code></pre></div>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="fu">select</span>(concept, description, implementation_tips)</span></code></pre></div>
 <p>For detailed information about a specific concept, use
 <code>bid_concept()</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Get information about a specific concept</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">bid_concept</span>(<span class="st">&quot;Processing Fluency&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(concept, description, implementation_tips)</span></code></pre></div>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">select</span>(concept, description, implementation_tips)</span></code></pre></div>
 <p>The <code>bid_concept()</code> function supports case-insensitive and
 partial matching:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Case-insensitive matching</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">bid_concept</span>(<span class="st">&quot;hick&#39;s law&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(concept, description)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">select</span>(concept, description)</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># Partial matching</span></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">bid_concept</span>(<span class="st">&quot;proximity&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(concept, description)</span></code></pre></div>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="fu">select</span>(concept, description)</span></code></pre></div>
 <p>You can also explore concepts that are new to the BID framework:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Explore new concepts from user-centric design</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">bid_concepts</span>(<span class="st">&quot;visual hierarchy|breathable|gherkin&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(concept, description)</span></code></pre></div>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">select</span>(concept, description)</span></code></pre></div>
 </div>
 <div id="documenting-a-dashboard-project-with-bid" class="section level2">
 <h2>Documenting a Dashboard Project with BID</h2>
@@ -439,7 +449,7 @@ answer and structure the data story:</p>
 <span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>)</span>
 <span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a></span>
 <span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>interpret_result <span class="sc">|&gt;</span></span>
-<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(central_question, hook, tension, resolution)</span></code></pre></div>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>  <span class="fu">select</span>(central_question, hook, tension, resolution)</span></code></pre></div>
 <p>The function evaluates our data story elements and provides
 suggestions for improvement (in the <code>suggestions</code> column).
 We’ve also added user personas to better target our design.</p>
@@ -456,7 +466,7 @@ dashboard or interface:</p>
 <span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>)</span>
 <span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
 <span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>notice_result <span class="sc">|&gt;</span></span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(problem, theory, evidence)</span></code></pre></div>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="fu">select</span>(problem, theory, evidence)</span></code></pre></div>
 <p>Notice that the function automatically selected an appropriate theory
 based on our problem description. It also provides suggestions for
 addressing cognitive load which you can access from the
@@ -477,7 +487,7 @@ interpret your dashboard:</p>
 <span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>)</span>
 <span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a></span>
 <span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>anticipate_result <span class="sc">|&gt;</span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(bias_mitigations)</span></code></pre></div>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  <span class="fu">select</span>(bias_mitigations)</span></code></pre></div>
 <p>The function evaluates our bias mitigation strategies, providing
 implementation suggestions.</p>
 </div>
@@ -485,12 +495,10 @@ implementation suggestions.</p>
 <h3>Stage 4: Structure the Dashboard</h3>
 <p>Now determine the layout and key design principles to implement:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Document the dashboard structure</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>structure_result <span class="ot">&lt;-</span> <span class="fu">bid_structure</span>(</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">previous_stage =</span> anticipate_result</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>)</span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>structure_result <span class="sc">|&gt;</span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(layout, concepts, suggestions)</span></code></pre></div>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>structure_result <span class="ot">&lt;-</span> <span class="fu">bid_structure</span>(<span class="at">previous_stage =</span> anticipate_result)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>structure_result <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="fu">select</span>(layout, concepts, suggestions)</span></code></pre></div>
 <p>The function automatically selects an appropriate layout based on the
 content from previous stages and provides ranked, actionable suggestions
 organized by UX concepts. The layout selection is transparent with clear
@@ -514,7 +522,7 @@ and the ability to collaborate:</p>
 <span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>)</span>
 <span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a></span>
 <span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>validate_result <span class="sc">|&gt;</span></span>
-<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(summary_panel, collaboration, next_steps)</span></code></pre></div>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>  <span class="fu">select</span>(summary_panel, collaboration, next_steps)</span></code></pre></div>
 <p>The validate function acknowledges our implementation of the Peak-End
 Rule through next steps and provides suggestions for refining our
 approach.</p>
@@ -527,12 +535,12 @@ generate concrete suggestions for implementing the principles using
 common R packages:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Get {bslib} component suggestions</span></span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">bid_suggest_components</span>(structure_result, <span class="at">package =</span> <span class="st">&quot;bslib&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(component, description) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="fu">select</span>(component, description) <span class="sc">|&gt;</span></span>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">2</span>)</span>
 <span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a></span>
 <span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co"># Get {reactable} suggestions for showing data</span></span>
 <span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="fu">bid_suggest_components</span>(structure_result, <span class="at">package =</span> <span class="st">&quot;reactable&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(component, description) <span class="sc">|&gt;</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  <span class="fu">select</span>(component, description) <span class="sc">|&gt;</span></span>
 <span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">2</span>)</span>
 <span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a></span>
 <span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co"># Get suggestions from all supported packages</span></span>
@@ -548,13 +556,10 @@ process:</p>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">cat</span>(report)</span>
 <span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co"># Generate an HTML report</span></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>html_report <span class="ot">&lt;-</span> <span class="fu">bid_report</span>(</span>
-<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  validate_result,</span>
-<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">&quot;html&quot;</span></span>
-<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>)</span>
-<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a></span>
-<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co"># Generate a markdown report</span></span>
-<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>md_report <span class="ot">&lt;-</span> <span class="fu">bid_report</span>(validate_result, <span class="at">format =</span> <span class="st">&quot;markdown&quot;</span>)</span></code></pre></div>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>html_report <span class="ot">&lt;-</span> <span class="fu">bid_report</span>(validate_result, <span class="at">format =</span> <span class="st">&quot;html&quot;</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co"># Generate a markdown report</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>md_report <span class="ot">&lt;-</span> <span class="fu">bid_report</span>(validate_result, <span class="at">format =</span> <span class="st">&quot;markdown&quot;</span>)</span></code></pre></div>
 </div>
 <div id="using-bid-in-your-shiny-development-workflow" class="section level2">
 <h2>Using BID in Your Shiny Development Workflow</h2>
@@ -619,6 +624,47 @@ intuitive, engaging, and effective for your users.</p>
 <li>A UI component library implementing BID principles</li>
 <li>Testing and validation tools for dashboard evaluation</li>
 </ul>
+</div>
+<div id="integrating-telemetry-data-new-in-0.3.1" class="section level2">
+<h2>Integrating Telemetry Data (New in 0.3.1)</h2>
+<p>If you have telemetry data from user interactions,
+<code>{bidux}</code> can help transform it into actionable BID
+insights:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Modern telemetry workflow (0.3.1+)</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co"># Process telemetry data into organized issues</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>issues <span class="ot">&lt;-</span> <span class="fu">bid_telemetry</span>(<span class="st">&quot;path/to/telemetry.sqlite&quot;</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co"># Triage and review issues</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="fu">print</span>(issues)  <span class="co"># Shows organized issue summary</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co"># Convert high-priority issues to Notice stages</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>critical_issues <span class="ot">&lt;-</span> issues <span class="sc">|&gt;</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>  <span class="fu">filter</span>(severity <span class="sc">==</span> <span class="st">&quot;critical&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">3</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>notices <span class="ot">&lt;-</span> <span class="fu">bid_notices</span>(</span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a>  <span class="at">issues =</span> critical_issues,</span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a>  <span class="at">previous_stage =</span> interpret_result</span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a>)</span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="co"># Extract telemetry flags for structure optimization</span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a>flags <span class="ot">&lt;-</span> <span class="fu">bid_flags</span>(issues)</span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="co"># Use flags to inform layout selection</span></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a>structure_result <span class="ot">&lt;-</span> <span class="fu">bid_structure</span>(</span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a>  <span class="at">previous_stage =</span> anticipate_result,</span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a>  <span class="at">telemetry_flags =</span> flags</span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a>)</span></code></pre></div>
+<p>The hybrid object returned by <code>bid_ingest_telemetry()</code>
+maintains backward compatibility while providing enhanced
+functionality:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Legacy approach still works</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>legacy_notices <span class="ot">&lt;-</span> <span class="fu">bid_ingest_telemetry</span>(<span class="st">&quot;path/to/telemetry.sqlite&quot;</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="fu">length</span>(legacy_notices)  <span class="co"># Behaves like list of Notice stages</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co"># But now also provides enhanced features</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="fu">as_tibble</span>(legacy_notices)  <span class="co"># Tidy issues view</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="fu">bid_flags</span>(legacy_notices)  <span class="co"># Extract global flags</span></span></code></pre></div>
 <p>Visit <a href="https://github.com/jrwinget/bidux">github.com/jrwinget/bidux</a>
 for updates and to contribute to the package development. We welcome
 feedback and suggestions to help make the BID framework even more

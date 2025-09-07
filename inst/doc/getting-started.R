@@ -12,30 +12,30 @@ knitr::opts_chunk$set(
 ## ----concepts-----------------------------------------------------------------
 # # List all concepts
 # all_concepts <- bid_concepts()
-# head(dplyr::select(all_concepts, concept, category, description), 3)
+# head(select(all_concepts, concept, category, description), 3)
 # 
 # # Search for specific concepts
 # bid_concepts("cognitive") |>
-#   dplyr::select(concept, description, implementation_tips)
+#   select(concept, description, implementation_tips)
 
 ## ----concept_detail-----------------------------------------------------------
 # # Get information about a specific concept
 # bid_concept("Processing Fluency") |>
-#   dplyr::select(concept, description, implementation_tips)
+#   select(concept, description, implementation_tips)
 
 ## ----concept_matching---------------------------------------------------------
 # # Case-insensitive matching
 # bid_concept("hick's law") |>
-#   dplyr::select(concept, description)
+#   select(concept, description)
 # 
 # # Partial matching
 # bid_concept("proximity") |>
-#   dplyr::select(concept, description)
+#   select(concept, description)
 
 ## ----new_concepts-------------------------------------------------------------
 # # Explore new concepts from user-centric design
 # bid_concepts("visual hierarchy|breathable|gherkin") |>
-#   dplyr::select(concept, description)
+#   select(concept, description)
 
 ## ----interpret----------------------------------------------------------------
 # # Document the user's need
@@ -67,7 +67,7 @@ knitr::opts_chunk$set(
 # )
 # 
 # interpret_result |>
-#   dplyr::select(central_question, hook, tension, resolution)
+#   select(central_question, hook, tension, resolution)
 
 ## ----notice-------------------------------------------------------------------
 # # Document the problem
@@ -78,7 +78,7 @@ knitr::opts_chunk$set(
 # )
 # 
 # notice_result |>
-#   dplyr::select(problem, theory, evidence)
+#   select(problem, theory, evidence)
 
 ## ----anticipate---------------------------------------------------------------
 # # Document bias mitigation strategies
@@ -92,16 +92,14 @@ knitr::opts_chunk$set(
 # )
 # 
 # anticipate_result |>
-#   dplyr::select(bias_mitigations)
+#   select(bias_mitigations)
 
 ## ----structure----------------------------------------------------------------
 # # Document the dashboard structure
-# structure_result <- bid_structure(
-#   previous_stage = anticipate_result
-# )
+# structure_result <- bid_structure(previous_stage = anticipate_result)
 # 
 # structure_result |>
-#   dplyr::select(layout, concepts, suggestions)
+#   select(layout, concepts, suggestions)
 
 ## ----validate-----------------------------------------------------------------
 # # Document validation approach
@@ -118,17 +116,17 @@ knitr::opts_chunk$set(
 # )
 # 
 # validate_result |>
-#   dplyr::select(summary_panel, collaboration, next_steps)
+#   select(summary_panel, collaboration, next_steps)
 
 ## ----suggestions--------------------------------------------------------------
 # # Get {bslib} component suggestions
 # bid_suggest_components(structure_result, package = "bslib") |>
-#   dplyr::select(component, description) |>
+#   select(component, description) |>
 #   head(2)
 # 
 # # Get {reactable} suggestions for showing data
 # bid_suggest_components(structure_result, package = "reactable") |>
-#   dplyr::select(component, description) |>
+#   select(component, description) |>
 #   head(2)
 # 
 # # Get suggestions from all supported packages
@@ -141,11 +139,44 @@ knitr::opts_chunk$set(
 # cat(report)
 # 
 # # Generate an HTML report
-# html_report <- bid_report(
-#   validate_result,
-#   format = "html"
-# )
+# html_report <- bid_report(validate_result, format = "html")
 # 
 # # Generate a markdown report
 # md_report <- bid_report(validate_result, format = "markdown")
+
+## ----telemetry_workflow-------------------------------------------------------
+# # Modern telemetry workflow (0.3.1+)
+# # Process telemetry data into organized issues
+# issues <- bid_telemetry("path/to/telemetry.sqlite")
+# 
+# # Triage and review issues
+# print(issues)  # Shows organized issue summary
+# 
+# # Convert high-priority issues to Notice stages
+# critical_issues <- issues |>
+#   filter(severity == "critical") |>
+#   slice_head(n = 3)
+# 
+# notices <- bid_notices(
+#   issues = critical_issues,
+#   previous_stage = interpret_result
+# )
+# 
+# # Extract telemetry flags for structure optimization
+# flags <- bid_flags(issues)
+# 
+# # Use flags to inform layout selection
+# structure_result <- bid_structure(
+#   previous_stage = anticipate_result,
+#   telemetry_flags = flags
+# )
+
+## ----legacy_compatibility-----------------------------------------------------
+# # Legacy approach still works
+# legacy_notices <- bid_ingest_telemetry("path/to/telemetry.sqlite")
+# length(legacy_notices)  # Behaves like list of Notice stages
+# 
+# # But now also provides enhanced features
+# as_tibble(legacy_notices)  # Tidy issues view
+# bid_flags(legacy_notices)  # Extract global flags
 

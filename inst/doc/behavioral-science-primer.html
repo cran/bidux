@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Behavioral Science for Data Scientists: Why Your Dashboard Users Think Differently Than You Do</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Behavioral Science for Data Scientists: Why
+Your Dashboard Users Think Differently Than You Do</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(bidux)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
+<div id="introduction-the-gap-between-data-creators-and-data-users" class="section level2">
+<h2>Introduction: The Gap Between Data Creators and Data Users</h2>
+<p>As data scientists and R developers, we’re trained to think
+systematically, explore data thoroughly, and validate our assumptions.
+But here’s a reality check: your dashboard users don’t think like you
+do.</p>
+<p>Consider this scenario: - <strong>You see</strong>: A well-organized
+dashboard with 15 filters, 8 visualizations, and comprehensive data
+coverage - <strong>Your users see</strong>: An overwhelming interface
+where they can’t find what they need quickly</p>
+<p>This isn’t because your users are less intelligent; it’s because
+they’re human, and humans have predictable cognitive patterns that
+affect how they process information.</p>
+</div>
+<div id="the-core-problem-cognitive-load-vs.-analytical-depth" class="section level2">
+<h2>The Core Problem: Cognitive Load vs. Analytical Depth</h2>
+<div id="what-youre-optimized-for-as-a-data-scientist" class="section level3">
+<h3>What You’re Optimized For (as a data scientist)</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Your typical approach to data exploration</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">filter</span>(multiple_conditions) <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">group_by</span>(several_dimensions) <span class="sc">|&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="at">metric_1 =</span> <span class="fu">mean</span>(value_1, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="at">metric_2 =</span> <span class="fu">sum</span>(value_2),</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    <span class="at">metric_3 =</span> <span class="fu">median</span>(value_3),</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(metric_1))</span></code></pre></div>
+</div>
+<div id="what-your-users-need-cognitive-efficiency" class="section level3">
+<h3>What Your Users Need (cognitive efficiency)</h3>
+<ul>
+<li><strong>Quick orientation</strong>: “What am I looking at?”</li>
+<li><strong>Immediate value</strong>: “What does this mean for my
+decision?”</li>
+<li><strong>Clear next steps</strong>: “What should I do about it?”</li>
+</ul>
+</div>
+</div>
+<div id="key-behavioral-science-concepts-for-data-people" class="section level2">
+<h2>Key Behavioral Science Concepts for Data People</h2>
+<div id="cognitive-load-theory-the-mental-ram-problem" class="section level3">
+<h3>1. Cognitive Load Theory: The Mental RAM Problem</h3>
+<p>Think of human attention like computer memory: limited and easily
+overloaded.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Explore cognitive load concepts</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>cognitive_concepts <span class="ot">&lt;-</span> <span class="fu">bid_concepts</span>(<span class="st">&quot;cognitive&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>cognitive_concepts <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">select</span>(concept, description, implementation_tips) <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">3</span>)</span></code></pre></div>
+<p><strong>For dashboards, this means:</strong></p>
+<ul>
+<li>Users can only process 5-9 pieces of information simultaneously</li>
+<li>Every filter, chart, and button competes for mental resources</li>
+<li>Progressive disclosure beats comprehensive display</li>
+</ul>
+<p><strong>Practical example:</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Instead of showing all 12 KPIs at once:</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># kpi_grid &lt;- layout_columns(</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#   value_box(&quot;Revenue&quot;, &quot;$1.2M&quot;, icon = &quot;currency-dollar&quot;),</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#   value_box(&quot;Customers&quot;, &quot;15,432&quot;, icon = &quot;people&quot;),</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#   # ... 10 more value boxes</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># )</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co"># Show key metrics first, details on demand:</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>kpi_summary <span class="ot">&lt;-</span> <span class="fu">layout_columns</span>(</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">4</span>),</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Key Performance Summary&quot;</span>),</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>    <span class="fu">value_box</span>(<span class="st">&quot;Primary Goal&quot;</span>, <span class="st">&quot;$1.2M Revenue&quot;</span>, <span class="at">icon =</span> <span class="st">&quot;target&quot;</span>),</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>    <span class="fu">p</span>(<span class="st">&quot;vs. $980K target (+22%)&quot;</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  ),</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Details&quot;</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    <span class="fu">actionButton</span>(</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>      <span class="st">&quot;show_details&quot;</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>      <span class="st">&quot;View All Metrics&quot;</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>      <span class="at">class =</span> <span class="st">&quot;btn-outline-primary&quot;</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>    )</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>  )</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="anchoring-bias-the-first-number-problem" class="section level3">
+<h3>2. Anchoring Bias: The First Number Problem</h3>
+<p>Humans over-rely on the first piece of information they see. In data
+dashboards, this means the first number shown becomes a reference point
+for everything else.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Learn about anchoring</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">bid_concept</span>(<span class="st">&quot;anchoring&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">select</span>(description, implementation_tips)</span></code></pre></div>
+<p><strong>Dashboard implication:</strong></p>
+<p>If you show “Sales: $50K” first, users will judge all subsequent
+numbers relative to $50K, even if it’s not the most important
+metric.</p>
+<p><strong>Solution pattern:</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Provide context and reference points</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>sales_card <span class="ot">&lt;-</span> <span class="fu">card</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">card_header</span>(<span class="st">&quot;Monthly Sales Performance&quot;</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">layout_columns</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="fu">value_box</span>(</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;This Month&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>      <span class="at">value =</span> <span class="st">&quot;$87K&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>      <span class="at">showcase =</span> <span class="fu">bs_icon</span>(<span class="st">&quot;graph-up&quot;</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>      <span class="at">theme =</span> <span class="st">&quot;success&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>    ),</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>    <span class="fu">div</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>      <span class="fu">p</span>(<span class="st">&quot;Previous month: $65K&quot;</span>, <span class="at">style =</span> <span class="st">&quot;color: #666; margin: 0;&quot;</span>),</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>      <span class="fu">p</span>(<span class="st">&quot;Target: $80K&quot;</span>, <span class="at">style =</span> <span class="st">&quot;color: #666; margin: 0;&quot;</span>),</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>      <span class="fu">p</span>(<span class="fu">strong</span>(<span class="st">&quot;vs. Target: +9%&quot;</span>), <span class="at">style =</span> <span class="st">&quot;color: #28a745;&quot;</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    )</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  )</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="framing-effects-how-you-say-it-matters-more-than-what-you-say" class="section level3">
+<h3>3. Framing Effects: How You Say It Matters More Than What You
+Say</h3>
+<p>The same data can be interpreted completely differently based on how
+it’s presented.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Explore framing concepts</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">bid_concept</span>(<span class="st">&quot;framing&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">select</span>(description, implementation_tips)</span></code></pre></div>
+<p><strong>Example: Customer satisfaction of 73%</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Negative frame (emphasizes problems)</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>satisfaction_negative <span class="ot">&lt;-</span> <span class="fu">value_box</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="st">&quot;Customer Issues&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="st">&quot;27% Unsatisfied&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">icon =</span> <span class="st">&quot;exclamation-triangle&quot;</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="st">&quot;danger&quot;</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>)</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co"># Positive frame (emphasizes success)</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>satisfaction_positive <span class="ot">&lt;-</span> <span class="fu">value_box</span>(</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="st">&quot;Customer Satisfaction&quot;</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  <span class="st">&quot;73% Satisfied&quot;</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  <span class="at">icon =</span> <span class="st">&quot;heart-fill&quot;</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  <span class="at">theme =</span> <span class="st">&quot;success&quot;</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>)</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co"># Balanced frame (shows progress)</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>satisfaction_balanced <span class="ot">&lt;-</span> <span class="fu">card</span>(</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>  <span class="fu">card_header</span>(<span class="st">&quot;Customer Satisfaction Progress&quot;</span>),</span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>  <span class="fu">value_box</span>(<span class="st">&quot;Current Level&quot;</span>, <span class="st">&quot;73%&quot;</span>),</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>  <span class="fu">p</span>(<span class="st">&quot;Improvement needed: 17 percentage points to reach 90% target&quot;</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="choice-overload-why-more-options-create-worse-outcomes" class="section level3">
+<h3>4. Choice Overload: Why More Options Create Worse Outcomes</h3>
+<p>Research shows that too many choices lead to decision paralysis and
+user dissatisfaction.</p>
+<p><strong>The data scientist instinct:</strong></p>
+<p>“Let’s give them 20 different chart types and 15 filters so they can
+explore any question!”</p>
+<p><strong>The user reality:</strong></p>
+<ol style="list-style-type: decimal">
+<li>Use defaults and ignore customization options</li>
+<li>Get overwhelmed and abandon the task</li>
+<li>Make suboptimal choices due to cognitive fatigue</li>
+</ol>
+<p><strong>Better approach:</strong></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Instead of 15 filters visible at once</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>ui_complex <span class="ot">&lt;-</span> <span class="fu">div</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="fu">selectInput</span>(<span class="st">&quot;region&quot;</span>, <span class="st">&quot;Region&quot;</span>, <span class="at">choices =</span> regions),</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="fu">selectInput</span>(<span class="st">&quot;product&quot;</span>, <span class="st">&quot;Product&quot;</span>, <span class="at">choices =</span> products),</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="fu">selectInput</span>(<span class="st">&quot;channel&quot;</span>, <span class="st">&quot;Channel&quot;</span>, <span class="at">choices =</span> channels),</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="co"># ... 12 more filters</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>)</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co"># Use progressive disclosure</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>ui_simple <span class="ot">&lt;-</span> <span class="fu">div</span>(</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  <span class="co"># Show only the most common filters first</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>  <span class="fu">selectInput</span>(<span class="st">&quot;time_period&quot;</span>, <span class="st">&quot;Time Period&quot;</span>, <span class="at">choices =</span> time_options),</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>  <span class="fu">selectInput</span>(<span class="st">&quot;metric&quot;</span>, <span class="st">&quot;Primary Metric&quot;</span>, <span class="at">choices =</span> key_metrics),</span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>  <span class="co"># Advanced filters behind a toggle</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>  <span class="fu">accordion</span>(</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>    <span class="fu">accordion_panel</span>(</span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>      <span class="st">&quot;Advanced Filters&quot;</span>,</span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>      <span class="at">icon =</span> <span class="fu">bs_icon</span>(<span class="st">&quot;sliders&quot;</span>),</span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>      <span class="fu">selectInput</span>(<span class="st">&quot;region&quot;</span>, <span class="st">&quot;Region&quot;</span>, <span class="at">choices =</span> regions),</span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>      <span class="fu">selectInput</span>(<span class="st">&quot;product&quot;</span>, <span class="st">&quot;Product&quot;</span>, <span class="at">choices =</span> products)</span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>      <span class="co"># Additional filters here</span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a>    )</span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a>  )</span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="translating-data-science-skills-to-ux-thinking" class="section level2">
+<h2>Translating Data Science Skills to UX Thinking</h2>
+<div id="your-ab-testing-mindset-ux-validation" class="section level3">
+<h3>Your A/B Testing Mindset → UX Validation</h3>
+<p>You already know how to test hypotheses with data. Apply the same
+rigor to UX decisions:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Your typical A/B test</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">t.test</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  treatment_group<span class="sc">$</span>conversion_rate,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  control_group<span class="sc">$</span>conversion_rate</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>)</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co"># UX equivalent: Test interface variations</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>dashboard_test <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  <span class="at">control =</span> <span class="st">&quot;Current 5-chart overview page&quot;</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>  <span class="at">treatment =</span> <span class="st">&quot;Redesigned with progressive disclosure&quot;</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>)</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co"># Measure: task completion time, user satisfaction, error rates</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co"># Analyze: same statistical rigor you&#39;d apply to any experiment</span></span></code></pre></div>
+</div>
+<div id="your-data-validation-process-user-mental-model-validation" class="section level3">
+<h3>Your Data Validation Process → User Mental Model Validation</h3>
+<p>Just as you validate data quality, validate that your interface
+matches user expectations:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Document user mental models like you document data assumptions</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>user_assumptions <span class="ot">&lt;-</span> <span class="fu">bid_interpret</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">central_question =</span> <span class="st">&quot;How do sales managers think about performance?&quot;</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">data_story =</span> <span class="fu">list</span>(</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>    <span class="at">hook =</span> <span class="st">&quot;Sales managers need quick performance insights&quot;</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>    <span class="at">context =</span> <span class="st">&quot;They have 15 minutes between meetings&quot;</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>    <span class="at">tension =</span> <span class="st">&quot;Current reports take too long to interpret&quot;</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>    <span class="at">resolution =</span> <span class="st">&quot;Provide immediate visual context with drill-down capability&quot;</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  )</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>)</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co"># Validate these assumptions like you&#39;d validate data quality</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="fu">summary</span>(user_assumptions)</span></code></pre></div>
+</div>
+</div>
+<div id="the-bid-framework-a-systematic-approach-for-data-people" class="section level2">
+<h2>The BID Framework: A Systematic Approach for Data People</h2>
+<p>The BID framework gives you a systematic way to apply behavioral
+science, similar to how you approach data analysis:</p>
+<div id="stage-1-interpret-like-defining-your-research-question" class="section level3">
+<h3>Stage 1: Interpret (Like defining your research question)</h3>
+<ul>
+<li>What specific question does this dashboard answer?</li>
+<li>Who are the users and what are their constraints?</li>
+</ul>
+</div>
+<div id="stage-2-notice-like-identifying-data-quality-issues" class="section level3">
+<h3>Stage 2: Notice (Like identifying data quality issues)</h3>
+<ul>
+<li>Where do users get stuck or confused?</li>
+<li>What cognitive bottlenecks exist?</li>
+</ul>
+</div>
+<div id="stage-3-anticipate-like-checking-for-statistical-biases" class="section level3">
+<h3>Stage 3: Anticipate (Like checking for statistical biases)</h3>
+<ul>
+<li>What cognitive biases might affect interpretation?</li>
+<li>How can design mitigate these biases?</li>
+</ul>
+</div>
+<div id="stage-4-structure-like-choosing-the-right-visualization" class="section level3">
+<h3>Stage 4: Structure (Like choosing the right visualization)</h3>
+<ul>
+<li>What layout best supports the user’s mental model?</li>
+<li>How should information be hierarchically organized?</li>
+</ul>
+</div>
+<div id="stage-5-validate-like-testing-your-model" class="section level3">
+<h3>Stage 5: Validate (Like testing your model)</h3>
+<ul>
+<li>Does the user leave with clear insights?</li>
+<li>Can they take action on what they’ve learned?</li>
+</ul>
+</div>
+</div>
+<div id="practical-next-steps" class="section level2">
+<h2>Practical Next Steps</h2>
+<ol style="list-style-type: decimal">
+<li><strong>Start small</strong>: Pick one dashboard and apply the BID
+framework</li>
+<li><strong>Measure</strong>: Track user behavior metrics (time to
+insight, task completion)</li>
+<li><strong>Iterate</strong>: Use the same experimental mindset you
+apply to model development</li>
+<li><strong>Learn progressively</strong>: Use
+<code>bid_concepts()</code> to explore one behavioral principle at a
+time</li>
+</ol>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Explore available concepts by category</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>all_concepts <span class="ot">&lt;-</span> <span class="fu">bid_concepts</span>()</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">table</span>(all_concepts<span class="sc">$</span>category)</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co"># Start with these fundamental concepts for data dashboards</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>starter_concepts <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="st">&quot;Cognitive Load Theory&quot;</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="st">&quot;Anchoring Effect&quot;</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>  <span class="st">&quot;Processing Fluency&quot;</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>  <span class="st">&quot;Progressive Disclosure&quot;</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>)</span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="cf">for</span> (concept <span class="cf">in</span> starter_concepts) {</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">### &quot;</span>, concept, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>  info <span class="ot">&lt;-</span> <span class="fu">bid_concept</span>(concept)</span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>  <span class="fu">cat</span>(info<span class="sc">$</span>description[<span class="dv">1</span>], <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Implementation:&quot;</span>, info<span class="sc">$</span>implementation_tips[<span class="dv">1</span>], <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="why-this-matters-for-you" class="section level2">
+<h2>Why This Matters for You</h2>
+<p>Understanding user cognition makes you a more complete data
+professional:</p>
+<ul>
+<li><strong>Better adoption</strong>: Your analyses get used instead of
+ignored</li>
+<li><strong>Clearer communication</strong>: Stakeholders understand and
+act on your insights</li>
+<li><strong>Strategic thinking</strong>: You solve business problems,
+not just technical problems</li>
+<li><strong>Competitive advantage</strong>: Most data scientists don’t
+think about user experience</li>
+</ul>
+<p>Remember: The best analysis in the world is worthless if users can’t
+understand and act on it. Behavioral science helps bridge that gap.</p>
+</div>
+<div id="resources-for-further-learning" class="section level2">
+<h2>Resources for Further Learning</h2>
+<ul>
+<li>Use <code>bid_concepts()</code> to explore all available behavioral
+science concepts</li>
+<li>Try the <code>getting-started</code> vignette for hands-on BID
+framework practice</li>
+<li>Check out the <code>telemetry-integration</code> vignette to measure
+the impact of your UX improvements</li>
+</ul>
+<p>The goal isn’t to become a UX expert; it’s to apply your analytical
+thinking to user experience and create more effective data products.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

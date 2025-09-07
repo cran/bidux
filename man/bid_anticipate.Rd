@@ -35,39 +35,29 @@ mitigation strategies related to anchoring, framing, confirmation bias, etc.
 It also supports adding interaction hints and visual feedback elements.
 }
 \examples{
-structure_info <- bid_structure(
-  bid_interpret(
-    bid_notice(
-      "Issue with dropdown menus",
-      evidence = "User testing indicated delays"
-    ),
-    central_question = "How can we improve selection efficiency?",
-    data_story = list(
-      hook = "Too many options",
-      context = "Excessive choices",
-      tension = "User frustration",
-      resolution = "Simplify menu"
-    )
-  ),
-  concepts = c("principle_of_proximity", "default_effect")
-)
-
-# Basic usage
-bid_anticipate(
-  previous_stage = structure_info,
-  bias_mitigations = list(
-    anchoring = "Use context-aware references",
-    framing = "Toggle between positive and negative framing"
+interpret_stage <- bid_interpret(
+  central_question = "How can we improve selection efficiency?",
+  data_story = list(
+    hook = "Too many options",
+    context = "Excessive choices", 
+    tension = "User frustration",
+    resolution = "Simplify menu"
   )
 )
 
-# Let the function suggest bias mitigations based on previous stages
-bid_anticipate(
-  previous_stage = structure_info
+notice_stage <- bid_notice(
+  previous_stage = interpret_stage,
+  problem = "Issue with dropdown menus",
+  evidence = "User testing indicated delays"
 )
 
-# with accessibility included (default)
-bid_anticipate(
+structure_info <- bid_structure(previous_stage = notice_stage)
+
+# Let the function suggest bias mitigations based on previous stages
+bid_anticipate(previous_stage = structure_info)
+
+# with accessibility included (default) and custom bias mitigations
+anticipate_result <- bid_anticipate(
   previous_stage = structure_info,
   bias_mitigations = list(
     anchoring = "Use context-aware references",
@@ -75,5 +65,7 @@ bid_anticipate(
   ),
   include_accessibility = TRUE
 )
+
+summary(anticipate_result)
 
 }

@@ -11,6 +11,7 @@ bid_validate(
   next_steps = NULL,
   include_exp_design = TRUE,
   include_telemetry = TRUE,
+  telemetry_refs = NULL,
   include_empower_tools = TRUE
 )
 }
@@ -33,6 +34,11 @@ design suggestions. Default is TRUE.}
 \item{include_telemetry}{Logical indicating whether to include telemetry
 tracking and monitoring suggestions. Default is TRUE.}
 
+\item{telemetry_refs}{Optional character vector or named list specifying
+specific telemetry reference points to include in validation steps.
+If provided, these will be integrated into the telemetry tracking
+recommendations with provenance information.}
+
 \item{include_empower_tools}{Logical indicating whether to include
 context-aware empowerment tool suggestions. Default is TRUE.}
 }
@@ -45,42 +51,32 @@ This function documents the validation stage, where the user tests and
 refines the dashboard. It represents stage 5 in the BID framework.
 }
 \examples{
-structure_input <- bid_notice(
-  problem  = "Issue with dropdown menus",
-  evidence = "User testing indicated delays"
-) |>
-  bid_interpret(
-    central_question = "How can we improve selection efficiency?",
+validate_result <- bid_interpret(
+    central_question = "How can we improve delivery efficiency?",
     data_story = list(
-      hook = "Too many options",
-      context = "Excessive choices",
+      hook = "Too many delays",
+      context = "Excessive shipments",
       tension = "User frustration",
-      resolution = "Simplify menu"
+      resolution = "Increase delivery channels"
     )
+  ) |>
+  bid_notice(
+    problem  = "Issue with dropdown menus",
+    evidence = "User testing indicated delays"
+  ) |>
+  bid_anticipate(
+    bias_mitigations = list(
+      anchoring = "Provide reference points",
+      framing = "Use gain-framed messaging"
+    )
+  ) |>
+  bid_structure() |>
+  bid_validate(
+   include_exp_design = FALSE,
+   include_telemetry = TRUE,
+   include_empower_tools = TRUE
   )
 
-structure_result <- bid_structure(
-  previous_stage = structure_input,
-  concepts       = c("Principle of Proximity", "Default Effect")
-)
-
-anticipate <- bid_anticipate(
-  previous_stage = structure_result,
-  bias_mitigations = list(
-    anchoring = "Provide reference points",
-    framing   = "Use gain-framed messaging"
-  )
-)
-
-bid_validate(
-  previous_stage = anticipate,
-  summary_panel = "Clear summary of key insights with action items",
-  collaboration = "Team annotation and sharing features",
-  next_steps = c(
-    "Conduct user testing with target audience",
-    "Implement accessibility improvements",
-    "Add mobile responsiveness"
-  )
-)
+summary(validate_result)
 
 }
