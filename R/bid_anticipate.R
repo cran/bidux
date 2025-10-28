@@ -12,6 +12,8 @@
 #'        previous stages.
 #' @param include_accessibility Logical indicating whether to include
 #'        accessibility mitigations. Default is TRUE.
+#' @param quiet Logical indicating whether to suppress informational messages.
+#'        If NULL, uses getOption("bidux.quiet", FALSE).
 #' @param ... Additional parameters. If 'interaction_principles' is provided,
 #'        it will be ignored with a warning.
 #'
@@ -23,18 +25,18 @@
 #'   central_question = "How can we improve selection efficiency?",
 #'   data_story = list(
 #'     hook = "Too many options",
-#'     context = "Excessive choices", 
+#'     context = "Excessive choices",
 #'     tension = "User frustration",
 #'     resolution = "Simplify menu"
 #'   )
 #' )
-#' 
+#'
 #' notice_stage <- bid_notice(
 #'   previous_stage = interpret_stage,
 #'   problem = "Issue with dropdown menus",
 #'   evidence = "User testing indicated delays"
 #' )
-#' 
+#'
 #' structure_info <- bid_structure(previous_stage = notice_stage)
 #'
 #' # Let the function suggest bias mitigations based on previous stages
@@ -49,7 +51,7 @@
 #'   ),
 #'   include_accessibility = TRUE
 #' )
-#' 
+#'
 #' summary(anticipate_result)
 #'
 #' @export
@@ -57,17 +59,27 @@ bid_anticipate <- function(
     previous_stage,
     bias_mitigations = NULL,
     include_accessibility = TRUE,
+    quiet = NULL,
     ...) {
   if (missing(previous_stage) || is.null(previous_stage)) {
-    stop("Required parameter 'previous_stage' must be provided", call. = FALSE)
+    cli::cli_abort(standard_error_msg(
+      "Required parameter 'previous_stage' must be provided",
+      suggestions = "Provide the output from a previous BID stage function"
+    ))
   }
 
   # handle deprecated interaction_principles parameter via ...
   dots <- list(...)
   if ("interaction_principles" %in% names(dots)) {
     cli::cli_warn(c(
-      "!" = "The 'interaction_principles' parameter has been deprecated and removed.",
-      "i" = "Interaction principles are no longer explicitly tracked in the Anticipate stage.",
+      "!" = paste(
+        "The 'interaction_principles' parameter has been",
+        "deprecated and removed."
+      ),
+      "i" = paste(
+        "Interaction principles are no longer explicitly tracked",
+        "in the Anticipate stage."
+      ),
       "i" = "This parameter will be ignored in this version."
     ))
     # remove from dots to avoid issues
@@ -78,55 +90,78 @@ bid_anticipate <- function(
   if (length(dots) > 0) {
     unexpected_params <- names(dots)
     cli::cli_warn(c(
-      "!" = "Unexpected parameters provided: {paste(unexpected_params, collapse = ', ')}",
+      "!" = paste(
+        "Unexpected parameters provided:",
+        paste(unexpected_params, collapse = ", ")
+      ),
       "i" = "These will be ignored."
     ))
   }
 
   validate_previous_stage(previous_stage, "Anticipate")
 
+  # enhanced parameter validation for bias_mitigations
   if (!is.null(bias_mitigations)) {
-    if (!is.list(bias_mitigations)) {
-      cli::cli_abort(
-        c(
-          "The bias_mitigations parameter must be a list",
-          "i" = "You provided {.cls {class(bias_mitigations)}}"
-        )
-      )
-    }
-
-    if (
-      length(bias_mitigations) == 0 ||
-        is.null(names(bias_mitigations)) ||
-        any(names(bias_mitigations) == "")
-    ) {
-      cli::cli_warn(
-        c(
-          "!" = "bias_mitigations must be a non-empty named list.",
-          "i" = "Using automatically generated bias mitigations instead."
-        )
-      )
-      bias_mitigations <- NULL
-    } else {
-      empty_values <- sapply(bias_mitigations, function(x) {
-        is.null(x) || is.na(x) || (is.character(x) && nchar(trimws(x)) == 0)
-      })
-
-      if (any(empty_values)) {
-        cli::cli_warn(
-          c(
-            "!" = "bias_mitigations must be a non-empty named list.",
-            "i" = "Using automatically generated bias mitigations instead."
+    if (inherits(bias_mitigations, "bid_bias_mitigations")) {
+      # new S3 class - validate structure
+      if (!validate_bias_mitigations(bias_mitigations)) {
+        cli::cli_abort(standard_error_msg(
+          "Invalid bid_bias_mitigations object",
+          suggestions = paste(
+            "Use new_bias_mitigations() constructor to",
+            "create valid objects"
           )
-        )
+        ))
+      }
+    } else if (is.list(bias_mitigations)) {
+      # legacy list format - validate and migrate with deprecation warning
+      if (
+        length(bias_mitigations) == 0 ||
+          is.null(names(bias_mitigations)) ||
+          any(names(bias_mitigations) == "")
+      ) {
+        cli::cli_warn(c(
+          "!" = "bias_mitigations must be a non-empty named list",
+          "i" = "Using automatically generated bias mitigations instead"
+        ))
         bias_mitigations <- NULL
       } else {
-        for (i in seq_along(bias_mitigations)) {
-          if (!is.character(bias_mitigations[[i]])) {
-            bias_mitigations[[i]] <- as.character(bias_mitigations[[i]])
+        empty_values <- sapply(bias_mitigations, function(x) {
+          is.null(x) || is.na(x) || (is.character(x) && nchar(trimws(x)) == 0)
+        })
+
+        if (any(empty_values)) {
+          cli::cli_warn(c(
+            "!" = "bias_mitigations contains empty values",
+            "i" = "Using automatically generated bias mitigations instead"
+          ))
+          bias_mitigations <- NULL
+        } else {
+          # convert legacy format to character for migration
+          for (i in seq_along(bias_mitigations)) {
+            if (!is.character(bias_mitigations[[i]])) {
+              bias_mitigations[[i]] <- as.character(bias_mitigations[[i]])
+            }
           }
+
+          # migrate to new S3 class with deprecation warning
+          cli::cli_warn(c(
+            "!" = "Using deprecated list format for bias_mitigations parameter",
+            "i" = "Please use new_bias_mitigations() constructor for new code",
+            "i" = "Legacy format will be automatically migrated"
+          ))
+          bias_mitigations <- migrate_bias_mitigations(bias_mitigations)
         }
       }
+    } else {
+      cli::cli_abort(standard_error_msg(
+        "bias_mitigations must be a bid_bias_mitigations object or list",
+        context = glue::glue("You provided: {class(bias_mitigations)[1]}"),
+        suggestions = c(
+          "Use new_bias_mitigations() constructor",
+          "Or provide a named list of bias mitigation strategies"
+        )
+      ))
     }
   }
 
@@ -243,14 +278,16 @@ bid_anticipate <- function(
       # issue deprecation warning once per session (skip in tests to reduce noise)
       # use package namespace instead of global environment for CRAN compliance
       pkg_env <- asNamespace("bidux")
-      if (!exists(".bidux_layout_bias_warned", envir = pkg_env) && 
-          !identical(Sys.getenv("TESTTHAT"), "true")) {
+      if (
+        !exists(".bid_layout_bias_warned", envir = pkg_env) &&
+          !identical(Sys.getenv("TESTTHAT"), "true")
+      ) {
         warning(
           "Layout-specific bias mitigations are deprecated and will be removed in bidux 0.4.0. ",
           "Consider using concept-based bias mitigations instead.",
           call. = FALSE
         )
-        try(assign(".bidux_layout_bias_warned", TRUE, envir = pkg_env), silent = TRUE)
+        try(assign(".bid_layout_bias_warned", TRUE, envir = pkg_env), silent = TRUE)
       }
 
       layout_bias_map <- list(
@@ -422,14 +459,17 @@ bid_anticipate <- function(
         nrow(bias_info) > 0
     ) {
       implementation <- paste(
-        bias_name,
+        tools::toTitleCase(bias_name),
         "mitigation:",
-        bias_info$implementation_tips
+        normalize_text(
+          bias_info$implementation_tips,
+          remove_trailing_punct = TRUE
+        )
       )
     } else {
       implementation <- paste(
-        bias_name,
-        "mitigation: Consider how this bias affects user decisions."
+        tools::toTitleCase(bias_name),
+        "mitigation: Consider how this bias affects user decisions"
       )
     }
 
@@ -476,14 +516,33 @@ bid_anticipate <- function(
   # create result tibble
   result_data <- tibble::tibble(
     stage = "Anticipate",
-    bias_mitigations = paste(
-      names(bias_mitigations),
-      unlist(bias_mitigations),
-      sep = ": ",
-      collapse = "; "
-    ),
+    bias_mitigations = {
+      # handle both S3 class and legacy list formats
+      if (inherits(bias_mitigations, "bid_bias_mitigations")) {
+        # new S3 class format - extract data.frame and format
+        paste(
+          bias_mitigations$bias_type,
+          bias_mitigations$mitigation_strategy,
+          sep = ": ",
+          collapse = "; "
+        )
+      } else {
+        # legacy list format - exclude accessibility from bias mitigations string
+        bias_only <- bias_mitigations[names(bias_mitigations) != "accessibility"]
+        paste(
+          names(bias_only),
+          unlist(bias_only),
+          sep = ": ",
+          collapse = "; "
+        )
+      }
+    },
     accessibility = if (include_accessibility) {
-      if ("accessibility" %in% names(bias_mitigations)) {
+      if (inherits(bias_mitigations, "bid_bias_mitigations")) {
+        # S3 class format - no accessibility field expected here
+        "accessibility mitigation not specified"
+      } else if ("accessibility" %in% names(bias_mitigations)) {
+        # legacy list format
         bias_mitigations$accessibility
       } else {
         "accessibility mitigation not specified"
@@ -519,7 +578,7 @@ bid_anticipate <- function(
       layout = layout,
       concepts_count = length(concepts),
       auto_generated_biases = is.null(bias_mitigations),
-      stage_number_previous = 4  # migration support for 0.3.1
+      stage_number_previous = 4 # migration support for 0.3.1
     )
   )
 
@@ -528,7 +587,7 @@ bid_anticipate <- function(
 
   # add session-level migration notice (once per session)
   .show_stage_numbering_notice()
-  
+
   bid_message(
     "Stage 3 (Anticipate) completed.",
     paste0("Bias mitigations: ", length(names(bias_mitigations)), " defined"),
@@ -539,11 +598,11 @@ bid_anticipate <- function(
     },
     paste(
       "Key suggestions:",
-      paste(
-        bias_suggestions[seq_len(min(3, length(bias_suggestions)))],
-        collapse = ", "
+      format_suggestions(
+        bias_suggestions[seq_len(min(3, length(bias_suggestions)))]
       )
-    )
+    ),
+    quiet = quiet
   )
 
   return(result)

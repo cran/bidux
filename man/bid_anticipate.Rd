@@ -8,6 +8,7 @@ bid_anticipate(
   previous_stage,
   bias_mitigations = NULL,
   include_accessibility = TRUE,
+  quiet = NULL,
   ...
 )
 }
@@ -21,6 +22,9 @@ previous stages.}
 
 \item{include_accessibility}{Logical indicating whether to include
 accessibility mitigations. Default is TRUE.}
+
+\item{quiet}{Logical indicating whether to suppress informational messages.
+If NULL, uses getOption("bidux.quiet", FALSE).}
 
 \item{...}{Additional parameters. If 'interaction_principles' is provided,
 it will be ignored with a warning.}
@@ -39,7 +43,7 @@ interpret_stage <- bid_interpret(
   central_question = "How can we improve selection efficiency?",
   data_story = list(
     hook = "Too many options",
-    context = "Excessive choices", 
+    context = "Excessive choices",
     tension = "User frustration",
     resolution = "Simplify menu"
   )

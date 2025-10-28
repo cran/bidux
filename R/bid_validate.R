@@ -22,20 +22,22 @@
 #'        recommendations with provenance information.
 #' @param include_empower_tools Logical indicating whether to include
 #'        context-aware empowerment tool suggestions. Default is TRUE.
+#' @param quiet Logical indicating whether to suppress informational messages.
+#'        If NULL, uses getOption("bidux.quiet", FALSE).
 #'
 #' @return A tibble containing the documented information for the "Validate"
 #'         stage.
 #'
 #' @examples
 #' validate_result <- bid_interpret(
-#'     central_question = "How can we improve delivery efficiency?",
-#'     data_story = list(
-#'       hook = "Too many delays",
-#'       context = "Excessive shipments",
-#'       tension = "User frustration",
-#'       resolution = "Increase delivery channels"
-#'     )
-#'   ) |>
+#'   central_question = "How can we improve delivery efficiency?",
+#'   data_story = list(
+#'     hook = "Too many delays",
+#'     context = "Excessive shipments",
+#'     tension = "User frustration",
+#'     resolution = "Increase delivery channels"
+#'   )
+#' ) |>
 #'   bid_notice(
 #'     problem  = "Issue with dropdown menus",
 #'     evidence = "User testing indicated delays"
@@ -48,9 +50,9 @@
 #'   ) |>
 #'   bid_structure() |>
 #'   bid_validate(
-#'    include_exp_design = FALSE,
-#'    include_telemetry = TRUE,
-#'    include_empower_tools = TRUE
+#'     include_exp_design = FALSE,
+#'     include_telemetry = TRUE,
+#'     include_empower_tools = TRUE
 #'   )
 #'
 #' summary(validate_result)
@@ -64,7 +66,8 @@ bid_validate <- function(
     include_exp_design = TRUE,
     include_telemetry = TRUE,
     telemetry_refs = NULL,
-    include_empower_tools = TRUE) {
+    include_empower_tools = TRUE,
+    quiet = NULL) {
   validate_required_params(previous_stage = previous_stage)
   validate_previous_stage(previous_stage, "Validate")
 
@@ -75,7 +78,10 @@ bid_validate <- function(
 
   if (is.null(summary_panel)) {
     summary_panel <- generate_summary_panel_suggestion(previous_stage)
-    cli::cli_alert_info(paste0("Suggested summary panel: ", summary_panel))
+    bid_alert_info(
+      paste0("Suggested summary panel: ", summary_panel),
+      quiet = quiet
+    )
   }
 
   if (is.null(collaboration)) {
@@ -83,10 +89,10 @@ bid_validate <- function(
       previous_stage,
       include_empower_tools
     )
-    cli::cli_alert_info(paste0(
+    bid_alert_info(paste0(
       "Suggested collaboration features: ",
       collaboration
-    ))
+    ), quiet = quiet)
   }
 
   if (is.null(next_steps)) {
@@ -96,7 +102,7 @@ bid_validate <- function(
       include_telemetry,
       telemetry_refs
     )
-    cli::cli_alert_info("Suggested next steps:")
+    bid_alert_info("Suggested next steps:", quiet = quiet)
     for (step in next_steps) {
       cli::cli_li(step)
     }
@@ -165,7 +171,8 @@ bid_validate <- function(
       length(parse_next_steps(next_steps_formatted)),
       " items defined"
     ),
-    suggestions
+    suggestions,
+    quiet = quiet
   )
 
   return(result)
@@ -224,9 +231,8 @@ generate_summary_panel_suggestion <- function(previous_stage) {
 }
 
 generate_collaboration_suggestion <- function(
-  previous_stage,
-  include_empower_tools = TRUE
-) {
+    previous_stage,
+    include_empower_tools = TRUE) {
   # use the standardized helper function for consistency
   audience <- get_audience_from_previous(previous_stage)
 
@@ -283,11 +289,10 @@ generate_collaboration_suggestion <- function(
 }
 
 generate_next_steps_suggestion <- function(
-  previous_stage,
-  include_exp_design = TRUE,
-  include_telemetry = TRUE,
-  telemetry_refs = NULL
-) {
+    previous_stage,
+    include_exp_design = TRUE,
+    include_telemetry = TRUE,
+    telemetry_refs = NULL) {
   stage_name <- previous_stage$stage[1]
   next_steps <- character(0)
 
@@ -363,7 +368,7 @@ generate_next_steps_suggestion <- function(
       "Set up monitoring dashboards to track key performance indicators",
       "Plan post-launch telemetry analysis to validate design improvements"
     )
-    
+
     # add specific telemetry references if provided
     if (!is.null(telemetry_refs) && length(telemetry_refs) > 0) {
       telemetry_steps <- c(
@@ -371,7 +376,7 @@ generate_next_steps_suggestion <- function(
         .format_telemetry_refs_for_validation(telemetry_refs)
       )
     }
-    
+
     next_steps <- c(next_steps, telemetry_steps)
   }
 
@@ -500,146 +505,26 @@ generate_validation_suggestions <- function(
 }
 
 extract_previous_stage_info <- function(previous_stage) {
-  info <- list()
+  # use consolidated DRY helper from utils_stage.R
+  fields <- c(
+    "central_question",
+    "hook",
+    "problem",
+    "theory",
+    "audience",
+    "personas",
+    "bias_mitigations",
+    "layout",
+    "concepts",
+    "accessibility"
+  )
 
-  stage_name <- previous_stage$stage[1]
+  info <- extract_previous_stage_fields(previous_stage, fields)
 
-  if (stage_name == "Anticipate") {
-    info$bias <- safe_column_access(
-      previous_stage,
-      "bias_mitigations",
-      NA_character_
-    )
-    info$interaction <- safe_column_access(
-      previous_stage,
-      "interaction_principles",
-      NA_character_
-    )
-
-    # get information from any previous stages
-    info$layout <- safe_column_access(
-      previous_stage,
-      "previous_layout",
-      NA_character_
-    )
-    info$concepts <- safe_column_access(
-      previous_stage,
-      "previous_concepts",
-      NA_character_
-    )
-    info$accessibility <- safe_column_access(
-      previous_stage,
-      "previous_accessibility",
-      NA_character_
-    )
-    info$central_question <- safe_column_access(
-      previous_stage,
-      "previous_central_question",
-      NA_character_
-    )
-    info$problem <- safe_column_access(
-      previous_stage,
-      "previous_problem",
-      NA_character_
-    )
-    info$theory <- safe_column_access(
-      previous_stage,
-      "previous_theory",
-      NA_character_
-    )
-  } else if (stage_name == "Structure") {
-    info$layout <- safe_column_access(previous_stage, "layout", NA_character_)
-    info$concepts <- safe_column_access(
-      previous_stage,
-      "concepts",
-      NA_character_
-    )
-    info$bias <- safe_column_access(
-      previous_stage,
-      "previous_bias",
-      NA_character_
-    )
-    info$accessibility <- safe_column_access(
-      previous_stage,
-      "accessibility",
-      NA_character_
-    )
-
-    # get information from previous stages
-    info$central_question <- safe_column_access(
-      previous_stage,
-      "previous_central_question",
-      NA_character_
-    )
-    info$hook <- safe_column_access(
-      previous_stage,
-      "previous_hook",
-      NA_character_
-    )
-    info$problem <- safe_column_access(
-      previous_stage,
-      "previous_problem",
-      NA_character_
-    )
-    info$theory <- safe_column_access(
-      previous_stage,
-      "previous_theory",
-      NA_character_
-    )
-    info$audience <- safe_column_access(
-      previous_stage,
-      "previous_audience",
-      NA_character_
-    )
-    info$personas <- safe_column_access(
-      previous_stage,
-      "previous_personas",
-      NA_character_
-    )
-  } else if (stage_name == "Interpret") {
-    info$central_question <- safe_column_access(
-      previous_stage,
-      "central_question",
-      NA_character_
-    )
-    info$hook <- safe_column_access(
-      previous_stage,
-      "hook",
-      NA_character_
-    )
-    info$audience <- safe_column_access(
-      previous_stage,
-      "audience",
-      NA_character_
-    )
-    info$personas <- safe_column_access(
-      previous_stage,
-      "personas",
-      NA_character_
-    )
-
-    # get information from previous stages
-    info$problem <- safe_column_access(
-      previous_stage,
-      "previous_problem",
-      NA_character_
-    )
-    info$theory <- safe_column_access(
-      previous_stage,
-      "previous_theory",
-      NA_character_
-    )
-  } else if (stage_name == "Notice") {
-    info$problem <- safe_column_access(
-      previous_stage,
-      "problem",
-      NA_character_
-    )
-    info$theory <- safe_column_access(
-      previous_stage,
-      "theory",
-      NA_character_
-    )
+  # rename bias_mitigations to bias for backward compatibility
+  if ("bias_mitigations" %in% names(info)) {
+    info$bias <- info$bias_mitigations
+    info$bias_mitigations <- NULL
   }
 
   return(info)

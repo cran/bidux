@@ -12,7 +12,8 @@ bid_validate(
   include_exp_design = TRUE,
   include_telemetry = TRUE,
   telemetry_refs = NULL,
-  include_empower_tools = TRUE
+  include_empower_tools = TRUE,
+  quiet = NULL
 )
 }
 \arguments{
@@ -41,6 +42,9 @@ recommendations with provenance information.}
 
 \item{include_empower_tools}{Logical indicating whether to include
 context-aware empowerment tool suggestions. Default is TRUE.}
+
+\item{quiet}{Logical indicating whether to suppress informational messages.
+If NULL, uses getOption("bidux.quiet", FALSE).}
 }
 \value{
 A tibble containing the documented information for the "Validate"
@@ -52,14 +56,14 @@ refines the dashboard. It represents stage 5 in the BID framework.
 }
 \examples{
 validate_result <- bid_interpret(
-    central_question = "How can we improve delivery efficiency?",
-    data_story = list(
-      hook = "Too many delays",
-      context = "Excessive shipments",
-      tension = "User frustration",
-      resolution = "Increase delivery channels"
-    )
-  ) |>
+  central_question = "How can we improve delivery efficiency?",
+  data_story = list(
+    hook = "Too many delays",
+    context = "Excessive shipments",
+    tension = "User frustration",
+    resolution = "Increase delivery channels"
+  )
+) |>
   bid_notice(
     problem  = "Issue with dropdown menus",
     evidence = "User testing indicated delays"
@@ -72,9 +76,9 @@ validate_result <- bid_interpret(
   ) |>
   bid_structure() |>
   bid_validate(
-   include_exp_design = FALSE,
-   include_telemetry = TRUE,
-   include_empower_tools = TRUE
+    include_exp_design = FALSE,
+    include_telemetry = TRUE,
+    include_empower_tools = TRUE
   )
 
 summary(validate_result)

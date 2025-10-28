@@ -8,11 +8,13 @@ knitr::opts_chunk$set(
 ## ----setup--------------------------------------------------------------------
 # library(bidux)
 # library(dplyr)
-# library(purrr)
 
 ## ----automated-bid-pipeline---------------------------------------------------
 # # Create a comprehensive BID analysis function
-# analyze_dashboard_ux <- function(dashboard_config, telemetry_path = NULL) {
+# analyze_dashboard_ux <- function(
+#     dashboard_config,
+#     telemetry_path = NULL,
+#     telemetry_sensitivity = "moderate") {
 #   # Stage 1: Interpret (from configuration)
 #   interpret_stage <- bid_interpret(
 #     central_question = dashboard_config$central_question,
@@ -22,8 +24,13 @@ knitr::opts_chunk$set(
 # 
 #   # If telemetry exists, integrate it into the workflow
 #   if (!is.null(telemetry_path) && file.exists(telemetry_path)) {
-#     # Ingest telemetry and identify issues
-#     telemetry_issues <- bid_telemetry(telemetry_path)
+#     # Ingest telemetry with sensitivity preset (new in 0.3.2)
+#     # Choose "strict" for new dashboards, "moderate" for established ones,
+#     # or "relaxed" for mature, stable dashboards
+#     telemetry_issues <- bid_telemetry(
+#       telemetry_path,
+#       thresholds = bid_telemetry_presets(telemetry_sensitivity)
+#     )
 # 
 #     # Convert top issues to Notice stages
 #     notice_stages <- bid_notices(
@@ -68,9 +75,6 @@ knitr::opts_chunk$set(
 #   # Stage 5: Validate with domain-specific next steps
 #   validate_stage <- bid_validate(
 #     previous_stage = structure_stage,
-#     summary_panel = generate_summary_panel(dashboard_config),
-#     collaboration = get_collaboration_features(dashboard_config$team_size),
-#     next_steps = generate_next_steps(dashboard_config, structure_stage)
 #   )
 # 
 #   return(validate_stage)
@@ -156,6 +160,122 @@ knitr::opts_chunk$set(
 # # Run portfolio analysis
 # portfolio_results <- analyze_dashboard_portfolio(dashboard_portfolio)
 
+## ----telemetry-presets--------------------------------------------------------
+# # STRICT: For critical applications or new dashboards
+# # Flags even minor issues (e.g., inputs used by < 2% of sessions)
+# critical_dashboard_analysis <- function(telemetry_path) {
+#   # Use strict thresholds for critical business dashboards
+#   issues <- bid_telemetry(
+#     telemetry_path,
+#     thresholds = bid_telemetry_presets("strict")
+#   )
+# 
+#   # Strict preset catches early warning signs
+#   # Example thresholds:
+#   #   - unused_input_threshold: 0.02 (2% usage)
+#   #   - delay_threshold_secs: 20 seconds
+#   #   - error_rate_threshold: 0.05 (5% of sessions)
+# 
+#   return(issues)
+# }
+# 
+# # MODERATE: Default balanced approach for most applications
+# standard_dashboard_analysis <- function(telemetry_path) {
+#   # Balanced sensitivity for established dashboards
+#   issues <- bid_telemetry(
+#     telemetry_path,
+#     thresholds = bid_telemetry_presets("moderate")
+#   )
+# 
+#   # Moderate preset provides good signal-to-noise ratio
+#   # Example thresholds:
+#   #   - unused_input_threshold: 0.05 (5% usage)
+#   #   - delay_threshold_secs: 30 seconds
+#   #   - error_rate_threshold: 0.1 (10% of sessions)
+# 
+#   return(issues)
+# }
+# 
+# # RELAXED: For mature, stable dashboards
+# mature_dashboard_analysis <- function(telemetry_path) {
+#   # Only flag major issues in stable production dashboards
+#   issues <- bid_telemetry(
+#     telemetry_path,
+#     thresholds = bid_telemetry_presets("relaxed")
+#   )
+# 
+#   # Relaxed preset focuses on severe problems
+#   # Example thresholds:
+#   #   - unused_input_threshold: 0.1 (10% usage)
+#   #   - delay_threshold_secs: 60 seconds
+#   #   - error_rate_threshold: 0.2 (20% of sessions)
+# 
+#   return(issues)
+# }
+# 
+# # Adaptive sensitivity based on dashboard lifecycle
+# adaptive_telemetry_analysis <- function(
+#     telemetry_path,
+#     dashboard_age_days,
+#     is_critical = FALSE) {
+#   # Choose sensitivity based on dashboard maturity and criticality
+#   sensitivity <- if (is_critical) {
+#     "strict"
+#   } else if (dashboard_age_days < 30) {
+#     "strict" # New dashboards need close monitoring
+#   } else if (dashboard_age_days < 180) {
+#     "moderate" # Maturing dashboards
+#   } else {
+#     "relaxed" # Stable, mature dashboards
+#   }
+# 
+#   issues <- bid_telemetry(
+#     telemetry_path,
+#     thresholds = bid_telemetry_presets(sensitivity)
+#   )
+# 
+#   cli::cli_alert_info(
+#     "Using {sensitivity} sensitivity for {dashboard_age_days}-day-old dashboard"
+#   )
+# 
+#   return(issues)
+# }
+# 
+# # Compare findings across different sensitivity levels
+# compare_sensitivity_levels <- function(telemetry_path) {
+#   strict_issues <- bid_telemetry(
+#     telemetry_path,
+#     thresholds = bid_telemetry_presets("strict")
+#   )
+# 
+#   moderate_issues <- bid_telemetry(
+#     telemetry_path,
+#     thresholds = bid_telemetry_presets("moderate")
+#   )
+# 
+#   relaxed_issues <- bid_telemetry(
+#     telemetry_path,
+#     thresholds = bid_telemetry_presets("relaxed")
+#   )
+# 
+#   # Compare issue counts at different sensitivity levels
+#   comparison <- data.frame(
+#     sensitivity = c("strict", "moderate", "relaxed"),
+#     total_issues = c(
+#       nrow(strict_issues),
+#       nrow(moderate_issues),
+#       nrow(relaxed_issues)
+#     ),
+#     critical_issues = c(
+#       nrow(filter(strict_issues, severity == "critical")),
+#       nrow(filter(moderate_issues, severity == "critical")),
+#       nrow(filter(relaxed_issues, severity == "critical"))
+#     )
+#   )
+# 
+#   return(comparison)
+# }
+
 ## ----custom-concepts----------------------------------------------------------
 # # Add domain-specific behavioral concepts
 # add_custom_concepts <- function() {
@@ -223,7 +343,6 @@ knitr::opts_chunk$set(
 # 
 #   if (layout == "dual_process") {
 #     insights$layout_analysis <- "Dual-process layout chosen. Good for financial dashboards requiring both summary and detailed analysis."
-#     )
 #   }
 # 
 #   # Check for domain-specific bias considerations
@@ -413,17 +532,42 @@ knitr::opts_chunk$set(
 # }
 # 
 # # Automated UX health reporting
-# generate_ux_health_report <- function(monitoring_system, time_period = "week") {
+# generate_ux_health_report <- function(
+#     monitoring_system,
+#     time_period = "week",
+#     use_adaptive_sensitivity = TRUE) {
 #   health_data <- map(
 #     monitoring_system$telemetry_sources,
 #     function(source) {
-#       issues <- bid_telemetry(source$path, time_filter = time_period)
+#       # Use adaptive sensitivity based on dashboard maturity
+#       if (use_adaptive_sensitivity && !is.null(source$dashboard_age_days)) {
+#         sensitivity <- if (source$is_critical %||% FALSE) {
+#           "strict"
+#         } else if (source$dashboard_age_days < 30) {
+#           "strict"
+#         } else if (source$dashboard_age_days < 180) {
+#           "moderate"
+#         } else {
+#           "relaxed"
+#         }
+#         thresholds <- bid_telemetry_presets(sensitivity)
+#       } else {
+#         # Default to moderate sensitivity
+#         thresholds <- bid_telemetry_presets("moderate")
+#         sensitivity <- "moderate"
+#       }
+# 
+#       issues <- bid_telemetry(
+#         source$path,
+#         thresholds = thresholds
+#       )
 # 
 #       health_scores <- calculate_ux_health_scores(issues)
 #       trend_analysis <- calculate_ux_trends(issues, source$historical_data)
 # 
 #       list(
 #         dashboard = source$dashboard_name,
+#         sensitivity_used = sensitivity,
 #         current_health = health_scores,
 #         trends = trend_analysis,
 #         recommendations = generate_health_recommendations(
@@ -505,18 +649,35 @@ knitr::opts_chunk$set(
 #       list(
 #         dashboard_name = "Executive Dashboard",
 #         path = "exec_dashboard_telemetry.sqlite",
-#         historical_data = "exec_dashboard_history.rds"
+#         historical_data = "exec_dashboard_history.rds",
+#         dashboard_age_days = 365, # Mature dashboard
+#         is_critical = TRUE # Executive-facing = critical
 #       ),
 #       list(
 #         dashboard_name = "Sales Analytics",
 #         path = "sales_dashboard_telemetry.sqlite",
-#         historical_data = "sales_dashboard_history.rds"
+#         historical_data = "sales_dashboard_history.rds",
+#         dashboard_age_days = 45, # Recently launched
+#         is_critical = FALSE
+#       ),
+#       list(
+#         dashboard_name = "Marketing Performance",
+#         path = "marketing_dashboard_telemetry.sqlite",
+#         historical_data = "marketing_dashboard_history.rds",
+#         dashboard_age_days = 15, # Brand new
+#         is_critical = FALSE
 #       )
 #     )
 #   )
 # 
-#   # Generate weekly health report
-#   weekly_report <- generate_ux_health_report(portfolio_monitoring)
+#   # Generate weekly health report with adaptive sensitivity
+#   # Executive Dashboard: uses "strict" (critical = TRUE)
+#   # Sales Analytics: uses "moderate" (45 days old)
+#   # Marketing Performance: uses "strict" (15 days old, new dashboard)
+#   weekly_report <- generate_ux_health_report(
+#     portfolio_monitoring,
+#     use_adaptive_sensitivity = TRUE
+#   )
 # 
 #   return(weekly_report)
 # }
@@ -569,39 +730,34 @@ knitr::opts_chunk$set(
 #   return(bid_security_stage)
 # }
 # 
-# # Example: Accessibility-focused BID stage
-# bid_accessibility <- function(
+# # Example: Accessibility-focused analysis using existing functions
+# create_accessibility_analysis <- function(
 #     previous_stage,
 #     wcag_level = "AA",
 #     assistive_tech_support = TRUE,
 #     target_disabilities = c("visual", "motor", "cognitive")) {
-#   validate_previous_stage(previous_stage, "Accessibility")
+#   # Use existing bid_concept function to get accessibility recommendations
+#   contrast_info <- bid_concept("Accessibility Contrast")
+#   keyboard_info <- bid_concept("Keyboard Navigation")
+#   screen_reader_info <- bid_concept("Screen Reader Compatibility")
 # 
-#   # Comprehensive accessibility analysis
-#   accessibility_audit <- perform_accessibility_audit(
-#     previous_stage = previous_stage,
-#     wcag_level = wcag_level,
-#     target_disabilities = target_disabilities
+#   # Create basic accessibility recommendations using existing concepts
+#   accessibility_recommendations <- c(
+#     contrast_info$implementation_tips[1],
+#     keyboard_info$implementation_tips[1],
+#     screen_reader_info$implementation_tips[1]
 #   )
 # 
-#   # Generate specific recommendations
-#   a11y_recommendations <- generate_accessibility_recommendations(
-#     audit_results = accessibility_audit,
-#     layout = safe_column_access(previous_stage, "layout"),
-#     existing_concepts = safe_column_access(previous_stage, "concepts")
-#   )
-# 
-#   result_data <- tibble(
-#     stage = "Accessibility",
+#   # Create a summary rather than a bid_stage since this is just an example
+#   accessibility_analysis <- list(
 #     wcag_level = wcag_level,
 #     assistive_tech_support = assistive_tech_support,
-#     accessibility_score = accessibility_audit$overall_score,
-#     recommendations = paste(a11y_recommendations, collapse = "; "),
-#     critical_issues = accessibility_audit$critical_issues_count,
-#     timestamp = Sys.time()
+#     target_disabilities = target_disabilities,
+#     recommendations = accessibility_recommendations,
+#     concepts_referenced = c("Accessibility Contrast", "Keyboard Navigation", "Screen Reader Compatibility")
 #   )
 # 
-#   return(bid_stage("Accessibility", result_data))
+#   return(accessibility_analysis)
 # }
 # 
 # # Integration with main BID workflow
@@ -625,13 +781,14 @@ knitr::opts_chunk$set(
 # 
 #   structure_stage <- bid_structure(previous_stage = anticipate_stage)
 # 
-#   # Custom stages
+#   # Custom accessibility analysis
 #   if (config$include_accessibility) {
-#     accessibility_stage <- bid_accessibility(
+#     accessibility_analysis <- create_accessibility_analysis(
 #       previous_stage = structure_stage,
 #       wcag_level = config$accessibility_requirements$wcag_level
 #     )
-#     final_stage <- accessibility_stage
+#     # Note: This analysis can inform the validate stage
+#     final_stage <- structure_stage
 #   } else {
 #     final_stage <- structure_stage
 #   }
@@ -717,29 +874,81 @@ knitr::opts_chunk$set(
 # }
 
 ## ----documentation-practices--------------------------------------------------
+# # Helper function to extract BID stage summary using existing functions
+# extract_bid_summary <- function(bid_result) {
+#   if (inherits(bid_result, "bid_stage")) {
+#     # Single stage, extract key information
+#     stage_info <- list(
+#       stage = get_stage(bid_result),
+#       timestamp = bid_result$timestamp[1],
+#       key_fields = names(bid_result)[!names(bid_result) %in% c("stage", "timestamp")]
+#     )
+#     return(stage_info)
+#   } else if (is.list(bid_result)) {
+#     # Multiple stages, summarize each
+#     summary_list <- lapply(bid_result, function(stage) {
+#       if (inherits(stage, "bid_stage")) {
+#         list(
+#           stage = get_stage(stage),
+#           timestamp = stage$timestamp[1]
+#         )
+#       } else {
+#         list(stage = "unknown", timestamp = NA)
+#       }
+#     })
+#     return(summary_list)
+#   } else {
+#     return(list(error = "Unable to extract summary from provided object"))
+#   }
+# }
+# 
 # # Create comprehensive BID documentation
 # document_bid_decisions <- function(bid_result, project_context) {
 #   documentation <- list(
 #     project_overview = project_context,
 #     bid_stages_summary = extract_bid_summary(bid_result),
-#     key_decisions = extract_key_decisions(bid_result),
-#     behavioral_science_rationale = extract_behavioral_rationale(bid_result),
-#     implementation_guidelines = generate_implementation_guide(bid_result),
-#     success_metrics = define_success_metrics(bid_result),
-#     iteration_plan = create_iteration_plan(bid_result)
+#     # Use existing bid_report functionality instead of custom functions
+#     detailed_report = if (inherits(bid_result, "bid_stage")) {
+#       "Use bid_report(bid_result) for detailed documentation"
+#     } else {
+#       "Provide bid_stage object to generate detailed report"
+#     }
 #   )
 # 
 #   return(documentation)
 # }
 
 ## ----collaborative-workflows--------------------------------------------------
-# # Enable team collaboration on BID analysis
+# # Helper function for consensus building using existing concepts
+# build_consensus_on_bid_decisions <- function(team_members) {
+#   # Use existing bid_concept to get collaboration guidance
+#   cooperation_info <- bid_concept("Cooperation & Coordination")
+# 
+#   consensus_framework <- list(
+#     team_size = length(team_members),
+#     collaboration_approach = cooperation_info$implementation_tips[1],
+#     recommended_process = c(
+#       "Review BID stages individually with each team member",
+#       "Identify areas of agreement and disagreement",
+#       "Use bid_concepts() to find relevant behavioral science principles",
+#       "Document final decisions with rationale"
+#     ),
+#     tools = "Use bid_report() to share findings across team"
+#   )
+# 
+#   return(consensus_framework)
+# }
+# 
+# # Enable team collaboration on BID analysis using existing functions
 # create_bid_collaboration_workflow <- function(team_members, project_config) {
 #   workflow <- list(
-#     stakeholder_input = collect_stakeholder_perspectives(team_members),
-#     expert_review = facilitate_expert_review_process(project_config),
+#     team_composition = list(
+#       members = team_members,
+#       roles = c("UX Designer", "Data Analyst", "Product Manager", "Developer")
+#     ),
 #     consensus_building = build_consensus_on_bid_decisions(team_members),
-#     implementation_coordination = coordinate_implementation_tasks(team_members)
+#     documentation_approach = "Use bid_report() for comprehensive documentation",
+#     concept_reference = "Use bid_concepts() to explore relevant principles together"
 #   )
 # 
 #   return(workflow)
@@ -767,5 +976,155 @@ knitr::opts_chunk$set(
 #       recommendations = generate_org_recommendations(patterns, anti_patterns)
 #     )
 #   )
+# }
+
+## ----complete-workflow-example------------------------------------------------
+# # Real-world scenario: Quarterly UX review for multiple dashboards
+# quarterly_ux_review <- function() {
+#   # Dashboard portfolio with different maturity levels
+#   dashboards <- list(
+#     list(
+#       name = "C-Suite Executive Dashboard",
+#       telemetry_path = "data/exec_telemetry.sqlite",
+#       age_days = 450,
+#       is_critical = TRUE,
+#       central_question = "Are executives getting insights efficiently?",
+#       data_story = new_data_story(
+#         hook = "Board meetings consume excessive time on data interpretation",
+#         context = "Executive team needs faster decision support",
+#         tension = "Current dashboard has too many options",
+#         resolution = "Streamline to key metrics with progressive disclosure"
+#       )
+#     ),
+#     list(
+#       name = "Sales Team Analytics",
+#       telemetry_path = "data/sales_telemetry.sqlite",
+#       age_days = 60,
+#       is_critical = FALSE,
+#       central_question = "Why are sales reps abandoning the dashboard?",
+#       data_story = new_data_story(
+#         hook = "Sales dashboard usage dropped 40% in last month",
+#         context = "Recently redesigned with new features",
+#         tension = "Unclear if design or data quality issue",
+#         resolution = "Use telemetry to identify friction points"
+#       )
+#     ),
+#     list(
+#       name = "Marketing Campaign Tracker",
+#       telemetry_path = "data/marketing_telemetry.sqlite",
+#       age_days = 10,
+#       is_critical = FALSE,
+#       central_question = "Is the new campaign dashboard intuitive?",
+#       data_story = new_data_story(
+#         hook = "Brand new dashboard for campaign tracking",
+#         context = "Marketing team transitioning from Excel",
+#         tension = "Need to catch UX issues early",
+#         resolution = "Aggressive monitoring for first 30 days"
+#       )
+#     )
+#   )
+# 
+#   # Process each dashboard with appropriate sensitivity
+#   results <- lapply(dashboards, function(dashboard) {
+#     # Choose sensitivity based on criticality and maturity
+#     sensitivity <- if (dashboard$is_critical) {
+#       "strict"
+#     } else if (dashboard$age_days < 30) {
+#       "strict" # New dashboards
+#     } else if (dashboard$age_days < 180) {
+#       "moderate" # Maturing
+#     } else {
+#       "relaxed" # Stable
+#     }
+# 
+#     cli::cli_h2("Analyzing: {dashboard$name}")
+#     cli::cli_alert_info(
+#       "Dashboard age: {dashboard$age_days} days | Sensitivity: {sensitivity}"
+#     )
+# 
+#     # Run telemetry analysis with appropriate preset
+#     issues <- bid_telemetry(
+#       dashboard$telemetry_path,
+#       thresholds = bid_telemetry_presets(sensitivity)
+#     )
+# 
+#     if (nrow(issues) == 0) {
+#       cli::cli_alert_success("No significant UX issues detected")
+#       return(NULL)
+#     }
+# 
+#     # Run full BID pipeline on top issues
+#     interpret_stage <- bid_interpret(
+#       central_question = dashboard$central_question,
+#       data_story = dashboard$data_story
+#     )
+# 
+#     # Convert critical issues to Notice stages
+#     critical_issues <- issues |>
+#       filter(severity %in% c("critical", "high")) |>
+#       slice_head(n = 3)
+# 
+#     if (nrow(critical_issues) > 0) {
+#       notices <- bid_notices(
+#         issues = critical_issues,
+#         previous_stage = interpret_stage
+#       )
+# 
+#       # Work through BID stages for primary issue
+#       primary_notice <- notices[[1]]
+# 
+#       anticipate_stage <- bid_anticipate(
+#         previous_stage = primary_notice
+#       )
+# 
+#       # Use telemetry flags to inform structure
+#       flags <- bid_flags(issues)
+#       structure_stage <- bid_structure(
+#         previous_stage = anticipate_stage,
+#         telemetry_flags = flags
+#       )
+# 
+#       validate_stage <- bid_validate(
+#         previous_stage = structure_stage
+#       )
+# 
+#       return(
+#         list(
+#           dashboard = dashboard$name,
+#           sensitivity = sensitivity,
+#           total_issues = nrow(issues),
+#           critical_issues = nrow(critical_issues),
+#           bid_analysis = validate_stage,
+#           recommendations = extract_recommendations(validate_stage)
+#         )
+#       )
+#     }
+# 
+#     return(NULL)
+#   })
+# 
+#   # Filter out NULL results
+#   results <- results[!sapply(results, is.null)]
+# 
+#   # Generate executive summary
+#   cli::cli_h1("Quarterly UX Review Summary")
+#   cli::cli_alert_info("Analyzed {length(dashboards)} dashboards")
+#   cli::cli_alert_warning(
+#     "{length(results)} dashboards have critical UX issues requiring attention"
+#   )
+# 
+#   return(results)
+# }
+# 
+# # Helper to extract recommendations from validate stage
+# extract_recommendations <- function(validate_stage) {
+#   # This is a simplified example - customize based on your needs
+#   if (inherits(validate_stage, "bid_stage")) {
+#     suggestions <- safe_column_access(validate_stage, "suggestions")
+#     if (!is.null(suggestions)) {
+#       return(suggestions)
+#     }
+#   }
+#   return("See full BID analysis for recommendations")
 # }
 
