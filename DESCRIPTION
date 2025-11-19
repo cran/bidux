@@ -1,7 +1,7 @@
 Package: bidux
 Title: Behavioral Insight Design: A Toolkit for Integrating Behavioral
         Science in UI/UX Design
-Version: 0.3.2
+Version: 0.3.3
 Authors@R: 
     person(
         given = "Jeremy",
@@ -10,27 +10,28 @@ Authors@R:
         email="contact@jrwinget.com",
         comment = c(ORCID = "0000-0002-3783-4354")
     )
-Description: Provides a framework and toolkit to guide 'shiny' developers in
+Description: Provides a framework and toolkit to guide R dashboard developers in
     implementing the Behavioral Insight Design (BID) framework. The package offers
     functions for documenting each of the five stages (Interpret, Notice,
     Anticipate, Structure, and Validate), along with a comprehensive concept
-    dictionary.
+    dictionary. Works with both 'shiny' applications and 'Quarto' dashboards.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 4.1.0)
 RoxygenNote: 7.3.2
-Imports: cli, DBI, dplyr, glue, jsonlite, readr (>= 2.1.5), rlang,
-        RSQLite, stats, stringdist (>= 0.9.15), tibble (>= 3.2.1),
-        tools, utils
-Suggests: DiagrammeR, knitr, rmarkdown, spelling, testthat (>= 3.0.0)
+Imports: cli, DBI, dplyr, glue, janitor, jsonlite, readr (>= 2.1.5),
+        rlang, RSQLite, stats, stringdist (>= 0.9.15), tibble (>=
+        3.2.1), tools, utils
+Suggests: DiagrammeR, knitr, rmarkdown, spelling, testthat (>= 3.0.0),
+        withr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Language: en-US
 URL: https://jrwinget.github.io/bidux/
 NeedsCompilation: no
-Packaged: 2025-10-28 21:34:47 UTC; user
+Packaged: 2025-11-19 20:22:17 UTC; user
 Author: Jeremy Winget [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-3783-4354>)
 Maintainer: Jeremy Winget <contact@jrwinget.com>
 Repository: CRAN
-Date/Publication: 2025-10-28 22:00:02 UTC
+Date/Publication: 2025-11-19 20:40:02 UTC

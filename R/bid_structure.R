@@ -25,7 +25,9 @@
 #' @return A bid_stage object containing:
 #'   \item{stage}{"Structure"}
 #'   \item{layout}{Auto-selected layout type}
-#'   \item{suggestions}{List of concept groups with ranked suggestions}
+#'   \item{suggestions}{List of concept groups with ranked suggestions (nested format)}
+#'   \item{suggestions_tbl}{Flattened tibble with all suggestions, includes columns:
+#'     concept, title, details, components, rationale, score, difficulty, category}
 #'   \item{concepts}{Comma-separated string of all concepts used}
 #'
 #' @details
@@ -39,9 +41,12 @@
 #' - **tabs**: For categorical organization (unless telemetry shows issues)
 #'
 #' **Suggestion Engine**: Generates ranked, actionable recommendations grouped
-#' by UX concepts. Each suggestion includes specific Shiny/bslib components,
-#' implementation details, and rationale. Suggestions are scored based on
-#' relevance, layout appropriateness, and contextual factors.
+#' by UX concepts. Each suggestion includes specific R dashboard components
+#' (Shiny, bslib, DT, plotly, etc.), implementation details, and rationale.
+#' Suggestions are scored based on relevance, layout appropriateness, and
+#' contextual factors. Component suggestions work with both Shiny applications
+#' and Quarto dashboards, with shiny-prefixed components (i.e., `shiny::`)
+#' requiring Shiny runtime.
 #'
 #' @examples
 #' notice_result <- bid_interpret(
@@ -61,7 +66,17 @@
 #' # Auto-selected layout with concept-grouped suggestions
 #' structure_result <- bid_structure(previous_stage = notice_result)
 #' print(structure_result$layout) # Auto-selected layout
-#' print(structure_result$suggestions) # Ranked suggestions by concept
+#' print(structure_result$suggestions) # Ranked suggestions by concept (nested)
+#'
+#' # Access flattened tibble format for easier manipulation
+#' suggestions_flat <- structure_result$suggestions_tbl[[1]]
+#' print(suggestions_flat)
+#'
+#' # Filter by difficulty
+#' easy_suggestions <- suggestions_flat[suggestions_flat$difficulty == "Easy", ]
+#'
+#' # Filter by category
+#' layout_suggestions <- suggestions_flat[suggestions_flat$category == "Layout", ]
 #'
 #' summary(structure_result)
 #'
@@ -113,13 +128,17 @@ bid_structure <- function(
   suggestion_groups <- structure_suggestions(
     previous_stage,
     chosen_layout,
-    concepts
+    concepts,
+    quiet = quiet
   )
 
   concepts_detected <- sapply(suggestion_groups, function(g) g$concept)
   if (length(concepts_detected) == 0) {
     concepts_detected <- character(0)
   }
+
+  # create flattened tibble version of suggestions
+  suggestions_tbl <- flatten_suggestions_to_tibble(suggestion_groups)
 
   normalized_previous <- normalize_previous_stage(previous_stage)
 
@@ -141,6 +160,9 @@ bid_structure <- function(
     suggestions = suggestion_groups,
     timestamp = .now()
   )
+
+  # add suggestions_tbl as a list column (after tibble creation to avoid issues)
+  result_data$suggestions_tbl <- list(suggestions_tbl)
 
   metadata <- list(
     layout_type = chosen_layout,

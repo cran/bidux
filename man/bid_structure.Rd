@@ -36,7 +36,9 @@ function will abort with a helpful error message.}
 A bid_stage object containing:
 \item{stage}{"Structure"}
 \item{layout}{Auto-selected layout type}
-\item{suggestions}{List of concept groups with ranked suggestions}
+\item{suggestions}{List of concept groups with ranked suggestions (nested format)}
+\item{suggestions_tbl}{Flattened tibble with all suggestions, includes columns:
+concept, title, details, components, rationale, score, difficulty, category}
 \item{concepts}{Comma-separated string of all concepts used}
 }
 \description{
@@ -59,9 +61,12 @@ from previous stages and select the most appropriate layout:
 }
 
 \strong{Suggestion Engine}: Generates ranked, actionable recommendations grouped
-by UX concepts. Each suggestion includes specific Shiny/bslib components,
-implementation details, and rationale. Suggestions are scored based on
-relevance, layout appropriateness, and contextual factors.
+by UX concepts. Each suggestion includes specific R dashboard components
+(Shiny, bslib, DT, plotly, etc.), implementation details, and rationale.
+Suggestions are scored based on relevance, layout appropriateness, and
+contextual factors. Component suggestions work with both Shiny applications
+and Quarto dashboards, with shiny-prefixed components (i.e., \verb{shiny::})
+requiring Shiny runtime.
 }
 \examples{
 notice_result <- bid_interpret(
@@ -81,7 +86,17 @@ notice_result <- bid_interpret(
 # Auto-selected layout with concept-grouped suggestions
 structure_result <- bid_structure(previous_stage = notice_result)
 print(structure_result$layout) # Auto-selected layout
-print(structure_result$suggestions) # Ranked suggestions by concept
+print(structure_result$suggestions) # Ranked suggestions by concept (nested)
+
+# Access flattened tibble format for easier manipulation
+suggestions_flat <- structure_result$suggestions_tbl[[1]]
+print(suggestions_flat)
+
+# Filter by difficulty
+easy_suggestions <- suggestions_flat[suggestions_flat$difficulty == "Easy", ]
+
+# Filter by category
+layout_suggestions <- suggestions_flat[suggestions_flat$category == "Layout", ]
 
 summary(structure_result)
 

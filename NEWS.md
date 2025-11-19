@@ -1,3 +1,27 @@
+# bidux 0.3.3 (2025-11-19)
+==========================
+
+### NEW FEATURES
+
+* **DBI connection support for telemetry ingestion.** `bid_ingest_telemetry()` and `bid_telemetry()` now accept DBI connection objects in addition to file paths. This allows direct use of existing database connections and supports any DBI-compatible backend (SQLite, PostgreSQL, MySQL, etc.). New `table_name` parameter enables reading from custom table names instead of relying on auto-detection. Connections passed in remain open for caller management (fixes Issue #17).
+
+* **Quick UX suggestions with `bid_quick_suggest()`.** New function provides immediate, actionable UX suggestions without going through the full 5-stage BID workflow. Simply describe your problem and get ranked component recommendations with implementation guidance. Ideal for rapid prototyping or quick fixes.
+
+* **Flattened tibble format for Structure stage suggestions.** `bid_structure()` now returns both the nested suggestion format (`$suggestions`) and a new flattened tibble format (`$suggestions_tbl`). The tibble includes columns for `concept`, `title`, `details`, `components`, `rationale`, `score`, `difficulty`, and `category`, making it easy to filter and analyze suggestions using standard dplyr operations. Examples include filtering by difficulty ("Easy", "Medium", "Hard"), category ("Layout", "Navigation", "Content", etc.), or score thresholds.
+
+### IMPROVEMENTS
+
+* **Enhanced concept citations and accuracy in bid_concepts_data.csv:**
+  - Updated Beautiful-Is-Good Stereotype with more comprehensive description and added aesthetic-usability reference (Tractinsky et al., 2000) alongside the original social psychology reference (Dion et al., 1972)
+  - Improved Data Storytelling Framework with clearer description and updated citations to data visualization authorities (Knaflic, 2015; Dykes, 2020)
+  - Added clarifying note to Gherkin Method explaining that while not a behavioral science concept, it supports clear information processing and scenario-based thinking
+
+### DOCUMENTATION UPDATES
+
+* **Quarto dashboard compatibility.** Updated package documentation to clarify that bidux works with both Shiny applications and Quarto dashboards. Core BID framework stages, layout suggestions, and most component recommendations (`bslib`, `DT`, `plotly`, `reactable`) work in both frameworks. Added notes about which features require Shiny runtime when using Quarto (`server: shiny`).
+
+* **Getting Started vignette enhanced** with comprehensive examples showing how to work with both nested and flattened suggestion formats, including practical filtering patterns for finding easy-to-implement, high-impact suggestions
+
 # bidux 0.3.2 (2025-10-28)
 ==========================
 

@@ -411,20 +411,20 @@ enhanced functionality:</p>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>legacy_result <span class="ot">&lt;-</span> <span class="fu">bid_ingest_telemetry</span>(<span class="st">&quot;telemetry.sqlite&quot;</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># 1. LEGACY LIST INTERFACE (backward compatible)</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">length</span>(legacy_result)               <span class="co"># Number of issues as named list</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">names</span>(legacy_result)                <span class="co"># Issue IDs: &quot;unused_input_region&quot;, &quot;error_1&quot;, etc.</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>legacy_result[[<span class="dv">1</span>]]                  <span class="co"># Access individual bid_stage Notice objects</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>legacy_result<span class="sc">$</span>unused_input_region   <span class="co"># Access by name</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">length</span>(legacy_result) <span class="co"># Number of issues as named list</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">names</span>(legacy_result) <span class="co"># Issue IDs: &quot;unused_input_region&quot;, &quot;error_1&quot;, etc.</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>legacy_result[[<span class="dv">1</span>]] <span class="co"># Access individual bid_stage Notice objects</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>legacy_result<span class="sc">$</span>unused_input_region <span class="co"># Access by name</span></span>
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
 <span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># 2. ENHANCED TIBBLE INTERFACE (new in 0.3.1)</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">as_tibble</span>(legacy_result)            <span class="co"># Convert to tidy tibble view</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">print</span>(legacy_result)                <span class="co"># Pretty-printed triage summary</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">as_tibble</span>(legacy_result) <span class="co"># Convert to tidy tibble view</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">print</span>(legacy_result) <span class="co"># Pretty-printed triage summary</span></span>
 <span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a></span>
 <span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co"># 3. FLAGS EXTRACTION (new in 0.3.1)</span></span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>flags <span class="ot">&lt;-</span> <span class="fu">bid_flags</span>(legacy_result)   <span class="co"># Extract global telemetry flags</span></span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>flags<span class="sc">$</span>has_critical_issues           <span class="co"># Boolean flag</span></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>flags<span class="sc">$</span>has_navigation_issues         <span class="co"># Boolean flag</span></span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>flags<span class="sc">$</span>session_count                 <span class="co"># Integer metadata</span></span></code></pre></div>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>flags <span class="ot">&lt;-</span> <span class="fu">bid_flags</span>(legacy_result) <span class="co"># Extract global telemetry flags</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>flags<span class="sc">$</span>has_critical_issues <span class="co"># Boolean flag</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>flags<span class="sc">$</span>has_navigation_issues <span class="co"># Boolean flag</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>flags<span class="sc">$</span>session_count <span class="co"># Integer metadata</span></span></code></pre></div>
 <p><strong>Key characteristics of <code>bid_ingest_telemetry()</code>
 output:</strong> - Returns a hybrid object with class:
 <code>c(&quot;bid_issues&quot;, &quot;list&quot;)</code> - <strong>List interface</strong>:
@@ -514,7 +514,7 @@ to identify UX issues:</p>
 <span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>issues <span class="ot">&lt;-</span> <span class="fu">bid_telemetry</span>(<span class="st">&quot;telemetry.log&quot;</span>, <span class="at">format =</span> <span class="st">&quot;json&quot;</span>)</span>
 <span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
 <span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co"># Review identified issues</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">nrow</span>(issues)  <span class="co"># Modern: tibble row count</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">nrow</span>(issues) <span class="co"># Modern: tibble row count</span></span>
 <span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="fu">print</span>(issues) <span class="co"># Both show formatted triage summary</span></span></code></pre></div>
 </div>
 <div id="configuring-analysis-sensitivity-with-presets" class="section level2">
@@ -606,8 +606,8 @@ problems only.</p>
 <span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">c</span>(</span>
 <span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    <span class="fu">bid_telemetry_presets</span>(<span class="st">&quot;moderate&quot;</span>),</span>
 <span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="fu">list</span>(</span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>      <span class="at">unused_input_threshold =</span> <span class="fl">0.03</span>,  <span class="co"># Override: flag if &lt; 3% use</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>      <span class="at">error_rate_threshold =</span> <span class="fl">0.15</span>     <span class="co"># Override: flag if &gt; 15% errors</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>      <span class="at">unused_input_threshold =</span> <span class="fl">0.03</span>, <span class="co"># Override: flag if &lt; 3% use</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>      <span class="at">error_rate_threshold =</span> <span class="fl">0.15</span> <span class="co"># Override: flag if &gt; 15% errors</span></span>
 <span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    )</span>
 <span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  )</span>
 <span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>)</span>
@@ -616,12 +616,12 @@ problems only.</p>
 <span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>fully_custom <span class="ot">&lt;-</span> <span class="fu">bid_telemetry</span>(</span>
 <span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>  <span class="st">&quot;telemetry.sqlite&quot;</span>,</span>
 <span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">list</span>(</span>
-<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>    <span class="at">unused_input_threshold =</span> <span class="fl">0.1</span>,   <span class="co"># Flag if &lt;10% of sessions use input</span></span>
-<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>    <span class="at">delay_threshold_secs =</span> <span class="dv">60</span>,      <span class="co"># Flag if &gt;60s before first interaction</span></span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>    <span class="at">error_rate_threshold =</span> <span class="fl">0.05</span>,    <span class="co"># Flag if &gt;5% of sessions have errors</span></span>
-<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>    <span class="at">navigation_threshold =</span> <span class="fl">0.3</span>,     <span class="co"># Flag if &lt;30% visit a page</span></span>
-<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>    <span class="at">rapid_change_window =</span> <span class="dv">5</span>,        <span class="co"># Look for changes within 5 seconds</span></span>
-<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>    <span class="at">rapid_change_count =</span> <span class="dv">3</span>          <span class="co"># Flag if 3+ changes in window</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>    <span class="at">unused_input_threshold =</span> <span class="fl">0.1</span>, <span class="co"># Flag if &lt;10% of sessions use input</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>    <span class="at">delay_threshold_secs =</span> <span class="dv">60</span>, <span class="co"># Flag if &gt;60s before first interaction</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>    <span class="at">error_rate_threshold =</span> <span class="fl">0.05</span>, <span class="co"># Flag if &gt;5% of sessions have errors</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>    <span class="at">navigation_threshold =</span> <span class="fl">0.3</span>, <span class="co"># Flag if &lt;30% visit a page</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>    <span class="at">rapid_change_window =</span> <span class="dv">5</span>, <span class="co"># Look for changes within 5 seconds</span></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>    <span class="at">rapid_change_count =</span> <span class="dv">3</span> <span class="co"># Flag if 3+ changes in window</span></span>
 <span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a>  )</span>
 <span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a>)</span></code></pre></div>
 </div>
@@ -630,28 +630,31 @@ problems only.</p>
 <p>Different presets will identify different numbers of issues:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Analyze same data with all three presets</span></span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>strict <span class="ot">&lt;-</span> <span class="fu">bid_telemetry</span>(<span class="st">&quot;telemetry.sqlite&quot;</span>,</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>                        <span class="at">thresholds =</span> <span class="fu">bid_telemetry_presets</span>(<span class="st">&quot;strict&quot;</span>))</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>moderate <span class="ot">&lt;-</span> <span class="fu">bid_telemetry</span>(<span class="st">&quot;telemetry.sqlite&quot;</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>                          <span class="at">thresholds =</span> <span class="fu">bid_telemetry_presets</span>(<span class="st">&quot;moderate&quot;</span>))</span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>relaxed <span class="ot">&lt;-</span> <span class="fu">bid_telemetry</span>(<span class="st">&quot;telemetry.sqlite&quot;</span>,</span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>                         <span class="at">thresholds =</span> <span class="fu">bid_telemetry_presets</span>(<span class="st">&quot;relaxed&quot;</span>))</span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a></span>
-<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co"># Compare issue counts</span></span>
-<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>  <span class="at">preset =</span> <span class="fu">c</span>(<span class="st">&quot;Strict&quot;</span>, <span class="st">&quot;Moderate&quot;</span>, <span class="st">&quot;Relaxed&quot;</span>),</span>
-<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="at">issues_found =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(strict), <span class="fu">nrow</span>(moderate), <span class="fu">nrow</span>(relaxed)),</span>
-<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>  <span class="at">critical =</span> <span class="fu">c</span>(</span>
-<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>    <span class="fu">sum</span>(strict<span class="sc">$</span>severity <span class="sc">==</span> <span class="st">&quot;critical&quot;</span>),</span>
-<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>    <span class="fu">sum</span>(moderate<span class="sc">$</span>severity <span class="sc">==</span> <span class="st">&quot;critical&quot;</span>),</span>
-<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>    <span class="fu">sum</span>(relaxed<span class="sc">$</span>severity <span class="sc">==</span> <span class="st">&quot;critical&quot;</span>)</span>
-<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a>  )</span>
-<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a>)</span>
-<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a></span>
-<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a><span class="fu">print</span>(comparison)</span>
-<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a><span class="co">#&gt;     preset issues_found critical</span></span>
-<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a><span class="co">#&gt; 1   Strict           12        3</span></span>
-<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt; 2 Moderate            8        2</span></span>
-<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a><span class="co">#&gt; 3  Relaxed            4        1</span></span></code></pre></div>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">bid_telemetry_presets</span>(<span class="st">&quot;strict&quot;</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>)</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>moderate <span class="ot">&lt;-</span> <span class="fu">bid_telemetry</span>(<span class="st">&quot;telemetry.sqlite&quot;</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">bid_telemetry_presets</span>(<span class="st">&quot;moderate&quot;</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>)</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>relaxed <span class="ot">&lt;-</span> <span class="fu">bid_telemetry</span>(<span class="st">&quot;telemetry.sqlite&quot;</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">bid_telemetry_presets</span>(<span class="st">&quot;relaxed&quot;</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>)</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co"># Compare issue counts</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>  <span class="at">preset =</span> <span class="fu">c</span>(<span class="st">&quot;Strict&quot;</span>, <span class="st">&quot;Moderate&quot;</span>, <span class="st">&quot;Relaxed&quot;</span>),</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>  <span class="at">issues_found =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(strict), <span class="fu">nrow</span>(moderate), <span class="fu">nrow</span>(relaxed)),</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>  <span class="at">critical =</span> <span class="fu">c</span>(</span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a>    <span class="fu">sum</span>(strict<span class="sc">$</span>severity <span class="sc">==</span> <span class="st">&quot;critical&quot;</span>),</span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a>    <span class="fu">sum</span>(moderate<span class="sc">$</span>severity <span class="sc">==</span> <span class="st">&quot;critical&quot;</span>),</span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a>    <span class="fu">sum</span>(relaxed<span class="sc">$</span>severity <span class="sc">==</span> <span class="st">&quot;critical&quot;</span>)</span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a>  )</span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a>)</span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="fu">print</span>(comparison)</span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a><span class="co">#&gt;     preset issues_found critical</span></span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a><span class="co">#&gt; 1   Strict           12        3</span></span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a><span class="co">#&gt; 2 Moderate            8        2</span></span>
+<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a><span class="co">#&gt; 3  Relaxed            4        1</span></span></code></pre></div>
 </div>
 </div>
 <div id="understanding-the-analysis" class="section level2">
@@ -800,12 +803,12 @@ telemetry issues into BID stages:</p>
 <span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>notice_list <span class="ot">&lt;-</span> <span class="fu">bid_notices</span>(</span>
 <span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>  <span class="at">issues =</span> high_priority,</span>
 <span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>  <span class="at">previous_stage =</span> interpret_result,</span>
-<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a>  <span class="at">max_issues =</span> <span class="dv">3</span>  <span class="co"># Limit to top 3 issues</span></span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a>  <span class="at">max_issues =</span> <span class="dv">3</span> <span class="co"># Limit to top 3 issues</span></span>
 <span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a>)</span>
 <span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a></span>
 <span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a><span class="co"># Result is a named list of bid_stage objects</span></span>
-<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a><span class="fu">length</span>(notice_list)  <span class="co"># Number of Notice stages created</span></span>
-<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>notice_list[[<span class="dv">1</span>]]     <span class="co"># Access individual Notice stage</span></span>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a><span class="fu">length</span>(notice_list) <span class="co"># Number of Notice stages created</span></span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>notice_list[[<span class="dv">1</span>]] <span class="co"># Access individual Notice stage</span></span>
 <span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a></span>
 <span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a><span class="co"># Continue BID workflow with first issue</span></span>
 <span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a>anticipate_result <span class="ot">&lt;-</span> <span class="fu">bid_anticipate</span>(</span>
@@ -894,12 +897,12 @@ telemetry issues into BID stages:</p>
 <span id="cb20-27"><a href="#cb20-27" tabindex="-1"></a><span class="co"># Pass flags to structure stage</span></span>
 <span id="cb20-28"><a href="#cb20-28" tabindex="-1"></a>structure_result <span class="ot">&lt;-</span> <span class="fu">bid_structure</span>(</span>
 <span id="cb20-29"><a href="#cb20-29" tabindex="-1"></a>  <span class="at">previous_stage =</span> anticipate_result,</span>
-<span id="cb20-30"><a href="#cb20-30" tabindex="-1"></a>  <span class="at">telemetry_flags =</span> flags  <span class="co"># Influences layout selection and suggestions</span></span>
+<span id="cb20-30"><a href="#cb20-30" tabindex="-1"></a>  <span class="at">telemetry_flags =</span> flags <span class="co"># Influences layout selection and suggestions</span></span>
 <span id="cb20-31"><a href="#cb20-31" tabindex="-1"></a>)</span>
 <span id="cb20-32"><a href="#cb20-32" tabindex="-1"></a></span>
 <span id="cb20-33"><a href="#cb20-33" tabindex="-1"></a><span class="co"># Flags also work with legacy hybrid objects</span></span>
 <span id="cb20-34"><a href="#cb20-34" tabindex="-1"></a>legacy_result <span class="ot">&lt;-</span> <span class="fu">bid_ingest_telemetry</span>(<span class="st">&quot;telemetry.sqlite&quot;</span>)</span>
-<span id="cb20-35"><a href="#cb20-35" tabindex="-1"></a>legacy_flags <span class="ot">&lt;-</span> <span class="fu">bid_flags</span>(legacy_result)  <span class="co"># Same flags interface</span></span></code></pre></div>
+<span id="cb20-35"><a href="#cb20-35" tabindex="-1"></a>legacy_flags <span class="ot">&lt;-</span> <span class="fu">bid_flags</span>(legacy_result) <span class="co"># Same flags interface</span></span></code></pre></div>
 </div>
 <div id="understanding-the-hybrid-object" class="section level2">
 <h2>Understanding the Hybrid Object</h2>
@@ -913,19 +916,19 @@ interfaces:</p>
 <span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a><span class="fu">class</span>(hybrid)</span>
 <span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;bid_issues&quot; &quot;list&quot;</span></span>
 <span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a></span>
-<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a><span class="fu">length</span>(hybrid)           <span class="co"># Number of issues</span></span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a><span class="fu">length</span>(hybrid) <span class="co"># Number of issues</span></span>
 <span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a><span class="co">#&gt; [1] 8</span></span>
 <span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a></span>
-<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a><span class="fu">names</span>(hybrid)            <span class="co"># Issue IDs</span></span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a><span class="fu">names</span>(hybrid) <span class="co"># Issue IDs</span></span>
 <span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a><span class="co">#&gt; [1] &quot;unused_input_region&quot;      &quot;delayed_interaction&quot;</span></span>
 <span id="cb21-14"><a href="#cb21-14" tabindex="-1"></a><span class="co">#&gt; [3] &quot;error_1&quot;                  &quot;navigation_settings_tab&quot;</span></span>
 <span id="cb21-15"><a href="#cb21-15" tabindex="-1"></a></span>
-<span id="cb21-16"><a href="#cb21-16" tabindex="-1"></a>hybrid[[<span class="dv">1</span>]]              <span class="co"># First issue as bid_stage object</span></span>
+<span id="cb21-16"><a href="#cb21-16" tabindex="-1"></a>hybrid[[<span class="dv">1</span>]] <span class="co"># First issue as bid_stage object</span></span>
 <span id="cb21-17"><a href="#cb21-17" tabindex="-1"></a><span class="co">#&gt; BID Framework - Notice Stage</span></span>
 <span id="cb21-18"><a href="#cb21-18" tabindex="-1"></a><span class="co">#&gt; Problem: Users are not interacting with the &#39;region&#39; input control</span></span>
 <span id="cb21-19"><a href="#cb21-19" tabindex="-1"></a><span class="co">#&gt; Evidence: Only 25 out of 847 sessions (3.0%) interacted with &#39;region&#39;</span></span>
 <span id="cb21-20"><a href="#cb21-20" tabindex="-1"></a></span>
-<span id="cb21-21"><a href="#cb21-21" tabindex="-1"></a>hybrid<span class="sc">$</span>error_1           <span class="co"># Access by name</span></span>
+<span id="cb21-21"><a href="#cb21-21" tabindex="-1"></a>hybrid<span class="sc">$</span>error_1 <span class="co"># Access by name</span></span>
 <span id="cb21-22"><a href="#cb21-22" tabindex="-1"></a><span class="co">#&gt; BID Framework - Notice Stage</span></span>
 <span id="cb21-23"><a href="#cb21-23" tabindex="-1"></a><span class="co">#&gt; Problem: Users encounter errors when using the dashboard</span></span>
 <span id="cb21-24"><a href="#cb21-24" tabindex="-1"></a></span>
@@ -935,7 +938,7 @@ interfaces:</p>
 <span id="cb21-28"><a href="#cb21-28" tabindex="-1"></a><span class="fu">class</span>(issues_tbl)</span>
 <span id="cb21-29"><a href="#cb21-29" tabindex="-1"></a><span class="co">#&gt; [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</span></span>
 <span id="cb21-30"><a href="#cb21-30" tabindex="-1"></a></span>
-<span id="cb21-31"><a href="#cb21-31" tabindex="-1"></a><span class="fu">nrow</span>(issues_tbl)        <span class="co"># Same count as length(hybrid)</span></span>
+<span id="cb21-31"><a href="#cb21-31" tabindex="-1"></a><span class="fu">nrow</span>(issues_tbl) <span class="co"># Same count as length(hybrid)</span></span>
 <span id="cb21-32"><a href="#cb21-32" tabindex="-1"></a><span class="co">#&gt; [1] 8</span></span>
 <span id="cb21-33"><a href="#cb21-33" tabindex="-1"></a></span>
 <span id="cb21-34"><a href="#cb21-34" tabindex="-1"></a><span class="co"># Filter and manipulate as tibble</span></span>
@@ -1226,16 +1229,19 @@ stakeholders. After 3 months in production, users are complaining it’s
 <span id="cb25-96"><a href="#cb25-96" tabindex="-1"></a>      <span class="fu">layout_columns</span>(</span>
 <span id="cb25-97"><a href="#cb25-97" tabindex="-1"></a>        <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>),</span>
 <span id="cb25-98"><a href="#cb25-98" tabindex="-1"></a>        <span class="fu">selectInput</span>(<span class="st">&quot;time_period&quot;</span>, <span class="st">&quot;Time Period&quot;</span>,</span>
-<span id="cb25-99"><a href="#cb25-99" tabindex="-1"></a>          <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;Today&quot;</span>, <span class="st">&quot;This Week&quot;</span>, <span class="st">&quot;This Month&quot;</span>)),</span>
-<span id="cb25-100"><a href="#cb25-100" tabindex="-1"></a>        <span class="fu">selectInput</span>(<span class="st">&quot;focus_area&quot;</span>, <span class="st">&quot;Focus Area&quot;</span>,</span>
-<span id="cb25-101"><a href="#cb25-101" tabindex="-1"></a>          <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;Revenue&quot;</span>, <span class="st">&quot;Traffic&quot;</span>, <span class="st">&quot;Conversions&quot;</span>)),</span>
-<span id="cb25-102"><a href="#cb25-102" tabindex="-1"></a>        <span class="fu">selectInput</span>(<span class="st">&quot;comparison&quot;</span>, <span class="st">&quot;Compare To&quot;</span>,</span>
-<span id="cb25-103"><a href="#cb25-103" tabindex="-1"></a>          <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;Previous Period&quot;</span>, <span class="st">&quot;Same Period Last Year&quot;</span>)),</span>
-<span id="cb25-104"><a href="#cb25-104" tabindex="-1"></a>        <span class="fu">actionButton</span>(<span class="st">&quot;apply_custom&quot;</span>, <span class="st">&quot;Analyze&quot;</span>, <span class="at">class =</span> <span class="st">&quot;btn btn-primary&quot;</span>)</span>
-<span id="cb25-105"><a href="#cb25-105" tabindex="-1"></a>      )</span>
-<span id="cb25-106"><a href="#cb25-106" tabindex="-1"></a>    )</span>
-<span id="cb25-107"><a href="#cb25-107" tabindex="-1"></a>  )</span>
-<span id="cb25-108"><a href="#cb25-108" tabindex="-1"></a>)</span></code></pre></div>
+<span id="cb25-99"><a href="#cb25-99" tabindex="-1"></a>          <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;Today&quot;</span>, <span class="st">&quot;This Week&quot;</span>, <span class="st">&quot;This Month&quot;</span>)</span>
+<span id="cb25-100"><a href="#cb25-100" tabindex="-1"></a>        ),</span>
+<span id="cb25-101"><a href="#cb25-101" tabindex="-1"></a>        <span class="fu">selectInput</span>(<span class="st">&quot;focus_area&quot;</span>, <span class="st">&quot;Focus Area&quot;</span>,</span>
+<span id="cb25-102"><a href="#cb25-102" tabindex="-1"></a>          <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;Revenue&quot;</span>, <span class="st">&quot;Traffic&quot;</span>, <span class="st">&quot;Conversions&quot;</span>)</span>
+<span id="cb25-103"><a href="#cb25-103" tabindex="-1"></a>        ),</span>
+<span id="cb25-104"><a href="#cb25-104" tabindex="-1"></a>        <span class="fu">selectInput</span>(<span class="st">&quot;comparison&quot;</span>, <span class="st">&quot;Compare To&quot;</span>,</span>
+<span id="cb25-105"><a href="#cb25-105" tabindex="-1"></a>          <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">&quot;Previous Period&quot;</span>, <span class="st">&quot;Same Period Last Year&quot;</span>)</span>
+<span id="cb25-106"><a href="#cb25-106" tabindex="-1"></a>        ),</span>
+<span id="cb25-107"><a href="#cb25-107" tabindex="-1"></a>        <span class="fu">actionButton</span>(<span class="st">&quot;apply_custom&quot;</span>, <span class="st">&quot;Analyze&quot;</span>, <span class="at">class =</span> <span class="st">&quot;btn btn-primary&quot;</span>)</span>
+<span id="cb25-108"><a href="#cb25-108" tabindex="-1"></a>      )</span>
+<span id="cb25-109"><a href="#cb25-109" tabindex="-1"></a>    )</span>
+<span id="cb25-110"><a href="#cb25-110" tabindex="-1"></a>  )</span>
+<span id="cb25-111"><a href="#cb25-111" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="step-4-measure-the-impact" class="section level3">
 <h3>Step 4: Measure the Impact</h3>
@@ -1362,7 +1368,7 @@ collect new telemetry to verify improvements:</p></li>
 <span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a><span class="co"># After implementing improvements</span></span>
 <span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a>issues_after <span class="ot">&lt;-</span> <span class="fu">bid_telemetry</span>(</span>
 <span id="cb28-9"><a href="#cb28-9" tabindex="-1"></a>  <span class="st">&quot;telemetry_after.sqlite&quot;</span>,</span>
-<span id="cb28-10"><a href="#cb28-10" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">bid_telemetry_presets</span>(<span class="st">&quot;moderate&quot;</span>)  <span class="co"># Use same thresholds!</span></span>
+<span id="cb28-10"><a href="#cb28-10" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">bid_telemetry_presets</span>(<span class="st">&quot;moderate&quot;</span>) <span class="co"># Use same thresholds!</span></span>
 <span id="cb28-11"><a href="#cb28-11" tabindex="-1"></a>)</span>
 <span id="cb28-12"><a href="#cb28-12" tabindex="-1"></a></span>
 <span id="cb28-13"><a href="#cb28-13" tabindex="-1"></a><span class="co"># Compare issue counts</span></span>

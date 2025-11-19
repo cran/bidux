@@ -221,7 +221,7 @@ try({
 # # Deprecated format still validates (but triggers warnings)
 # try(new_data_story(
 #   context = "Valid context",
-#   variables = "invalid_type"  # Must be a list
+#   variables = "invalid_type" # Must be a list
 # ))
 })
 
@@ -268,7 +268,7 @@ try({
 # 
 # # Override specific thresholds while using a preset as base
 # custom_thresholds <- bid_telemetry_presets("moderate")
-# custom_thresholds$unused_input_threshold <- 0.03  # More sensitive to unused inputs
+# custom_thresholds$unused_input_threshold <- 0.03 # More sensitive to unused inputs
 # issues <- bid_ingest_telemetry("telemetry.sqlite", thresholds = custom_thresholds)
 
 ## ----tibble-------------------------------------------------------------------

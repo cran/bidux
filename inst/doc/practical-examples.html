@@ -1079,7 +1079,7 @@ behavior.</p>
 <span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a>        <span class="st">&quot;Year to date&quot;</span> <span class="ot">=</span> <span class="st">&quot;ytd&quot;</span>,</span>
 <span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a>        <span class="st">&quot;Custom range&quot;</span> <span class="ot">=</span> <span class="st">&quot;custom&quot;</span></span>
 <span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a>      ),</span>
-<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a>      <span class="at">selected =</span> <span class="st">&quot;30d&quot;</span>,  <span class="co"># Smart default based on most common usage</span></span>
+<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a>      <span class="at">selected =</span> <span class="st">&quot;30d&quot;</span>, <span class="co"># Smart default based on most common usage</span></span>
 <span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a>      <span class="at">inline =</span> <span class="cn">TRUE</span></span>
 <span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a>    )</span>
 <span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a>  ),</span>
@@ -1103,7 +1103,7 @@ behavior.</p>
 <span id="cb12-44"><a href="#cb12-44" tabindex="-1"></a>server_date_feedback <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
 <span id="cb12-45"><a href="#cb12-45" tabindex="-1"></a>  output<span class="sc">$</span>data_coverage_info <span class="ot">&lt;-</span> <span class="fu">renderUI</span>({</span>
 <span id="cb12-46"><a href="#cb12-46" tabindex="-1"></a>    <span class="co"># Calculate based on selected date range</span></span>
-<span id="cb12-47"><a href="#cb12-47" tabindex="-1"></a>    coverage_pct <span class="ot">&lt;-</span> <span class="dv">95</span>  <span class="co"># Example: 95% of data falls in selected range</span></span>
+<span id="cb12-47"><a href="#cb12-47" tabindex="-1"></a>    coverage_pct <span class="ot">&lt;-</span> <span class="dv">95</span> <span class="co"># Example: 95% of data falls in selected range</span></span>
 <span id="cb12-48"><a href="#cb12-48" tabindex="-1"></a></span>
 <span id="cb12-49"><a href="#cb12-49" tabindex="-1"></a>    <span class="fu">div</span>(</span>
 <span id="cb12-50"><a href="#cb12-50" tabindex="-1"></a>      <span class="at">class =</span> <span class="st">&quot;alert alert-info&quot;</span>,</span>

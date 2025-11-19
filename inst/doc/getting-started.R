@@ -101,6 +101,36 @@ knitr::opts_chunk$set(
 # structure_result |>
 #   select(layout, concepts, suggestions)
 
+## ----structure-nested---------------------------------------------------------
+# # Access nested suggestions (grouped by concept)
+# structure_result$suggestions[[1]]$concept
+# structure_result$suggestions[[1]]$suggestions[[1]]$title
+
+## ----structure-tibble---------------------------------------------------------
+# # Access flattened tibble format
+# suggestions_flat <- structure_result$suggestions_tbl[[1]]
+# 
+# # View all suggestions sorted by score
+# suggestions_flat |>
+#   select(concept, title, score, difficulty, category) |>
+#   head(5)
+# 
+# # Filter by implementation difficulty
+# easy_wins <- suggestions_flat |>
+#   filter(difficulty == "Easy") |>
+#   select(title, details, components)
+# 
+# # Filter by category
+# layout_suggestions <- suggestions_flat |>
+#   filter(category == "Layout") |>
+#   select(title, details, rationale)
+# 
+# # Find high-impact suggestions
+# high_impact <- suggestions_flat |>
+#   filter(score >= 0.85, difficulty %in% c("Easy", "Medium")) |>
+#   arrange(desc(score)) |>
+#   select(title, score, difficulty, components)
+
 ## ----validate-----------------------------------------------------------------
 # # Document validation approach
 # validate_result <- bid_validate(
@@ -231,9 +261,9 @@ knitr::opts_chunk$set(
 # 
 # # 5. Extract telemetry flags for informed decisions
 # flags <- bid_flags(issues)
-# flags$has_critical_issues  # TRUE/FALSE
-# flags$has_navigation_issues  # TRUE/FALSE
-# flags$session_count  # Number of sessions analyzed
+# flags$has_critical_issues # TRUE/FALSE
+# flags$has_navigation_issues # TRUE/FALSE
+# flags$session_count # Number of sessions analyzed
 # 
 # # 6. Use flags to inform Structure stage
 # structure_result <- bid_structure(
@@ -249,14 +279,14 @@ knitr::opts_chunk$set(
 # )
 # 
 # # Legacy list interface (backward compatible)
-# length(legacy_issues)  # Number of issues as list length
-# legacy_issues[[1]]  # First issue as bid_stage object
-# names(legacy_issues)  # Issue identifiers
+# length(legacy_issues) # Number of issues as list length
+# legacy_issues[[1]] # First issue as bid_stage object
+# names(legacy_issues) # Issue identifiers
 # 
 # # Enhanced features (new in 0.3.1)
-# as_tibble(legacy_issues)  # Get tidy issues view
-# bid_flags(legacy_issues)  # Extract global flags
-# print(legacy_issues)  # Shows organized triage summary
+# as_tibble(legacy_issues) # Get tidy issues view
+# bid_flags(legacy_issues) # Extract global flags
+# print(legacy_issues) # Shows organized triage summary
 # 
 # # Both interfaces work on same object
 
@@ -264,7 +294,7 @@ knitr::opts_chunk$set(
 # # Step 1: Analyze telemetry to identify friction points
 # issues <- bid_telemetry(
 #   "path/to/telemetry.sqlite",
-#   thresholds = bid_telemetry_presets("strict")  # Catch everything during development
+#   thresholds = bid_telemetry_presets("strict") # Catch everything during development
 # )
 # 
 # # Step 2: Start BID workflow with central question
@@ -300,7 +330,7 @@ knitr::opts_chunk$set(
 # # Step 5: Structure with telemetry-informed decisions
 # structure_result <- bid_structure(
 #   previous_stage = anticipate_result,
-#   telemetry_flags = bid_flags(issues)  # Informs layout selection
+#   telemetry_flags = bid_flags(issues) # Informs layout selection
 # )
 # 
 # # Step 6: Validate with telemetry references

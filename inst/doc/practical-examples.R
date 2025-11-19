@@ -643,7 +643,7 @@ knitr::opts_chunk$set(
 #         "Year to date" = "ytd",
 #         "Custom range" = "custom"
 #       ),
-#       selected = "30d",  # Smart default based on most common usage
+#       selected = "30d", # Smart default based on most common usage
 #       inline = TRUE
 #     )
 #   ),
@@ -667,7 +667,7 @@ knitr::opts_chunk$set(
 # server_date_feedback <- function(input, output, session) {
 #   output$data_coverage_info <- renderUI({
 #     # Calculate based on selected date range
-#     coverage_pct <- 95  # Example: 95% of data falls in selected range
+#     coverage_pct <- 95 # Example: 95% of data falls in selected range
 # 
 #     div(
 #       class = "alert alert-info",

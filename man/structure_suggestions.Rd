@@ -4,7 +4,12 @@
 \alias{structure_suggestions}
 \title{Generate ranked, concept-grouped, actionable UI/UX suggestions}
 \usage{
-structure_suggestions(previous_stage, chosen_layout, concepts = NULL)
+structure_suggestions(
+  previous_stage,
+  chosen_layout,
+  concepts = NULL,
+  quiet = NULL
+)
 }
 \arguments{
 \item{previous_stage}{A tibble or list output from an earlier BID stage}
@@ -33,9 +38,15 @@ Each suggestion includes:
 \itemize{
 \item title: Brief actionable description
 \item details: Specific implementation guidance
-\item components: Shiny/bslib component recommendations
+\item components: R dashboard component recommendations (shiny::, bslib::, etc.)
 \item rationale: 1-2 sentence explanation
 \item score: Relevance ranking (0-1)
 }
+
+\strong{Framework Compatibility:}
+Components prefixed with 'shiny::' require Shiny runtime (either a Shiny app
+or Quarto dashboard with \code{server: shiny}). Components from bslib, DT, plotly,
+reactable, and leaflet work in both Shiny apps and static/OJS Quarto
+dashboards.
 }
 \keyword{internal}

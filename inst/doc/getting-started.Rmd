@@ -180,6 +180,57 @@ structure_result |>
 
 The function automatically selects an appropriate layout based on the content from previous stages and provides ranked, actionable suggestions organized by UX concepts. The layout selection is transparent with clear rationale for why a particular layout was chosen.
 
+#### Working with Suggestions: Nested vs Flattened Format
+
+The `bid_structure()` function returns suggestions in two formats for maximum flexibility:
+
+**Nested Format** (`$suggestions`): Organized by behavioral science concepts, ideal for understanding the theoretical foundation:
+
+```{r structure-nested}
+# Access nested suggestions (grouped by concept)
+structure_result$suggestions[[1]]$concept
+structure_result$suggestions[[1]]$suggestions[[1]]$title
+```
+
+**Flattened Tibble Format** (`$suggestions_tbl`): A tidy tibble with one row per suggestion, ideal for filtering and analysis:
+
+```{r structure-tibble}
+# Access flattened tibble format
+suggestions_flat <- structure_result$suggestions_tbl[[1]]
+
+# View all suggestions sorted by score
+suggestions_flat |>
+  select(concept, title, score, difficulty, category) |>
+  head(5)
+
+# Filter by implementation difficulty
+easy_wins <- suggestions_flat |>
+  filter(difficulty == "Easy") |>
+  select(title, details, components)
+
+# Filter by category
+layout_suggestions <- suggestions_flat |>
+  filter(category == "Layout") |>
+  select(title, details, rationale)
+
+# Find high-impact suggestions
+high_impact <- suggestions_flat |>
+  filter(score >= 0.85, difficulty %in% c("Easy", "Medium")) |>
+  arrange(desc(score)) |>
+  select(title, score, difficulty, components)
+```
+
+The tibble format includes these columns:
+
+- `concept`: Behavioral science concept (e.g., "Cognitive Load Theory")
+- `title`: Brief actionable description
+- `details`: Specific implementation guidance
+- `components`: Comma-separated Shiny/bslib component names
+- `rationale`: Why this suggestion is relevant
+- `score`: Relevance score (0-1, higher is more relevant)
+- `difficulty`: Implementation difficulty ("Easy", "Medium", "Hard")
+- `category`: Category grouping ("Layout", "Navigation", "Content", etc.)
+
 ### Stage 5: Validate & Empower the User
 
 Finally, document how you'll ensure users leave with clear insights and the ability to collaborate:
@@ -408,9 +459,9 @@ notices <- bid_notices(
 
 # 5. Extract telemetry flags for informed decisions
 flags <- bid_flags(issues)
-flags$has_critical_issues  # TRUE/FALSE
-flags$has_navigation_issues  # TRUE/FALSE
-flags$session_count  # Number of sessions analyzed
+flags$has_critical_issues # TRUE/FALSE
+flags$has_navigation_issues # TRUE/FALSE
+flags$session_count # Number of sessions analyzed
 
 # 6. Use flags to inform Structure stage
 structure_result <- bid_structure(
@@ -431,14 +482,14 @@ legacy_issues <- bid_ingest_telemetry(
 )
 
 # Legacy list interface (backward compatible)
-length(legacy_issues)  # Number of issues as list length
-legacy_issues[[1]]  # First issue as bid_stage object
-names(legacy_issues)  # Issue identifiers
+length(legacy_issues) # Number of issues as list length
+legacy_issues[[1]] # First issue as bid_stage object
+names(legacy_issues) # Issue identifiers
 
 # Enhanced features (new in 0.3.1)
-as_tibble(legacy_issues)  # Get tidy issues view
-bid_flags(legacy_issues)  # Extract global flags
-print(legacy_issues)  # Shows organized triage summary
+as_tibble(legacy_issues) # Get tidy issues view
+bid_flags(legacy_issues) # Extract global flags
+print(legacy_issues) # Shows organized triage summary
 
 # Both interfaces work on same object
 ```
@@ -451,7 +502,7 @@ Here's a full example showing how telemetry analysis integrates with the BID fra
 # Step 1: Analyze telemetry to identify friction points
 issues <- bid_telemetry(
   "path/to/telemetry.sqlite",
-  thresholds = bid_telemetry_presets("strict")  # Catch everything during development
+  thresholds = bid_telemetry_presets("strict") # Catch everything during development
 )
 
 # Step 2: Start BID workflow with central question
@@ -487,7 +538,7 @@ anticipate_result <- bid_anticipate(
 # Step 5: Structure with telemetry-informed decisions
 structure_result <- bid_structure(
   previous_stage = anticipate_result,
-  telemetry_flags = bid_flags(issues)  # Informs layout selection
+  telemetry_flags = bid_flags(issues) # Informs layout selection
 )
 
 # Step 6: Validate with telemetry references
